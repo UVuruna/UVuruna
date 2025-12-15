@@ -1,16 +1,37 @@
-## Hi there 👋
+# Hi, I'm UVuruna 👋
 
-<!--
-**UVuruna/UVuruna** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+## 🛠️ Windows Toolkit
 
-Here are some ideas to get you started:
+|  | Repo | Description |
+|--|------|-------------|
+| 🌈 | [Auto-OpenRGB](https://github.com/UVuruna/Auto-OpenRGB) | Automatic RGB profile switching based on time |
+| 👁️ | [DOMY-Watch](https://github.com/UVuruna/DOMY-Watch) | Desktop monitoring application |
+| 📊 | [ProcessMemoryUsage](https://github.com/UVuruna/ProcessMemoryUsage) | Process memory monitoring utility |
+| 📖 | [AutoRead](https://github.com/UVuruna/AutoRead) | Link Elearning auto-reader script |
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## 🎮 Games
+
+|  | Repo | Description |
+|--|------|-------------|
+| ♟️ | [Chess](https://github.com/UVuruna/Chess) | Chess game |
+| ⭕ | [TicTacToe](https://github.com/UVuruna/TicTacToe) | Tic-Tac-Toe game |
+
+## 🌐 Websites
+
+|  | Repo | Description |
+|--|------|-------------|
+| 🍊 | [Prirodni-Sokovi](https://github.com/UVuruna/Prirodni-Sokovi) | Natural juices website |
+| 🪟 | [vaske-komarnici](https://github.com/UVuruna/vaske-komarnici) | Mosquito nets website |
+
+## 🔧 Developer Tools
+
+|  | Repo | Description |
+|--|------|-------------|
+| 🎨 | [SVG-Styler](https://github.com/UVuruna/SVG-Styler) | SVG color, gradient, brightness editor |
+
+## 📱 Applications
+
+|  | Repo | Description |
+|--|------|-------------|
+| 🏥 | [RHMH](https://github.com/UVuruna/RHMH) | Reconstructive surgery patient management |
+| 🔒 | Robin | |
