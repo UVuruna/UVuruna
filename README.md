@@ -5,7 +5,7 @@
 |  | Repo | Description |
 |--|------|-------------|
 | 🌈 | [Auto-OpenRGB](https://github.com/UVuruna/Auto-OpenRGB) | Automatic RGB profile switching based on time |
-| 👁️ | [DOMY-Watch](https://github.com/UVuruna/DOMY-Watch) | Desktop monitoring application |
+| ⌚ | [DOMY-Watch](https://github.com/UVuruna/DOMY-Watch) | Desktop watch widget |
 | 📊 | [ProcessMemoryUsage](https://github.com/UVuruna/ProcessMemoryUsage) | Process memory monitoring utility |
 | 📖 | [AutoRead](https://github.com/UVuruna/AutoRead) | Link Elearning auto-reader script |
 
