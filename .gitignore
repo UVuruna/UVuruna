@@ -1,0 +1,16 @@
+# Ignore everything in this monorepo root by default.
+# Only the documentation files and logos are tracked on GitHub.
+# Each project has its own git repository.
+
+*
+
+# Root documentation
+!CLAUDE.md
+!README.md
+!PROJECTS.md
+!company.json
+!.gitignore
+
+# Project logos (SVG files used in README and PROJECTS)
+!logos/
+!logos/**
