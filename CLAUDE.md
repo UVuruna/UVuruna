@@ -669,6 +669,62 @@ gh release create v{version} "dist/{ProjectName}_Setup.exe" \
 
 ---
 
+## Performance Profiling — Python (CPU)
+
+**Tool: py-spy** — sampling profiler that attaches to a running process without modifying code.
+
+### Installation
+
+```bash
+pip install py-spy
+```
+
+### Step 1 — Find the PID
+
+```powershell
+Get-CimInstance Win32_Process -Filter "Name='python.exe'" | Select-Object ProcessId, CommandLine | Format-List
+```
+
+Identify the PID by `CommandLine` path.
+
+### Step 2 — Live Monitor
+
+```bash
+py-spy top --pid <PID> --rate 100
+```
+
+`--rate 100` — 100 samples per second (higher precision). Output refreshes every second.
+
+### Step 3 — Flame Graph (deeper analysis)
+
+```bash
+py-spy record --output profile.svg --pid <PID>
+```
+
+Generates an SVG flame graph — use this when `top` identifies a problem area and you need to trace the full call chain.
+
+### Reading Results
+
+```
+%Own    %Total   OwnTime  TotalTime  Function (filename)
+ 2.07%   2.07%   2.070s   2.070s    resize (PIL\Image.py)
+ 1.27%   3.34%   1.270s   3.340s    _save (PIL\IcoImagePlugin.py)
+```
+
+- **`%Own`** — time this function spends directly (excluding callees)
+- **`%Total`** — time including all functions it calls
+- Sorted by `%Total` — follow the chain from top to bottom to find the root caller
+
+### When CPU = 0%
+
+If all values show `0.00%` and `GIL: 0.00%, Active: 0.00%` — the application is genuinely idle. This is a **positive result** confirming that no unnecessary work is happening.
+
+### Important
+
+`top` shows **cumulative time since process start** — if the app has been running for a long time, old slow calls pollute the stats. Restart the app and measure a short, focused window for clean results.
+
+---
+
 ## Documentation System — Quick Reference
 
 | What | Naming | Location |
