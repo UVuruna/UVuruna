@@ -21,7 +21,7 @@ Full-stack developer working across desktop applications, AI/ML platforms, autom
 | <img src="logos/AutoOpenRGB.svg" width="22" height="22"> | [Auto OpenRGB](https://github.com/UVuruna/Auto-OpenRGB) | Automatic RGB lighting profile switching based on time of day — Task Scheduler integration, VBS keyboard shortcuts |
 | <img src="logos/AutoRead.svg" width="22" height="22"> | [AutoRead](https://github.com/UVuruna/AutoRead) | E-learning automation tool — OCR-based timer detection, automatic course navigation and link clicking |
 | <img src="logos/RHMH.svg" width="22" height="22"> | [RHMH](https://github.com/UVuruna/RHMH) | Medical patient management system — records, imaging, MKB-10 diagnoses, AI-powered OCR, Google Drive sync, analytics |
-| <img src="logos/Aviator.svg" width="22" height="22"> | Robin / Vili / Aviator 🔒 | Multi-bookmaker Aviator game automation — real-time OCR, WebSocket data collection, ML predictions, automated execution |
+| <img src="logos/Aviator.svg" width="22" height="22"> | Robin / Vili / Aviator 🔒 | Private |
 
 ---
 
@@ -31,7 +31,6 @@ Full-stack developer working across desktop applications, AI/ML platforms, autom
 |--|---------|-------------|
 | <img src="logos/MladenVuruna.svg" width="22" height="22"> | [Mladen Vuruna](https://github.com/UVuruna/mladenvuruna) | Personal portfolio for a Serbian writer and artist — books with page-flip animation, essays, art gallery, visitor analytics |
 | <img src="logos/ColorizeSVG.svg" width="22" height="22"> | [SVG Styler](https://github.com/UVuruna/SVG-Styler) | Interactive web tool for real-time SVG color editing — circular knob sliders for brightness, contrast, saturation, hue, and more |
-| <img src="logos/MxD.svg" width="22" height="22"> | [MxD](https://github.com/UVuruna/MxD) | Corporate website for a B2B marketing and business strategy company — dynamic component loading, services showcase |
 | <img src="logos/PrirodniSokovi.svg" width="22" height="22"> | [Prirodni Sokovi](https://github.com/UVuruna/Prirodni-Sokovi) | E-commerce website for a natural juice company — product catalog, ingredients, time-based theme system (4 daily themes) |
 | <img src="logos/VaskeKomarnici.svg" width="22" height="22"> | [Vaske Komarnici](https://github.com/UVuruna/vaske-komarnici) | Commercial website for mosquito screen products — catalog with 3 product categories, ordering system, SVG colorization |
 
@@ -41,9 +40,9 @@ Full-stack developer working across desktop applications, AI/ML platforms, autom
 
 | | Project | Description |
 |--|---------|-------------|
-| | [Texas Hold'em Poker](https://github.com/UVuruna/TexasHoldemPoker) | Poker game with real-time probability calculation based on remaining cards in the deck |
-| | [Chess](https://github.com/UVuruna/Chess) | Chess game implementation in Python |
-| | [Tic-Tac-Toe](https://github.com/UVuruna/TicTacToe) | Classic Tic-Tac-Toe game in Python |
+| <img src="logos/TexasHoldemPoker.svg" width="22" height="22"> | [Texas Hold'em Poker](https://github.com/UVuruna/TexasHoldemPoker) | Poker game with real-time probability calculation based on remaining cards in the deck |
+| <img src="logos/Chess.svg" width="22" height="22"> | [Chess](https://github.com/UVuruna/Chess) | Chess game implementation in Python |
+| <img src="logos/TicTacToe.svg" width="22" height="22"> | [Tic-Tac-Toe](https://github.com/UVuruna/TicTacToe) | Classic Tic-Tac-Toe game in Python |
 
 ---
 

@@ -174,17 +174,7 @@ Full index of all UVuruna projects — local and GitHub.
 **Type:** Automation Application (Windows)
 **Status:** 🟡 In Development
 
-**Description:** Multi-bookmaker Aviator game automation system. Collects real-time game data via OCR screen reading and WebSocket connections, runs ML models for round predictions, and executes automated betting decisions. Designed around a Worker Process pattern for parallel execution.
-
-**Tech Stack:** Python, PySide6, OCR, WebSocket, SQLite, ML
-
-**Architecture:** Worker Process Pattern — 1 Bookmaker = 1 Process = 1 CPU Core for parallel OCR execution across multiple bookmakers simultaneously.
-
-**Key Features:**
-- Parallel multi-bookmaker data collection
-- OCR + WebSocket hybrid data extraction
-- ML-powered round outcome predictions
-- Automated bet placement and session management
+**Description:** Private.
 
 ---
 
@@ -240,28 +230,6 @@ Full index of all UVuruna projects — local and GitHub.
 
 ---
 
-<a id="mxd"></a>
-
-### <img src="logos/MxD.svg" width="22" height="22"> MxD
-
-**Local path:** `WebSites/MxD (first)/`
-**GitHub:** [UVuruna/MxD](https://github.com/UVuruna/MxD)
-**Type:** Website
-**Status:** 🔴 Archived (job interview task)
-
-**Description:** Corporate website for a B2B marketing and business strategy company. Showcases marketing services, industry verticals, and solutions. Built with a dynamic HTML component loading system and lazy loading for performance.
-
-**Tech Stack:** HTML5, Vanilla JavaScript, CSS3
-
-**Key Features:**
-- Dynamic HTML component loading (JS-based module system)
-- Dropdown navigation (Services, Verticals, Marketing Solutions)
-- Carousel for partner/service showcase
-- Lazy loading for performance
-- AI chat feature
-
----
-
 <a id="prirodni-sokovi"></a>
 
 ### <img src="logos/PrirodniSokovi.svg" width="22" height="22"> Prirodni Sokovi
@@ -314,7 +282,7 @@ These are standalone repositories not part of the local monorepo.
 
 ---
 
-### Texas Hold'em Poker
+### <img src="logos/TexasHoldemPoker.svg" width="22" height="22"> Texas Hold'em Poker
 
 **GitHub:** [UVuruna/TexasHoldemPoker](https://github.com/UVuruna/TexasHoldemPoker)
 **Status:** 🔴 Archived
@@ -325,7 +293,7 @@ These are standalone repositories not part of the local monorepo.
 
 ---
 
-### Chess
+### <img src="logos/Chess.svg" width="22" height="22"> Chess
 
 **GitHub:** [UVuruna/Chess](https://github.com/UVuruna/Chess)
 **Status:** 🔴 Archived
@@ -336,7 +304,7 @@ These are standalone repositories not part of the local monorepo.
 
 ---
 
-### Tic-Tac-Toe
+### <img src="logos/TicTacToe.svg" width="22" height="22"> Tic-Tac-Toe
 
 **GitHub:** [UVuruna/TicTacToe](https://github.com/UVuruna/TicTacToe)
 **Status:** 🔴 Archived
