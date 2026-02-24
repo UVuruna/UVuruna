@@ -292,29 +292,29 @@ CLAUDE.md
 
 ---
 
-### Rule #6: Constructive Disagreement (Obrazloženo Neslaganje)
+### Rule #6: Constructive Disagreement
 
-**Ako znaš da korisnikov predlog nije optimalan, MORAŠ:**
+**If a proposed approach is suboptimal, you MUST:**
 
-1. **Objasniti ZAŠTO** — sa konkretnim tehničkim razlozima
-2. **Predložiti alternativu** — ako postoji bolje rešenje
-3. **Tražiti potvrdu** — tek nakon što korisnik razume trade-off
+1. **Explain WHY** — with concrete technical reasons
+2. **Propose an alternative** — if a better solution exists
+3. **Ask for confirmation** — only after the trade-offs are understood
 
 ```
-❌ ZABRANJENO — slepo prihvatanje
-User: "Hajde da čitamo TOP 50"
-Claude: "OK, implementiraću to."
+❌ WRONG — blind acceptance
+User: "Let's read the TOP 50"
+Claude: "OK, I'll implement that."
 
-✅ OBAVEZNO — obrazloženo neslaganje
-User: "Hajde da čitamo TOP 50"
-Claude: "Razmotrio sam to, ali vidim problem:
-- TOP 50 lista već sadrži sve relevantne podatke
-- Duplo čitanje troši resurse bez nove informacije
+✅ CORRECT — constructive disagreement
+User: "Let's read the TOP 50"
+Claude: "I considered this, but see a problem:
+- The TOP 50 list already contains all relevant data
+- Reading it twice wastes resources without new information
 
-Predlažem: čitamo samo jednom. Da li se slažeš?"
+Proposal: read only once. Do you agree?"
 ```
 
-**Princip:** Bolje je kratkoročno usporiti rad diskusijom nego dugoročno implementirati neefikasno rešenje.
+**Principle:** It is better to slow down briefly with discussion than to implement an inefficient solution that must be undone later.
 
 ---
 
@@ -333,8 +333,6 @@ def fetch_data(): ...
 ```
 
 **What must be English:** All `.md` files, code comments, commit messages, variable/function/class names.
-
-**Exception:** Rule #6 in CLAUDE.md files remains in Serbian (internal developer reference).
 
 ---
 
@@ -433,6 +431,38 @@ except SpecificError as e:
 ```
 
 **When fallbacks ARE acceptable:** Explicitly documented behavior (e.g., "returns None if not found"), retry logic with eventual failure escalation.
+
+---
+
+### Rule #14: Sub-Agents and Progress Visibility
+
+**Use sub-agents whenever tasks can run in parallel.**
+
+When two or more independent tasks exist with no shared state or sequential dependency, launch them simultaneously using the Task tool. Do not execute them one-by-one.
+
+**Always announce long operations before starting:**
+
+```
+✅ REQUIRED — announce before any task that will take significant time
+"Starting [operation] — this will take a moment."
+"Launching 3 parallel agents to explore the codebase."
+```
+
+**Never go silent during active work.** The user must always know something is happening:
+- For background agents: check output every 20–30 seconds and report status to the user
+- For any foreground operation expected to take more than 30 seconds: proactively report progress at regular intervals
+- If no meaningful update is possible: "Still working..."
+
+**Sub-agent instructions must include a structured deliverable** so results are easy to parse and act on. Vague tasks produce vague results.
+
+```
+❌ WRONG — vague instruction
+"Look at the project and tell me about it"
+
+✅ CORRECT — structured deliverable
+"Read these 3 files. For each, return: purpose (1 sentence),
+tech stack (list), key classes/functions, current status."
+```
 
 ---
 
