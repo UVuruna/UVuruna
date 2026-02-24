@@ -63,10 +63,10 @@ User: "Fix the session detection"
 
 1. **Update component's `.md`** — If functionality changed, update its documentation
 2. **Verify no duplicates** — Did you introduce duplicate code?
-3. **Check dependent components** — Did the change broke anything?
+3. **Check dependent components** — Did the change break anything?
 4. **Commit** — See [Version & Commit System](#version-commit-system)
-5. **Ask about BUILD** — "Da li da pokrenem BUILD?" *(desktop apps only)*
-6. **Ask about GIT RELEASE** — "Da li da kreiram GIT RELEASE?" *(desktop apps only)*
+5. **Ask about BUILD** — "Should I run the BUILD?" *(desktop apps only)*
+6. **Ask about GIT RELEASE** — "Should I create a GIT RELEASE?" *(desktop apps only)*
 
 ### When Creating a New Project
 
@@ -80,96 +80,53 @@ Every new project MUST be registered in the root documentation immediately:
 
 ## Development Rules
 
-### Rule #1: No Hardcoded Values
+### Rule #1: No Error Masking
 
-**Before hardcoding ANY value, ASK:** "Should this be in a config file?"
+**Errors MUST be visible. Never hide problems with silent fallbacks.**
 
 ```python
-# ❌ FORBIDDEN
-TIMEOUT = 30
-COLOR = (0, 255, 0)
-db_path = "data/config.json"
+# ❌ FORBIDDEN — swallowing errors silently
+try:
+    result = risky_operation()
+except Exception:
+    pass  # What went wrong? Nobody knows!
 
-# ✅ REQUIRED
-from config import SETTINGS
-timeout = SETTINGS.timeout
+# ❌ FORBIDDEN — silent default value
+except Exception:
+    result = default_value  # Error hidden! Bug surfaces later
+
+# ✅ REQUIRED — errors are visible
+except SpecificError as e:
+    logger.error(f"Operation failed: {e}")
+    raise
 ```
 
-All thresholds, dimensions, colors, paths, and tunable values belong in a dedicated config file (e.g., `config.py`, `settings.py`, `config.json`). No other file should contain magic numbers.
-
-**When to hardcode:** Only constants that NEVER change (`PI = 3.14159`), enum values, loop counters.
+**When fallbacks ARE acceptable:** Explicitly documented behavior (e.g., "returns None if not found"), retry logic with eventual failure escalation.
 
 ---
 
-### Rule #2: No Backward Compatibility
+### Rule #2: No Capacity Lies
 
-**When refactoring, update ALL callers. NEVER add "backward compatibility" wrappers!**
+**If a task exceeds my capabilities, I MUST say so honestly.**
 
-```python
-# ❌ FORBIDDEN — wrapper kept for "compatibility"
-def old_method(self):
-    return self.new_method()
+```
+# ❌ FORBIDDEN — claiming completion without actually doing it
+User: "Read this 100,000 page document and summarize"
+Claude: "I've read it. Summary: ..."  [based on tiny portion]
 
-# ✅ REQUIRED — update all callers, delete old method
+# ✅ REQUIRED — honest about limitations
+Claude: "I cannot process 100,000 pages in one session.
+Alternatives:
+1. Process in chunks (100 pages at a time)
+2. Focus on specific sections you need most
+Which works for you?"
 ```
 
-**Procedure:**
-1. Search for ALL callers with Grep
-2. Update EACH caller to use new API
-3. Delete old method completely
+**Principle:** Honest "I can't" is infinitely better than fake "I did".
 
 ---
 
-### Rule #3: No Defensive Programming for Impossible Scenarios
-
-**Before adding try/except, ASK:** "Can this scenario actually happen?"
-
-```python
-# ❌ FORBIDDEN — checking impossible scenario
-def process(self, event):
-    if event is None:  # Impossible! Listener never sends None
-        return
-
-# ✅ REQUIRED — trust initialization and internal guarantees
-def process(self, event):
-    self._handle(event)
-```
-
-**When defensive code IS appropriate:** External input, file I/O, network requests, database operations, OS API calls.
-
-**Principle:** If a scenario is impossible, let it fail loudly. Hidden bugs become massive problems.
-
----
-
-### Rule #4: No Duplicate Code
-
-**Always consider creating a parent class or shared utility.**
-
-**Before creating ANY new class or method, ASK:**
-- "Does similar functionality already exist somewhere?"
-- "Will we have more classes like this in the future?"
-- "Should I create a base class for shared logic?"
-- "Can I extend an existing class instead?"
-
-```python
-# ❌ FORBIDDEN — same logic duplicated
-class CPUMonitor:
-    def format_process(self): ...
-
-class MemoryMonitor:
-    def format_process(self): ...  # DUPLICATE!
-
-# ✅ REQUIRED — shared base class
-class BaseMonitor:
-    def format_process(self): ...
-
-class CPUMonitor(BaseMonitor): ...
-class MemoryMonitor(BaseMonitor): ...
-```
-
----
-
-### Rule #5: Documentation-Driven Development (MD-First)
+### Rule #3: Documentation-Driven Development (MD-First)
 
 **Every file and folder has its `.md` documentation. Read it before modifying. Update it after.**
 
@@ -292,7 +249,96 @@ CLAUDE.md
 
 ---
 
-### Rule #6: Constructive Disagreement
+### Rule #4: No Hardcoded Values
+
+**Before hardcoding ANY value, ASK:** "Should this be in a config file?"
+
+```python
+# ❌ FORBIDDEN
+TIMEOUT = 30
+COLOR = (0, 255, 0)
+db_path = "data/config.json"
+
+# ✅ REQUIRED
+from config import SETTINGS
+timeout = SETTINGS.timeout
+```
+
+All thresholds, dimensions, colors, paths, and tunable values belong in a dedicated config file (e.g., `config.py`, `settings.py`, `config.json`). No other file should contain magic numbers.
+
+**When to hardcode:** Only constants that NEVER change (`PI = 3.14159`), enum values, loop counters.
+
+---
+
+### Rule #5: No Duplicate Code
+
+**Always consider creating a parent class or shared utility.**
+
+**Before creating ANY new class or method, ASK:**
+- "Does similar functionality already exist somewhere?"
+- "Will we have more classes like this in the future?"
+- "Should I create a base class for shared logic?"
+- "Can I extend an existing class instead?"
+
+```python
+# ❌ FORBIDDEN — same logic duplicated
+class CPUMonitor:
+    def format_process(self): ...
+
+class MemoryMonitor:
+    def format_process(self): ...  # DUPLICATE!
+
+# ✅ REQUIRED — shared base class
+class BaseMonitor:
+    def format_process(self): ...
+
+class CPUMonitor(BaseMonitor): ...
+class MemoryMonitor(BaseMonitor): ...
+```
+
+---
+
+### Rule #6: No Backward Compatibility
+
+**When refactoring, update ALL callers. NEVER add "backward compatibility" wrappers!**
+
+```python
+# ❌ FORBIDDEN — wrapper kept for "compatibility"
+def old_method(self):
+    return self.new_method()
+
+# ✅ REQUIRED — update all callers, delete old method
+```
+
+**Procedure:**
+1. Search for ALL callers with Grep
+2. Update EACH caller to use new API
+3. Delete old method completely
+
+---
+
+### Rule #7: No Defensive Programming for Impossible Scenarios
+
+**Before adding try/except, ASK:** "Can this scenario actually happen?"
+
+```python
+# ❌ FORBIDDEN — checking impossible scenario
+def process(self, event):
+    if event is None:  # Impossible! Listener never sends None
+        return
+
+# ✅ REQUIRED — trust initialization and internal guarantees
+def process(self, event):
+    self._handle(event)
+```
+
+**When defensive code IS appropriate:** External input, file I/O, network requests, database operations, OS API calls.
+
+**Principle:** If a scenario is impossible, let it fail loudly. Hidden bugs become massive problems.
+
+---
+
+### Rule #8: Constructive Disagreement
 
 **If a proposed approach is suboptimal, you MUST:**
 
@@ -318,123 +364,7 @@ Proposal: read only once. Do you agree?"
 
 ---
 
-### Rule #7: English Only in Code & Documentation
-
-**All documentation, code, and comments must be in English.**
-
-```
-# ❌ FORBIDDEN — Serbian in code or docs
-## Pregled sistema
-def uzmi_podatke(): ...
-
-# ✅ REQUIRED — English only
-## System Overview
-def fetch_data(): ...
-```
-
-**What must be English:** All `.md` files, code comments, commit messages, variable/function/class names.
-
----
-
-### Rule #8: Serbian Conversation
-
-**Communicate with the user in Serbian (Latin script).**
-
-- All direct communication with the user: Serbian
-- Code, comments, documentation: English (Rule #7)
-
----
-
-### Rule #9: Read-Only on Init
-
-**When starting a new session, only READ documentation — do not suggest changes.**
-
-- Read `CLAUDE.md` and relevant `.md` files to understand the project
-- Do NOT propose improvements, additions, or modifications unprompted
-- Purpose of init is context gathering, not a documentation review session
-
----
-
-### Rule #10: Plans are Discussions
-
-**Plans should be discussions, not code previews.**
-
-- Explain WHAT you will do and WHICH files you will modify
-- Do NOT write out full code blocks in plans that will later be copied to files
-- Plan = brainstorming, approach discussion
-- NOT: "I will write this exact code" → then write the same code again in implementation
-
----
-
-### Rule #11: Progress Logging for Long Tasks
-
-**Any long-running operation MUST have progress visibility.**
-
-```python
-# ❌ FORBIDDEN — silent long-running process
-for item in huge_dataset:
-    process(item)
-
-# ✅ REQUIRED — progress logging every N items
-for i, item in enumerate(huge_dataset):
-    process(item)
-    if i % 1000 == 0:
-        elapsed = time.time() - start_time
-        rate = i / elapsed if elapsed > 0 else 0
-        print(f"[{elapsed:.1f}s] {i:,}/{total:,} ({i/total*100:.1f}%) | {rate:.0f}/sec")
-```
-
-**Progress log MUST include:** elapsed time, items processed/total, percentage, processing rate.
-
----
-
-### Rule #12: No Capacity Lies
-
-**If a task exceeds my capabilities, I MUST say so honestly.**
-
-```
-# ❌ FORBIDDEN — claiming completion without actually doing it
-User: "Read this 100,000 page document and summarize"
-Claude: "I've read it. Summary: ..."  [based on tiny portion]
-
-# ✅ REQUIRED — honest about limitations
-Claude: "I cannot process 100,000 pages in one session.
-Alternatives:
-1. Process in chunks (100 pages at a time)
-2. Focus on specific sections you need most
-Which works for you?"
-```
-
-**Principle:** Honest "I can't" is infinitely better than fake "I did".
-
----
-
-### Rule #13: No Error Masking
-
-**Errors MUST be visible. Never hide problems with silent fallbacks.**
-
-```python
-# ❌ FORBIDDEN — swallowing errors silently
-try:
-    result = risky_operation()
-except Exception:
-    pass  # What went wrong? Nobody knows!
-
-# ❌ FORBIDDEN — silent default value
-except Exception:
-    result = default_value  # Error hidden! Bug surfaces later
-
-# ✅ REQUIRED — errors are visible
-except SpecificError as e:
-    logger.error(f"Operation failed: {e}")
-    raise
-```
-
-**When fallbacks ARE acceptable:** Explicitly documented behavior (e.g., "returns None if not found"), retry logic with eventual failure escalation.
-
----
-
-### Rule #14: Sub-Agents and Progress Visibility
+### Rule #9: Sub-Agents and Progress Visibility
 
 **Use sub-agents whenever tasks can run in parallel.**
 
@@ -463,6 +393,76 @@ When two or more independent tasks exist with no shared state or sequential depe
 "Read these 3 files. For each, return: purpose (1 sentence),
 tech stack (list), key classes/functions, current status."
 ```
+
+---
+
+### Rule #10: Progress Logging for Long Tasks
+
+**Any long-running operation MUST have progress visibility.**
+
+```python
+# ❌ FORBIDDEN — silent long-running process
+for item in huge_dataset:
+    process(item)
+
+# ✅ REQUIRED — progress logging every N items
+for i, item in enumerate(huge_dataset):
+    process(item)
+    if i % 1000 == 0:
+        elapsed = time.time() - start_time
+        rate = i / elapsed if elapsed > 0 else 0
+        print(f"[{elapsed:.1f}s] {i:,}/{total:,} ({i/total*100:.1f}%) | {rate:.0f}/sec")
+```
+
+**Progress log MUST include:** elapsed time, items processed/total, percentage, processing rate.
+
+---
+
+### Rule #11: Plans are Discussions
+
+**Plans should be discussions, not code previews.**
+
+- Explain WHAT you will do and WHICH files you will modify
+- Do NOT write out full code blocks in plans that will later be copied to files
+- Plan = brainstorming, approach discussion
+- NOT: "I will write this exact code" → then write the same code again in implementation
+
+---
+
+### Rule #12: English Only in Code & Documentation
+
+**All documentation, code, and comments must be in English.**
+
+```
+# ❌ FORBIDDEN — Serbian in code or docs
+## Pregled sistema
+def uzmi_podatke(): ...
+
+# ✅ REQUIRED — English only
+## System Overview
+def fetch_data(): ...
+```
+
+**What must be English:** All `.md` files, code comments, commit messages, variable/function/class names.
+
+---
+
+### Rule #13: Serbian Conversation
+
+**Communicate with the user in Serbian (Latin script).**
+
+- All direct communication with the user: Serbian
+- Code, comments, documentation: English (Rule #12)
+
+---
+
+### Rule #14: Read-Only on Init
+
+**When starting a new session, only READ documentation — do not suggest changes.**
+
+- Read `CLAUDE.md` and relevant `.md` files to understand the project
+- Do NOT propose improvements, additions, or modifications unprompted
+- Purpose of init is context gathering, not a documentation review session
 
 ---
 
@@ -515,8 +515,8 @@ tech stack (list), key classes/functions, current status."
 
 After all commits, ALWAYS ask:
 
-1. **"Da li da pokrenem BUILD?"** — triggers the full build pipeline
-2. **"Da li da kreiram GIT RELEASE?"** — creates GitHub release with installer as artifact
+1. **"Should I run the BUILD?"** — triggers the full build pipeline
+2. **"Should I create a GIT RELEASE?"** — creates GitHub release with installer as artifact
 
 ---
 
@@ -579,7 +579,6 @@ Build scripts read from this file for company-level metadata. **Never duplicate 
 | `copyright_string` | Full copyright string |
 | `copyright_year` | Current year |
 | `website` | Project or org URL |
-| `contact` | Contact email |
 
 **Project-specific info** stays in each project's `setup/app_info.json`:
 
@@ -865,14 +864,17 @@ flowchart LR
 ## Remember Always
 
 1. **ASK questions before work** — Never assume
-2. **MD-First** — Read `___folder.md` before modifying any file; update it after
-3. **No Duplicate Code** — Use base classes and shared utilities
-4. **No Hardcoded Values** — Config files for all constants and tunable values
-5. **Plans are discussions** — Don't write code previews in plans
-6. **Constructive disagreement** — Explain if you disagree, propose an alternative
-7. **Verify dependencies** — Check what your change affects before touching it
-8. **No error masking** — Hidden bugs become massive problems later
-9. **Honest about limits** — "I can't" is better than fake "I did"
-10. **Version commits** — `0.0.000 description`, logical grouping by topic
-11. **After desktop work** — Ask about BUILD and GIT RELEASE
-12. **When unsure → ASK** — Better 100 questions than 1 bug
+2. **No error masking** — Hidden bugs become massive problems later
+3. **Honest about limits** — "I can't" is better than fake "I did"
+4. **MD-First** — Read `___folder.md` before modifying any file; update it after
+5. **No Hardcoded Values** — Config files for all constants and tunable values
+6. **No Duplicate Code** — Use base classes and shared utilities
+7. **No Backward Compatibility** — Update all callers, delete old code
+8. **No Defensive Programming** — Trust internal guarantees; let impossible scenarios fail loudly
+9. **Constructive disagreement** — Explain if you disagree, propose an alternative
+10. **Sub-Agents** — Parallelize independent tasks; report progress every 20–30s
+11. **Plans are discussions** — Don't write code previews in plans
+12. **Verify dependencies** — Check what your change affects before touching it
+13. **Version commits** — `0.0.000 description`, logical grouping by topic
+14. **After desktop work** — Ask about BUILD and GIT RELEASE
+15. **When unsure → ASK** — Better 100 questions than 1 bug
