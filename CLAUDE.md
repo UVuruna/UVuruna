@@ -673,8 +673,6 @@ gh release create v{version} "dist/{ProjectName}_Setup.exe" \
 
 **Tool: py-spy** — sampling profiler that attaches to a running process without modifying code.
 
-### Installation
-
 ```bash
 pip install py-spy
 ```
@@ -685,7 +683,12 @@ pip install py-spy
 Get-CimInstance Win32_Process -Filter "Name='python.exe'" | Select-Object ProcessId, CommandLine | Format-List
 ```
 
-Identify the PID by `CommandLine` path.
+Identify the PID by `CommandLine` path:
+
+```
+ProcessId   : 42724
+CommandLine : "python.exe" "u:/Coding/.../Input DNA/main.py"
+```
 
 ### Step 2 — Live Monitor
 
@@ -693,31 +696,39 @@ Identify the PID by `CommandLine` path.
 py-spy top --pid <PID> --rate 100
 ```
 
-`--rate 100` — 100 samples per second (higher precision). Output refreshes every second.
+`--rate 100` — 100 samples per second (higher precision). Output refreshes every second. Wait until the application enters the state you are investigating (idle, recording, etc.).
 
-### Step 3 — Flame Graph (deeper analysis)
-
-```bash
-py-spy record --output profile.svg --pid <PID>
-```
-
-Generates an SVG flame graph — use this when `top` identifies a problem area and you need to trace the full call chain.
-
-### Reading Results
+### Step 3 — Read Results
 
 ```
 %Own    %Total   OwnTime  TotalTime  Function (filename)
  2.07%   2.07%   2.070s   2.070s    resize (PIL\Image.py)
  1.27%   3.34%   1.270s   3.340s    _save (PIL\IcoImagePlugin.py)
+ 0.00%   3.37%   0.000s   3.370s    _update_icon (pystray\_base.py)
+ 0.00%   3.37%   0.000s   3.370s    set_recording (ui\tray_icon.py)
+ 0.00%   3.37%   0.000s   3.370s    _update_stats (main.py)
 ```
 
 - **`%Own`** — time this function spends directly (excluding callees)
 - **`%Total`** — time including all functions it calls
-- Sorted by `%Total` — follow the chain from top to bottom to find the root caller
+- Follow the chain **bottom to top** to find the root caller: `_update_stats` → `set_recording` → `_update_icon` → PIL
 
-### When CPU = 0%
+### Step 4 — Flame Graph (optional, deeper analysis)
 
-If all values show `0.00%` and `GIL: 0.00%, Active: 0.00%` — the application is genuinely idle. This is a **positive result** confirming that no unnecessary work is happening.
+```bash
+py-spy record --output profile.svg --pid <PID> --duration 30
+```
+
+Generates an SVG file — open in browser. Each block = one function, width = time spent.
+
+### When Everything Is OK
+
+```
+GIL: 0.00%, Active: 0.00%
+all functions: 0.00%
+```
+
+The application is genuinely idle — not consuming CPU.
 
 ### Important
 
