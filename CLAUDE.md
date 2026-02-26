@@ -232,7 +232,8 @@ CLAUDE.md
 
 | Target | Link Text Format | Example |
 |--------|-----------------|---------|
-| Folder doc `___folder.md` | `Name (folder)` | `[GUI (folder)](gui/___gui.md)` |
+| Folder doc `___folder.md` (top-level folder) | `Name (folder)` | `[App (folder)](app/___app.md)` |
+| Folder doc `___folder.md` (subfolder) | `Name (subfolder)` | `[GUI (subfolder)](app/gui/___gui.md)` |
 | Script doc `.md` | `Component Name` | `[App Controller](app_controller.md)` |
 | Script itself `.py/.js` | `Name (script)` | `[App Controller (script)](app_controller.py)` |
 | Files in structure trees | Plain text, NO links | `🐍 app_controller.py` |
@@ -241,10 +242,12 @@ CLAUDE.md
 # ❌ FORBIDDEN — paths visible to reader
 [app/___app.md](../../app/___app.md)
 [base_stats_widget.md](../../app/gui/widgets/base_stats_widget.md)
+**Documentation:** config/___config.md
 
 # ✅ REQUIRED — human-readable text
 [App (folder)](../../app/___app.md)
 [Base Stats Widget](../../app/gui/widgets/base_stats_widget.md)
+**Documentation:** [Config (folder)](../config/___config.md)
 ```
 
 ---
@@ -505,7 +508,7 @@ def fetch_data(): ...
 
 ### Procedure
 
-1. Check latest version: `git log --oneline -3`
+1. Check latest version: `git log --oneline -5`
 2. Group changes into logical commits (by topic/module)
 3. Stage specific files: `git add file1 file2` (**NOT** `git add .`)
 4. Commit with next version number and descriptive message
