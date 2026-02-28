@@ -485,25 +485,27 @@ def fetch_data(): ...
 
 **Examples:**
 ```
-0.1.010 Add session detection
-0.1.020 Fix timeout logic — idle vs click-end distinction
-0.1.030 Documentation — update folder docs for processor changes
+1.0.500 Add session detection
+1.0.501 Fix timeout logic — idle vs click-end distinction
+1.0.502 Documentation — update folder docs for processor changes
 1.2.150 Refactor collector base class
 ```
 
 ### Increment Rules
 
-| Work Type | Increment | Example |
-|-----------|-----------|---------|
-| Single independent commit | +1 | `0.1.010 → 0.1.011` |
-| Group of related commits (same task) | +10 per commit | `0.1.010 → 0.1.020 → 0.1.030` |
+| Scenario | Increment | Example |
+|----------|-----------|---------|
+| Same agent, related work (same session) | +1 per commit | `1.0.500 → 1.0.501 → 1.0.502` |
+| Unrelated / independent work | Start at next round number | `1.0.508 → 1.0.510` or `1.0.520` |
 
-**Complex work = multiple commits.** Split by topic/module:
+**Same agent session** = one Claude Code conversation working on a related task or plan. Each commit within that session increments by exactly 1, regardless of scope.
+
+**Complex work = multiple commits.** Split by topic/module, increment by 1:
 
 ```
-0.1.020 Schema update — add new columns to sessions table
-0.1.030 Session processor — implement new timeout logic
-0.1.040 Documentation — update folder docs for schema and processor
+1.0.500 Schema update — add new columns to sessions table
+1.0.501 Session processor — implement new timeout logic
+1.0.502 Documentation — update folder docs for schema and processor
 ```
 
 ### Procedure
