@@ -76,6 +76,18 @@ Full index of all UVuruna projects — local and GitHub.
 
 <a id="domy-watch"></a>
 
+### PromptPainter
+
+**Local path:** `Gadgets/PromptPainter/`
+**Type:** Automation Tool (Windows, supervised)
+**Status:** 🔴 In Definition — spec complete (CLAUDE.md), implementation pending
+
+**Description:** Reads a prompt-sheet `.md` (theme + titled image prompts), attaches over CDP to the owner's already open, logged-in Gemini/ChatGPT tab, submits prompts one by one, watches the send/stop button state for completion, captures each generated image directly from the DOM and saves it as `out/<theme>/<name>.png` — named by the sheet, resumable, paced, always supervised.
+
+**Tech Stack:** Python 3.13, Playwright (CDP attach)
+
+---
+
 ### <img src="logos/DOMYWatch.svg" width="22" height="22"> DOMY Watch
 
 **Local path:** `Gadgets/DOMY Watch/`
