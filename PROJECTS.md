@@ -80,20 +80,23 @@ Full index of all UVuruna projects — local and GitHub.
 
 **Local path:** `Gadgets/DOMY Watch/`
 **GitHub:** [UVuruna/DOMY-Watch](https://github.com/UVuruna/DOMY-Watch)
-**Type:** Desktop Application (Windows/Cross-platform)
-**Status:** 🔵 Maintained
+**Type:** Desktop Application (Windows)
+**Status:** 🟡 In Development — core feature-complete (dial, computation
+core, skin/theme/roster system, Settings, Encyclopedia, Guide, Time
+Travel); build/release pipeline remaining before v1 ships
 
-**Description:** Advanced analog clock that goes beyond just showing the time. Uses the Astral library to calculate location-aware astronomical data and visualizes it directly on the clock face — sunrise, sunset, dawn, dusk, moon phases, solar noon, and day-of-year position. Reads location from a hierarchical world location database.
+**Description:** Transparent frameless 24-hour analog clock widget for the Windows desktop. Uses the Astral library to calculate location-aware astronomical data and visualizes it directly on the clock face — sunrise, sunset, dawn, dusk, moon phases, solar noon, and day-of-year position. Reads location from a hierarchical world location database.
 
-**Tech Stack:** Python, Kivy (cross-platform GUI), Astral (astronomical calculations), timezonefinder, JSON data (moon phases, seasons, world locations)
+**Tech Stack:** Python 3.13, PySide6 (Qt GUI), Astral (astronomical calculations), tzdata, JSON data (moon phases, seasons, world locations)
 
 **Key Features:**
-- Multi-pointer analog clock (hours, minutes, seconds)
+- 24h analog clock (hour + minute hands, no seconds hand)
 - Sunrise/sunset and dawn/dusk arc visualization
 - Moon phase tracking
 - Earth position (day-of-year) indicator
-- Solar noon hexagon
+- Solar noon hexagram overlay
 - Location-aware timezone and daylight calculations
+- Skinnable weekday/theme/palette roster system
 
 ---
 
