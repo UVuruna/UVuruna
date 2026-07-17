@@ -22,7 +22,7 @@ Full-stack developer working across desktop applications, AI/ML platforms, autom
 | <img src="logos/DOMYWatch.svg" width="22" height="22"> [DOMY Watch](https://github.com/UVuruna/DOMY-Watch) | Advanced analog clock with astronomical data — sunrise/sunset, moon phases, seasonal markers, and day-of-year position |
 | <img src="logos/AutoOpenRGB.svg" width="22" height="22"> [Auto OpenRGB](https://github.com/UVuruna/Auto-OpenRGB) | Automatic RGB lighting profile switching based on time of day — Task Scheduler integration, VBS keyboard shortcuts |
 | <img src="logos/AutoRead.svg" width="22" height="22"> [AutoRead](https://github.com/UVuruna/AutoRead) | E-learning automation tool — OCR-based timer detection, automatic course navigation and link clicking |
-| PromptPainter | Supervised image-generation runner — parses prompt-sheet markdown and drives an open Gemini/ChatGPT tab over CDP, filing images by sheet name |
+| <img src="logos/PromptPainter.svg" width="22" height="22"> [PromptPainter](https://github.com/UVuruna/Prompt-Painter) | Supervised image-generation runner — parses prompt-sheet markdown and drives open Gemini/ChatGPT tabs over CDP in parallel, staging images for owner review |
 | <img src="logos/RHMH.svg" width="22" height="22"> [RHMH](https://github.com/UVuruna/RHMH) | Medical patient management system — records, imaging, MKB-10 diagnoses, AI-powered OCR, Google Drive sync, analytics |
 | <img src="logos/Redacted.svg" width="22" height="22"> Redacted 🔒 | Private |
 

@@ -76,13 +76,14 @@ Full index of all UVuruna projects — local and GitHub.
 
 <a id="domy-watch"></a>
 
-### PromptPainter
+### <img src="logos/PromptPainter.svg" width="22" height="22"> PromptPainter
 
 **Local path:** `Gadgets/PromptPainter/`
+**GitHub:** [UVuruna/Prompt-Painter](https://github.com/UVuruna/Prompt-Painter)
 **Type:** Automation Tool (Windows, supervised)
-**Status:** 🟡 In Development — built (parser + golden tests, CDP driver, resumable run loop, CLI); awaiting the first supervised live run
+**Status:** 🟡 In Development — built (parser + golden tests, CDP driver, resumable run loop, GUI with staged review); awaiting the first supervised live run
 
-**Description:** Reads a prompt-sheet `.md` (theme + titled image prompts), attaches over CDP to the owner's already open, logged-in Gemini/ChatGPT tab, submits prompts one by one, watches the send/stop button state for completion, captures each generated image directly from the DOM and saves it under the sheet's own drop path as `out/<drop-path>` — named by the sheet, resumable, paced, always supervised.
+**Description:** Reads a prompt-sheet `.md` (theme + titled image prompts), drives the logged-in Gemini and/or ChatGPT tabs over CDP — both in parallel when asked — submits prompts one by one with a per-site background suffix (transparent for ChatGPT, white for Gemini), watches the send/stop button state for completion, captures each generated image directly from the DOM, runs the in-house background fix, and stages everything for the owner's review; only approval files an image at its final `<out>/<site>/<drop-path>`. Resumable, paced, sources strictly read-only.
 
 **Tech Stack:** Python 3.13, Playwright (CDP attach)
 
