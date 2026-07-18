@@ -13,19 +13,45 @@ UVuruna is a personal development organization. All projects live in this monore
 ```
 📁 UVuruna (git)/
   📁 AI/            ← AI/ML projects
-  📁 API/           ← APIs and services
   📁 Applications/  ← Desktop and automation applications
   📁 Gadgets/       ← Small utilities and tools
+  📁 Games/         ← Games and experiments
   📁 WebSites/      ← Web projects
+  📁 logos/         ← Project logos (SVG), one per project
   📝 CLAUDE.md      ← This file (universal rules for all projects)
   ⚙️ company.json   ← Company/developer info (shared across all build pipelines)
-  📝 README.md      ← Root navigation hub
+  📝 README.md      ← GitHub profile landing page (this repo is UVuruna/UVuruna)
   📝 PROJECTS.md    ← Detailed project index
+  📝 DESIGN.md      ← Universal UI design system (see Rule #16)
+  📝 NAMING.md      ← UV naming reference for new projects/modules
+  📝 PRIVATE.md     ← LOCAL-ONLY index of hidden projects (never tracked)
 ```
 
 **Key root files:**
 - [company.json](company.json) — Company info used by all build pipelines
-- [PROJECTS.md](PROJECTS.md) — Full project index with status and tech stack
+- [PROJECTS.md](PROJECTS.md) — Full project index with status, visibility and tech stack
+- [DESIGN.md](DESIGN.md) — Design system every GUI project must follow
+- [PRIVATE.md](PRIVATE.md) — Hidden projects index (local only, gitignored)
+
+### Folder Structure Policy
+
+- **Maximum 2 levels: `Category/Project/`.** No deeper nesting.
+- **One documented exception:** a platform with multiple planned modules may add ONE grouping level (e.g. `AI/Uncanny Valley/Input DNA/` — the Uncanny Valley platform).
+- Each project has its own git repository — the monorepo root repo tracks ONLY root documentation and `logos/` (enforced by the `.gitignore` whitelist).
+
+<a id="project-visibility"></a>
+
+### Project Visibility
+
+Every project has exactly one visibility level, recorded in [PROJECTS.md](PROJECTS.md):
+
+| Level | Code on GitHub | Description in public docs | Listed in README/PROJECTS |
+|-------|----------------|----------------------------|---------------------------|
+| **Public** | Public repo | Yes | Yes |
+| **Private** | Private repo / none | Yes (description only, no code link) | Yes |
+| **Hidden** | Never | Never — must not be discoverable | No — exists ONLY in local [PRIVATE.md](PRIVATE.md) |
+
+**Hidden projects must never appear in any tracked file** — no name, no path, no logo. Their full entry lives in `PRIVATE.md`, which the root `.gitignore` keeps untracked.
 
 ---
 
@@ -72,9 +98,29 @@ User: "Fix the session detection"
 
 Every new project MUST be registered in the root documentation immediately:
 
-1. **Add to [README.md](README.md)** — Project name, one-line description, GitHub link (if public)
-2. **Add to [PROJECTS.md](PROJECTS.md)** — Full entry with tech stack, architecture, status, links
-3. **Add logo to [logos/](logos/)** — Copy `assets/logo.svg` as `logos/{ProjectName}.svg`
+1. **Decide visibility** — Public / Private / Hidden (see [Project Visibility](#project-visibility)); a Hidden project is registered ONLY in local `PRIVATE.md` and skips the steps below
+2. **Add to [PROJECTS.md](PROJECTS.md)** — Full entry with tech stack, architecture, status, visibility, links
+3. **Add to [README.md](README.md)** — Compact-list line (the Featured section is curated separately by the owner)
+4. **Add logo to [logos/](logos/)** — Copy `assets/logo.svg` as `logos/{ProjectName}.svg`
+
+---
+
+<a id="priorities"></a>
+
+## Priorities
+
+When goals conflict, this is the order — higher wins.
+
+**A. Performance (code efficiency).** Absolute priority on hot paths — loops over large data, rendering, I/O, anything called repeatedly. Off the hot path, do NOT micro-optimize at the cost of clarity: an optimization with no measurable gain is a net loss.
+
+**B. Readability.** Clear structure, honest names, small focused functions. Everything that is not a hot path is written for the reader first.
+
+**C. Inheritance over duplication.** Never write the same function twice — extract a base class or shared utility (Rule #5). Design class hierarchies around shared parents.
+
+**D. Logging.** Scaled to the project — not every gadget needs a full log system, but every application needs SOME error visibility:
+- Python: `logging` module, `logs/` folder, rotating file handler
+- GUI apps: uncaught exceptions are caught at the top level and written to the log — never silently swallowed (Rule #1)
+- Long operations: progress logging (Rule #10)
 
 ---
 
@@ -469,6 +515,63 @@ def fetch_data(): ...
 
 ---
 
+### Rule #15: Model Economy — Weakest Model That Can Do the Job
+
+**Token budget discipline is a requirement, not a preference.** The session model (top tier) is the ORCHESTRATOR: it thinks, decides, and does ordinary work INLINE — it delegates only when delegation genuinely pays.
+
+1. **Default = inline work, zero subagents.** Ordinary implementation, docs, fixes, tests and verification are done directly — a local test run is cheaper and more reliable than a verification agent.
+2. **Subagents only when they pay:** genuinely parallel independent tasks (Rule #9), work needing isolation, or research/reviews the owner asked for.
+3. **Model tiering — always pick the WEAKEST model that can do the job:**
+   - `haiku` — mechanical work: link checking, file inventories, grep-like sweeps, formatting audits, doc consistency, simple web lookups;
+   - `sonnet` — standard research, code reviews, web research with synthesis;
+   - `opus` — only genuinely hard verification (math, geometry, tricky concurrency), a couple per run at most;
+   - the top-tier session model is NEVER used for routine subagent work.
+4. **Reuse instead of rerun:** resume interrupted workflows (`resumeFromRunId`); read existing research/journal files before launching a new agent for something already answered.
+5. **Scope prompts tightly:** a subagent gets exact files and a structured deliverable (Rule #9), never "look around the project".
+6. **One background workflow at a time.**
+
+Projects may add STRICTER caps in their own `CLAUDE.md`, never looser ones.
+
+---
+
+### Rule #16: Modern UI — No Old-Fashioned Interfaces
+
+**Every GUI we ship — desktop or web — must look MODERN. A gray, blocky, default-widget interface is a bug.**
+
+Required visual language:
+- **Color** — a real palette with accents and gradients, dark-first where it fits; never default widget gray
+- **Shape** — rounded corners and breathing room; never sharp gray boxes
+- **Depth** — glow, shadow and layering effects
+- **Icons** — SVG icons, and emoji where they help
+- **Data** — charts, graphs and styled tables wherever there is data to show
+
+Procedure for any new GUI (or redesign):
+
+1. **Read [DESIGN.md](DESIGN.md) FIRST** — the universal design system (palette, effects, QSS/CSS patterns). It exists precisely so we do NOT re-research the internet for every project.
+2. **Only if DESIGN.md does not cover the stack or has gone stale** — launch a web-research agent (cheapest capable tier per Rule #15) to check current modern-UI practice, then FOLD the findings back into DESIGN.md.
+3. Projects may define their own theme on top of DESIGN.md — the baseline quality bar is non-negotiable.
+
+---
+
+### Rule #17: Translation Policy — English During Development
+
+For projects with user-facing translations (i18n), development is **English-only**. Texts churn — translating unfinished text is write-then-delete waste.
+
+- Sessions write ENGLISH ONLY; new UI keys may ship untranslated (English is the documented fallback)
+- The Serbian bundle is brought to full coverage in ONE dedicated TRANSLATION session immediately before a build/release
+
+---
+
+### Rule #18: Owner's Inbox Files
+
+The owner drops free-form specs into `INSTRUCTION.txt` (or similar files) in a project root. Treat them as product decisions:
+
+- Fold them into the proper docs/config
+- Record them in session memory
+- **Keep the file itself untouched** — it is the owner's scratchpad, not project documentation
+
+---
+
 <a id="version-commit-system"></a>
 
 ## Version & Commit System
@@ -584,6 +687,8 @@ Build scripts read from this file for company-level metadata. **Never duplicate 
 | `copyright_string` | Full copyright string |
 | `copyright_year` | Current year |
 | `website` | Project or org URL |
+
+**`copyright_year` is updated ONCE a year** — in the first build session of the new year, never ad-hoc per project.
 
 **Project-specific info** stays in each project's `setup/app_info.json`:
 
@@ -936,17 +1041,21 @@ flowchart LR
 ## Remember Always
 
 1. **ASK questions before work** — Never assume
-2. **No error masking** — Hidden bugs become massive problems later
-3. **Honest about limits** — "I can't" is better than fake "I did"
-4. **MD-First** — Read `___folder.md` before modifying any file; update it after
-5. **No Hardcoded Values** — Config files for all constants and tunable values
-6. **No Duplicate Code** — Use base classes and shared utilities
-7. **No Backward Compatibility** — Update all callers, delete old code
-8. **No Defensive Programming** — Trust internal guarantees; let impossible scenarios fail loudly
-9. **Constructive disagreement** — Explain if you disagree, propose an alternative
-10. **Sub-Agents** — Parallelize independent tasks; report progress every 20–30s
-11. **Plans are discussions** — Don't write code previews in plans
-12. **Verify dependencies** — Check what your change affects before touching it
-13. **Version commits** — `0.0.000 description`, logical grouping by topic
-14. **After desktop work** — Ask about BUILD and GIT RELEASE
-15. **When unsure → ASK** — Better 100 questions than 1 bug
+2. **Priorities** — Performance (hot paths) → Readability → Inheritance → Logging
+3. **No error masking** — Hidden bugs become massive problems later
+4. **Honest about limits** — "I can't" is better than fake "I did"
+5. **MD-First** — Read `___folder.md` before modifying any file; update it after
+6. **No Hardcoded Values** — Config files for all constants and tunable values
+7. **No Duplicate Code** — Use base classes and shared utilities
+8. **No Backward Compatibility** — Update all callers, delete old code
+9. **No Defensive Programming** — Trust internal guarantees; let impossible scenarios fail loudly
+10. **Constructive disagreement** — Explain if you disagree, propose an alternative
+11. **Sub-Agents** — Parallelize independent tasks; report progress every 20–30s
+12. **Model economy** — Weakest model that can do the job; session model orchestrates (Rule #15)
+13. **Modern UI** — Read DESIGN.md first; a gray blocky interface is a bug (Rule #16)
+14. **Plans are discussions** — Don't write code previews in plans
+15. **Verify dependencies** — Check what your change affects before touching it
+16. **Version commits** — `0.0.000 description`, logical grouping by topic
+17. **After desktop work** — Ask about BUILD and GIT RELEASE
+18. **Hidden projects stay hidden** — Never name them in any tracked file
+19. **When unsure → ASK** — Better 100 questions than 1 bug
