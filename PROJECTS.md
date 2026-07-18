@@ -55,7 +55,7 @@ Full index of all UVuruna projects — local and GitHub.
 
 <a id="pmUsage"></a>
 
-### <img src="logos/PMUsage.svg" width="22" height="22"> Process Memory Usage (PMUsage)
+### <img src="logos/Vitals.svg" width="22" height="22"> Vitals (formerly PMUsage)
 
 **Local path:** `Gadgets/PMUsage/`
 **GitHub:** [UVuruna/ProcessMemoryUsage](https://github.com/UVuruna/ProcessMemoryUsage)
