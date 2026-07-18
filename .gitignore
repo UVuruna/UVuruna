@@ -9,8 +9,11 @@
 !README.md
 !PROJECTS.md
 !NAMING.md
+!DESIGN.md
 !company.json
 !.gitignore
+
+# PRIVATE.md is intentionally NOT whitelisted — hidden projects index stays local
 
 # Project logos (SVG files used in README and PROJECTS)
 !logos/
