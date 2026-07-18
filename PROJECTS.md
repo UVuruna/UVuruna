@@ -1,6 +1,7 @@
 # Projects
 
 Full index of all UVuruna projects — local and GitHub.
+Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.md).
 
 ---
 
@@ -27,6 +28,7 @@ Full index of all UVuruna projects — local and GitHub.
 **GitHub:** [UVuruna/InputDNA](https://github.com/UVuruna/InputDNA)
 **Type:** Desktop Application (Windows)
 **Status:** 🟢 Active
+**Visibility:** Public
 
 **Description:** First module of the UVirtual platform — a system that builds a complete virtual replica of a user. InputDNA captures exactly how a specific person moves the mouse and types on the keyboard. It records raw input data into SQLite in real-time, then trains ML models on that behavioral fingerprint. The end goal is a replay engine that reproduces the user's input indistinguishably from the real thing.
 
@@ -61,6 +63,7 @@ Full index of all UVuruna projects — local and GitHub.
 **GitHub:** [UVuruna/ProcessMemoryUsage](https://github.com/UVuruna/ProcessMemoryUsage)
 **Type:** Desktop Application (Windows)
 **Status:** 🟢 Active
+**Visibility:** Public
 
 **Description:** Lightweight Windows desktop gadget for real-time process monitoring. Shows the top N processes by CPU or Memory usage, tracks historical peak usage with timestamps, and displays CPU core/thread count per process. Minimal resource footprint — designed to always be visible without getting in the way.
 
@@ -74,7 +77,7 @@ Full index of all UVuruna projects — local and GitHub.
 
 ---
 
-<a id="domy-watch"></a>
+<a id="promptpainter"></a>
 
 ### <img src="logos/PromptPainter.svg" width="22" height="22"> PromptPainter
 
@@ -82,12 +85,15 @@ Full index of all UVuruna projects — local and GitHub.
 **GitHub:** [UVuruna/Prompt-Painter](https://github.com/UVuruna/Prompt-Painter)
 **Type:** Automation Tool (Windows, supervised)
 **Status:** 🟡 In Development — built (parser + golden tests, CDP driver, resumable run loop, GUI with staged review); awaiting the first supervised live run
+**Visibility:** Public
 
 **Description:** Reads a prompt-sheet `.md` (theme + titled image prompts), drives the logged-in Gemini and/or ChatGPT tabs over CDP — both in parallel when asked — submits prompts one by one with a per-site background suffix (transparent for ChatGPT, white for Gemini), watches the send/stop button state for completion, captures each generated image directly from the DOM, runs the in-house background fix, and stages everything for the owner's review; only approval files an image at its final `<out>/<site>/<drop-path>`. Resumable, paced, sources strictly read-only.
 
 **Tech Stack:** Python 3.13, Playwright (CDP attach)
 
 ---
+
+<a id="domy-watch"></a>
 
 ### <img src="logos/DOMYWatch.svg" width="22" height="22"> DOMY Watch
 
@@ -97,6 +103,7 @@ Full index of all UVuruna projects — local and GitHub.
 **Status:** 🟡 In Development — core feature-complete (dial, computation
 core, skin/theme/roster system, Settings, Encyclopedia, Guide, Time
 Travel); build/release pipeline remaining before v1 ships
+**Visibility:** Public
 
 **Description:** Transparent frameless 24-hour analog clock widget for the Windows desktop. Uses the Astral library to calculate location-aware astronomical data and visualizes it directly on the clock face — sunrise, sunset, dawn, dusk, moon phases, solar noon, and day-of-year position. Reads location from a hierarchical world location database.
 
@@ -121,6 +128,7 @@ Travel); build/release pipeline remaining before v1 ships
 **GitHub:** [UVuruna/Auto-OpenRGB](https://github.com/UVuruna/Auto-OpenRGB)
 **Type:** Utility / Automation (Windows)
 **Status:** 🟢 Active
+**Visibility:** Public
 
 **Description:** Automatic RGB lighting profile switching based on time of day. Reads a config file defining profiles per time slot (dawn, morning, day, evening, night), generates VBS scripts for keyboard shortcut triggers, and creates Windows Task Scheduler tasks that run OpenRGB with the correct profile automatically.
 
@@ -142,6 +150,7 @@ Travel); build/release pipeline remaining before v1 ships
 **GitHub:** [UVuruna/AutoRead](https://github.com/UVuruna/AutoRead)
 **Type:** Automation Script
 **Status:** 🔵 Maintained
+**Visibility:** Public
 
 **Description:** Python automation tool for completing online e-learning courses. Uses screen capture and OCR (tesseract) to read countdown timers from the screen, then automatically clicks through course sections and waits the required duration before proceeding. Keyboard shortcuts allow calibrating screen regions at runtime.
 
@@ -163,6 +172,7 @@ Travel); build/release pipeline remaining before v1 ships
 **GitHub:** [UVuruna/RHMH](https://github.com/UVuruna/RHMH)
 **Type:** Desktop Application (Windows)
 **Status:** 🟢 Active
+**Visibility:** Public
 
 **Description:** Medical patient management system for a reconstructive surgery hospital department. Manages patient records, medical imaging files, MKB-10 diagnosis catalog, staff/employee data, and operational analytics. Includes AI-powered OCR for reading documents, Google Drive integration for cloud backup, and supports both online and offline modes.
 
@@ -181,16 +191,17 @@ Travel); build/release pipeline remaining before v1 ships
 
 ---
 
-<a id="aviator"></a>
+<a id="unreal-voice-sampler"></a>
 
-### <img src="logos/Redacted.svg" width="22" height="22"> Redacted 🔒
+### Unreal Voice Sampler 🔒
 
-**Local path:** `Applications/Redacted/Redacted/Redacted/`
-**GitHub:** Private
-**Type:** Automation Application (Windows)
-**Status:** 🟡 In Development
+**Local path:** `Applications/Unreal Voice Sampler/`
+**GitHub:** — (no public repository)
+**Type:** Desktop Application (Windows)
+**Status:** ⚪ Planned
+**Visibility:** Private
 
-**Description:** Private.
+**Description:** Reserved project — voice sampling tool. Name registered, no code yet.
 
 ---
 
@@ -208,6 +219,7 @@ Travel); build/release pipeline remaining before v1 ships
 **GitHub:** [UVuruna/mladenvuruna](https://github.com/UVuruna/mladenvuruna)
 **Type:** Website
 **Status:** 🟢 Live — [mladenvuruna.com](https://mladenvuruna.com)
+**Visibility:** Public
 
 **Description:** Personal portfolio website for a Serbian writer and artist. Showcases books with an interactive page-flip animation, essays, and an art gallery. Includes a visitor analytics system (IP, geolocation, pages visited, time spent), an IP-gated admin panel for content management, and a contact/comments system.
 
@@ -227,10 +239,11 @@ Travel); build/release pipeline remaining before v1 ships
 
 ### <img src="logos/ColorizeSVG.svg" width="22" height="22"> SVG Styler (Colorize SVG)
 
-**Local path:** `API/Colorize SVG/`
+**Local path:** `WebSites/Colorize SVG/`
 **GitHub:** [UVuruna/SVG-Styler](https://github.com/UVuruna/SVG-Styler)
 **Type:** Web Tool
 **Status:** 🟢 Active
+**Visibility:** Public
 
 **Description:** Interactive browser-based tool for real-time SVG color and filter editing. Uses custom circular knob sliders with color-gradient visualization to adjust 7 CSS filter properties simultaneously. Features a build pipeline for production optimization.
 
@@ -254,6 +267,7 @@ Travel); build/release pipeline remaining before v1 ships
 **GitHub:** [UVuruna/Prirodni-Sokovi](https://github.com/UVuruna/Prirodni-Sokovi)
 **Type:** Website
 **Status:** 🔵 Maintained
+**Visibility:** Public
 
 **Description:** E-commerce website for a natural juice company. Features a product catalog with 11+ juice combinations and individual ingredient pages. Implements a time-based theme system that automatically switches color schemes 4 times throughout the day (morning, noon, afternoon, night) based on Belgrade timezone.
 
@@ -275,6 +289,7 @@ Travel); build/release pipeline remaining before v1 ships
 **GitHub:** [UVuruna/vaske-komarnici](https://github.com/UVuruna/vaske-komarnici)
 **Type:** Website
 **Status:** 🔵 Maintained
+**Visibility:** Public
 
 **Description:** Commercial website for a window/door screen (mosquito net) products business. Features a product catalog with 3 categories (fixed, pleated, roller screens), a multi-step ordering system with persisted order state, installation guides, and SVG colorization for dynamic product visualization.
 
@@ -294,14 +309,16 @@ Travel); build/release pipeline remaining before v1 ships
 
 ## 🎮 Games & Experiments
 
-These are standalone repositories not part of the local monorepo.
+Early Python projects — local under `Games/`, each with its own GitHub repository.
 
 ---
 
 ### <img src="logos/TexasHoldemPoker.svg" width="22" height="22"> Texas Hold'em Poker
 
+**Local path:** `Games/THP Enhanced/`
 **GitHub:** [UVuruna/TexasHoldemPoker](https://github.com/UVuruna/TexasHoldemPoker)
 **Status:** 🔴 Archived
+**Visibility:** Public
 
 **Description:** Texas Hold'em Poker game in Python with real-time probability calculation. Computes win probabilities based on the cards dealt and remaining cards in the deck.
 
@@ -311,8 +328,10 @@ These are standalone repositories not part of the local monorepo.
 
 ### <img src="logos/Chess.svg" width="22" height="22"> Chess
 
+**Local path:** `Games/ChessGame/`
 **GitHub:** [UVuruna/Chess](https://github.com/UVuruna/Chess)
 **Status:** 🔴 Archived
+**Visibility:** Public
 
 **Description:** Chess game implementation in Python.
 
@@ -322,8 +341,10 @@ These are standalone repositories not part of the local monorepo.
 
 ### <img src="logos/TicTacToe.svg" width="22" height="22"> Tic-Tac-Toe
 
+**Local path:** `Games/TicTacToe/`
 **GitHub:** [UVuruna/TicTacToe](https://github.com/UVuruna/TicTacToe)
 **Status:** 🔴 Archived
+**Visibility:** Public
 
 **Description:** Classic Tic-Tac-Toe game in Python.
 
@@ -339,4 +360,5 @@ These are standalone repositories not part of the local monorepo.
 | 🟡 In Development | Currently being built |
 | 🔵 Maintained | Stable, occasional updates |
 | 🔴 Archived | No longer maintained |
-| 🔒 | Private repository |
+| ⚪ Planned | Registered, not yet started |
+| 🔒 | Private — description public, source code not |
