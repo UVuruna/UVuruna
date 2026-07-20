@@ -572,6 +572,22 @@ The owner drops free-form specs into `INSTRUCTION.txt` (or similar files) in a p
 
 ---
 
+### Rule #19: Compute, Don't Generate (owner decree 2026-07-20 — PENDING OWNER APPROVAL)
+
+**The power of a program is that a small set of rules covers every situation. An asset is GENERATED only when it is irreducibly artistic; every variant of it is COMPUTED.**
+
+Born from a real failure: a prompt sheet requested 12 nearly-identical watch subdial plates (4 shadow directions × 3 metals) when the program already recolored metals live and the shadow was one line of circle math — hours of generation wasted on what a formula does for free.
+
+Before ANY asset enters a prompt sheet, a generation queue, or the repo, answer the **derivation check** in writing (in the sheet or the doc):
+
+- Can this be derived from ONE master + rules? **Tint/metal** (recolor pipelines), **lighting/shadow** (angle math), **phase/fraction** (geometry), **orientation/position** (transforms), **size** (scaling) — these are NEVER separate images.
+- Only the irreducible core — a new scene, a new figure, a new composition — is generated. One master per such core; the program derives the rest live, disk-cached.
+- If a legacy sheet predates this rule, re-ask the question BEFORE regenerating from it — fixing a sheet's format without re-asking whether its images should exist is exactly the failure this rule exists to prevent.
+
+Applies to every project in this monorepo, current and future.
+
+---
+
 <a id="version-commit-system"></a>
 
 ## Version & Commit System
