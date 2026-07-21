@@ -27,7 +27,7 @@
 | <img src="logos/InputDNA.svg" width="36" height="36"> | [Input DNA](https://github.com/UVuruna/InputDNA) | ML platform that captures and learns unique mouse & keyboard behavior patterns — records raw input into SQLite, trains personal models, and can replay behavior indistinguishably from the real thing |
 | <img src="logos/Vitals.svg" width="36" height="36"> | [Vitals](https://github.com/UVuruna/ProcessMemoryUsage) | Real-time CPU, Memory & Network process monitor — top N processes, historical usage peaks with timestamps, configurable refresh and display (formerly PMUsage) |
 | <img src="logos/RHMH.svg" width="36" height="36"> | [RHMH](https://github.com/UVuruna/RHMH) | Medical patient management system — records, imaging, MKB-10 diagnoses, AI-powered OCR, Google Drive sync, analytics |
-| <img src="logos/UltraVivid.svg" width="36" height="36"> | [Ultra Vivid](https://github.com/UVuruna/Auto-OpenRGB) | Automatic RGB lighting profile switching based on time of day — Task Scheduler integration, VBS keyboard shortcuts (formerly Auto OpenRGB) |
+| <img src="logos/UltraVivid.svg" width="36" height="36"> | [Ultra Vivid](https://github.com/UVuruna/Ultra-Vivid) | Automatic RGB lighting profile switching based on time of day — Task Scheduler integration, VBS keyboard shortcuts (formerly Auto OpenRGB) |
 
 ### 🌐 Web
 

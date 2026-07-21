@@ -139,7 +139,7 @@ Travel); build/release pipeline remaining before v1 ships
 ### <img src="logos/UltraVivid.svg" width="22" height="22"> Ultra Vivid (formerly Auto OpenRGB)
 
 **Local path:** `Gadgets/Ultra Vivid/`
-**GitHub:** [UVuruna/Auto-OpenRGB](https://github.com/UVuruna/Auto-OpenRGB)
+**GitHub:** [UVuruna/Ultra-Vivid](https://github.com/UVuruna/Ultra-Vivid)
 **Type:** Utility / Automation (Windows)
 **Status:** 🟢 Active
 **Visibility:** Public
