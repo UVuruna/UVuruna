@@ -46,6 +46,7 @@
 |---|---------|--------|-------------|
 | <img src="logos/DOMYWatch.svg" width="22" height="22"> | [DOMY Watch](https://github.com/UVuruna/DOMY-Watch) | 🟡 In Development | Transparent 24h analog desktop clock with astronomical data — sunrise/sunset arcs, moon phases, solar noon, seasons |
 | <img src="logos/PromptPainter.svg" width="22" height="22"> | [PromptPainter](https://github.com/UVuruna/Prompt-Painter) | 🟡 In Development | Supervised image-generation runner — parses prompt-sheet markdown and drives Gemini/ChatGPT tabs over CDP |
+| | Remote User | ⚪ Planned | Remote control of the computer from an Android tablet/phone — tap moves the mouse and clicks, native keyboard types; phase 1 is bare remote input |
 | | Unreal Voice Sampler 🔒 | ⚪ Planned | Voice counterpart of Input DNA — samples how a person sounds via microphone and trains a personal voice model |
 | <img src="logos/TexasHoldemPoker.svg" width="22" height="22"> | [Texas Hold'em Poker](https://github.com/UVuruna/TexasHoldemPoker) | 🔴 Archived | Poker game with real-time win-probability calculation |
 | <img src="logos/Chess.svg" width="22" height="22"> | [Chess](https://github.com/UVuruna/Chess) | 🎓 Legacy | Chess game implementation in Python — learning-era project |

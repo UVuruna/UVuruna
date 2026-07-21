@@ -183,6 +183,20 @@ Travel); build/release pipeline remaining before v1 ships
 
 ---
 
+<a id="remote-user"></a>
+
+### Remote User
+
+**Local path:** `Applications/Remote User/`
+**GitHub:** — (no repository yet)
+**Type:** Desktop + Android Application
+**Status:** ⚪ Planned — feasibility research in progress
+**Visibility:** Public
+
+**Description:** Remote control of the computer from an Android device (tablet or phone). Two sides: a desktop app and an Android app. A tap on the tablet moves the mouse pointer to that position and clicks; an on-screen side icon substitutes the right click; the tablet's native keyboard types on the computer. Phase 1 targets only the most primitive remote communication (close an application, type an instruction into a focused text box — e.g. an agent prompt in VSCode). Later phases add per-application awareness: app-specific state tracking, notifications, and extra functions. Implementation language is open per Rule #21 and will be decided by the ongoing feasibility research.
+
+---
+
 <a id="web"></a>
 
 ## 🌐 Web Projects
