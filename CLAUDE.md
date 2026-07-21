@@ -420,6 +420,8 @@ Proposal: read only once. Do you agree?"
 
 When two or more independent tasks exist with no shared state or sequential dependency, launch them simultaneously using the Task tool. Do not execute them one-by-one.
 
+**Model choice for EVERY sub-agent:** before launching, the orchestrator assesses the task's complexity and assigns the WEAKEST model tier that can do it (see Rule #15). Premium-tier tokens (the session model) are never spent on work a cheaper tier handles.
+
 **Always announce long operations before starting:**
 
 ```
@@ -522,7 +524,7 @@ def fetch_data(): ...
 
 1. **Default = inline work, zero subagents.** Ordinary implementation, docs, fixes, tests and verification are done directly — a local test run is cheaper and more reliable than a verification agent.
 2. **Subagents only when they pay:** genuinely parallel independent tasks (Rule #9), work needing isolation, or research/reviews the owner asked for.
-3. **Model tiering — always pick the WEAKEST model that can do the job:**
+3. **Model tiering — for every delegated task, assess its complexity FIRST, then pick the WEAKEST model that can do the job:**
    - `haiku` — mechanical work: link checking, file inventories, grep-like sweeps, formatting audits, doc consistency, simple web lookups;
    - `sonnet` — standard research, code reviews, web research with synthesis;
    - `opus` — only genuinely hard verification (math, geometry, tricky concurrency), a couple per run at most;
