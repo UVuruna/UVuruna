@@ -5,6 +5,16 @@ Used for naming projects, modules, features, and products across the UVuruna eco
 
 ---
 
+## Naming Principle (owner decree 2026-07-21)
+
+**A name must describe what the thing DOES — in as few words as possible, naturally.**
+
+The UV pairs below are optional flavor, never an obligation. When a UV pair fits
+the function naturally, use it; when it doesn't, a plain descriptive name always
+wins over a forced UV name.
+
+---
+
 ## Tech / Science
 
 | Name | Use For |
