@@ -24,6 +24,7 @@ UVuruna is a personal development organization. All projects live in this monore
   📝 PROJECTS.md    ← Detailed project index
   📝 DESIGN.md      ← Universal UI design system (see Rule #16)
   📝 NAMING.md      ← UV naming reference for new projects/modules
+  📝 REFACTOR-GODFILES.md ← God-file split procedure for project sessions (see Rule #20)
   📝 PRIVATE.md     ← LOCAL-ONLY index of hidden projects (never tracked)
 ```
 
@@ -588,6 +589,44 @@ Applies to every project in this monorepo, current and future.
 
 ---
 
+### Rule #20: Cohesive Modules — No God-Files
+
+**A file is ONE cohesive unit of responsibility. A file that accumulates unrelated classes and concerns is a bug (a "god-file"), exactly like a gray default-widget GUI is a bug.**
+
+Born from a real case: PromptPainter's `gui.py` grew to 8,800+ lines — main window, every widget, every dialog, theming and helpers in one file. Result: unreadable diffs, useless `git blame`, impossible focused review, nothing testable or importable in isolation.
+
+**Thresholds:**
+
+| Lines | Status | Action |
+|-------|--------|--------|
+| ≤ ~500 | Normal | Nothing — size alone is fine |
+| ~500–1,000 | Smell | ASK in writing: "Does this file have more than one responsibility?" |
+| > ~1,000 | Violation | Split by responsibility — or document in the file's `.md` WHY it must stay whole (e.g. generated code, one irreducible table) |
+
+**How to split — by RESPONSIBILITY, never mechanically:**
+
+```
+# ❌ FORBIDDEN — mechanical split by line count
+gui_part1.py  (lines 1–3000)
+gui_part2.py  (lines 3000–6000)   # same god-file, now in three drawers
+
+# ✅ REQUIRED — one responsibility per file
+📁 gui/
+  📝 ___gui.md
+  🐍 main_window.py      ← window shell, layout, wiring
+  🐍 canvas_widget.py    ← one complex widget
+  🐍 settings_dialog.py  ← one dialog
+  🐍 theme.py            ← palette, QSS, styling
+```
+
+- The opposite extreme is ALSO forbidden: dozens of 30-line files create import spaghetti. Line count is a **smell threshold that forces the question** — cohesion is the criterion, never the goal itself.
+- Splitting an existing god-file is a real refactor: follow Rule #6 (update ALL callers, no compatibility shims), Rule #3 (each new module gets its `.md`), and change NO behavior while splitting.
+- The MD-first system (Rule #3) assumes this rule — "one `.md` beside each significant script" is meaningless when the whole project is one script.
+
+For the full refactor procedure to hand to a project session, see [Refactor God-Files](REFACTOR-GODFILES.md).
+
+---
+
 <a id="version-commit-system"></a>
 
 ## Version & Commit System
@@ -1074,4 +1113,5 @@ flowchart LR
 16. **Version commits** — `0.0.000 description`, logical grouping by topic
 17. **After desktop work** — Ask about BUILD and GIT RELEASE
 18. **Hidden projects stay hidden** — Never name them in any tracked file
-19. **When unsure → ASK** — Better 100 questions than 1 bug
+19. **Cohesive modules** — One responsibility per file; a god-file is a bug (Rule #20)
+20. **When unsure → ASK** — Better 100 questions than 1 bug
