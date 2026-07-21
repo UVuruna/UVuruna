@@ -565,13 +565,14 @@ For projects with user-facing translations (i18n), development is **English-only
 
 ---
 
-### Rule #18: Owner's Inbox Files
+### Rule #18: Owner's Inbox — the `UV/` Folder
 
-The owner drops free-form specs into `INSTRUCTION.txt` (or similar files) in a project root. Treat them as product decisions:
+**Every project has a `UV/` folder at its root — the owner's private inbox for the agents.** Into it the owner drops free-form texts and files: specs, pseudocode, instructions for upcoming features and implementation work. It is the canonical home for owner→agent instructions.
 
-- Fold them into the proper docs/config
-- Record them in session memory
-- **Keep the file itself untouched** — it is the owner's scratchpad, not project documentation
+- **`UV/` is gitignored — local only, never tracked or pushed.** Each project's `.gitignore` MUST contain a `UV/` entry. It is the owner's scratchpad, not project documentation, and may hold rough or private notes that must never reach GitHub.
+- **At the start of work, READ `UV/`** for pending instructions before touching anything else (alongside the folder's `.md` docs per Rule #3).
+- Treat its contents as **product decisions**: fold them into the proper docs/config, record them in session memory.
+- **Keep the owner's files themselves untouched** — read and act on them, never edit or delete them. (A root `INSTRUCTION.txt` is a legacy alias for the same purpose; new instructions live in `UV/`.)
 
 ---
 
@@ -662,7 +663,24 @@ FOR EACH event IN queue:
 WHEN batch full OR 2s passed → write batch to DB
 ```
 
-All universal rules (#1–#20) apply in every language.
+All other universal rules apply in every language.
+
+---
+
+### Rule #22: README Opening Is the GitHub About
+
+**Every project `README.md` opens with a short description paragraph (1–3 sentences) that says what the project does. That paragraph IS the project's GitHub "About" text — the owner must never copy it by hand.**
+
+- The opening paragraph sits right after the project title, before badges/TOC/anything else. Tight and plain: what it does, for whom, on what platform — no marketing filler.
+- **Sessions sync it automatically.** Whenever a session writes or changes that paragraph, and the project has a GitHub repo, it runs:
+
+  ```bash
+  gh repo edit <owner>/<repo> --description "<the opening paragraph>"
+  ```
+
+  so the GitHub About always matches the README with zero manual copying.
+- GitHub's About is short — keep the paragraph within ~350 characters. If the README intro is longer, its **first sentence** is the About text and gets synced.
+- Projects with no repo yet (Planned/Private without GitHub): the paragraph still leads the README; the `gh` sync runs the moment a repo exists.
 
 ---
 
@@ -1154,4 +1172,6 @@ flowchart LR
 18. **Hidden projects stay hidden** — Never name them in any tracked file
 19. **Cohesive modules** — One responsibility per file; a god-file is a bug (Rule #20)
 20. **Right language for the job** — No house language; most adequate stack per task; `.md` docs explain algorithms in pseudocode (Rule #21)
-21. **When unsure → ASK** — Better 100 questions than 1 bug
+21. **README opening = GitHub About** — Auto-synced via `gh repo edit --description` (Rule #22)
+22. **Owner's `UV/` inbox** — Read the gitignored `UV/` folder for owner instructions; never edit those files (Rule #18)
+23. **When unsure → ASK** — Better 100 questions than 1 bug
