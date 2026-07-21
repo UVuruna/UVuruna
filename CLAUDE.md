@@ -648,6 +648,18 @@ Procedure for every NEW project:
 2. If the best tool is not Python — **use it**. "We already know Python" is not an argument anymore.
 3. Language-specific sections of this file (PyInstaller build pipeline, py-spy profiling, `logging` recipes) are **recipes for Python projects, not a mandate**. Non-Python projects define their own equivalents (build, logging, profiling) following the same principles.
 
+**Docs stay owner-readable — pseudocode in `.md` files:**
+
+When a `.md` file explains a function or algorithm, describe the logic in **language-neutral pseudocode**, not in the implementation language's syntax. The owner must be able to follow every algorithm even when the project uses a language whose syntax he does not read fluently. Syntax-specific snippets may accompany the pseudocode, never replace it.
+
+```
+# ✅ Pseudocode in docs — readable regardless of implementation language
+FOR EACH event IN queue:
+    IF event age > timeout → discard, log warning
+    ELSE → append to batch
+WHEN batch full OR 2s passed → write batch to DB
+```
+
 All universal rules (#1–#20) apply in every language.
 
 ---
@@ -1139,5 +1151,5 @@ flowchart LR
 17. **After desktop work** — Ask about BUILD and GIT RELEASE
 18. **Hidden projects stay hidden** — Never name them in any tracked file
 19. **Cohesive modules** — One responsibility per file; a god-file is a bug (Rule #20)
-20. **Right language for the job** — No house language; pick the most adequate stack per task (Rule #21)
+20. **Right language for the job** — No house language; most adequate stack per task; `.md` docs explain algorithms in pseudocode (Rule #21)
 21. **When unsure → ASK** — Better 100 questions than 1 bug
