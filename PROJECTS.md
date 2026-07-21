@@ -74,7 +74,7 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 ### <img src="logos/Vitals.svg" width="22" height="22"> Vitals (formerly PMUsage)
 
 **Local path:** `Gadgets/Vitals/`
-**GitHub:** [UVuruna/ProcessMemoryUsage](https://github.com/UVuruna/ProcessMemoryUsage)
+**GitHub:** [UVuruna/Vitals](https://github.com/UVuruna/Vitals)
 **Type:** Desktop Application (Windows)
 **Status:** 🟢 Active
 **Visibility:** Public
@@ -284,7 +284,7 @@ Travel); build/release pipeline remaining before v1 ships
 ### <img src="logos/VaskeKomarnici.svg" width="22" height="22"> Vaske Komarnici
 
 **Local path:** `WebSites/Vaske-Komarnici/`
-**GitHub:** [UVuruna/vaske-komarnici](https://github.com/UVuruna/vaske-komarnici)
+**GitHub:** [UVuruna/Vaske-Komarnici](https://github.com/UVuruna/Vaske-Komarnici)
 **Type:** Website
 **Status:** 🔵 Maintained
 **Visibility:** Public

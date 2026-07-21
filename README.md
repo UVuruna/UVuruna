@@ -25,7 +25,7 @@
 | | Project | Description |
 |---|---------|-------------|
 | <img src="logos/InputDNA.svg" width="36" height="36"> | [Input DNA](https://github.com/UVuruna/InputDNA) | ML platform that captures and learns unique mouse & keyboard behavior patterns — records raw input into SQLite, trains personal models, and can replay behavior indistinguishably from the real thing |
-| <img src="logos/Vitals.svg" width="36" height="36"> | [Vitals](https://github.com/UVuruna/ProcessMemoryUsage) | Real-time CPU, Memory & Network process monitor — top N processes, historical usage peaks with timestamps, configurable refresh and display (formerly PMUsage) |
+| <img src="logos/Vitals.svg" width="36" height="36"> | [Vitals](https://github.com/UVuruna/Vitals) | Real-time CPU, Memory & Network process monitor — top N processes, historical usage peaks with timestamps, configurable refresh and display (formerly PMUsage) |
 | <img src="logos/RHMH.svg" width="36" height="36"> | [RHMH](https://github.com/UVuruna/RHMH) | Medical patient management system — records, imaging, MKB-10 diagnoses, AI-powered OCR, Google Drive sync, analytics |
 | <img src="logos/UltraVivid.svg" width="36" height="36"> | [Ultra Vivid](https://github.com/UVuruna/Ultra-Vivid) | Automatic RGB lighting profile switching based on time of day — Task Scheduler integration, VBS keyboard shortcuts (formerly Auto OpenRGB) |
 
@@ -36,7 +36,7 @@
 | <img src="logos/MladenVuruna.svg" width="36" height="36"> | [Mladen Vuruna](https://github.com/UVuruna/mladenvuruna) | Personal portfolio for a Serbian writer and artist — books with page-flip animation, essays, art gallery, visitor analytics — live at [mladenvuruna.com](https://mladenvuruna.com) |
 | <img src="logos/ColorizeSVG.svg" width="36" height="36"> | [SVG Styler](https://github.com/UVuruna/SVG-Styler) | Interactive web tool for real-time SVG color editing — circular knob sliders for brightness, contrast, saturation, hue, and more |
 | <img src="logos/PrirodniSokovi.svg" width="36" height="36"> | [Prirodni Sokovi](https://github.com/UVuruna/Prirodni-Sokovi) | E-commerce website for a natural juice company — product catalog, ingredients, time-based theme system (4 daily themes) |
-| <img src="logos/VaskeKomarnici.svg" width="36" height="36"> | [Vaske Komarnici](https://github.com/UVuruna/vaske-komarnici) | Commercial website for mosquito screen products — catalog with 3 product categories, ordering system, SVG colorization |
+| <img src="logos/VaskeKomarnici.svg" width="36" height="36"> | [Vaske Komarnici](https://github.com/UVuruna/Vaske-Komarnici) | Commercial website for mosquito screen products — catalog with 3 product categories, ordering system, SVG colorization |
 
 ---
 
