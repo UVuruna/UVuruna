@@ -573,9 +573,13 @@ The owner drops free-form specs into `INSTRUCTION.txt` (or similar files) in a p
 
 ---
 
-### Rule #19: Compute, Don't Generate (owner decree 2026-07-20 — PENDING OWNER APPROVAL)
+### Rule #19: Compute, Don't Generate (owner decree 2026-07-20, approved 2026-07-21)
 
 **The power of a program is that a small set of rules covers every situation. An asset is GENERATED only when it is irreducibly artistic; every variant of it is COMPUTED.**
+
+The owner's canonical example is **chess**: all the computers in the world together could not store every possible game written out as explicit variations — yet a handful of movement rules defines every one of them completely. Define how the pieces move; never enumerate the games.
+
+This applies to ALL programming, not just images: if something can be computed on the spot from rules, we NEVER materialize its variants as separate files/assets/data. The only exception is the owner explicitly insisting on a pre-made variant in a specific case.
 
 Born from a real failure: a prompt sheet requested 12 nearly-identical watch subdial plates (4 shadow directions × 3 metals) when the program already recolored metals live and the shadow was one line of circle math — hours of generation wasted on what a formula does for free.
 
