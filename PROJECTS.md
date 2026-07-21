@@ -185,15 +185,21 @@ Travel); build/release pipeline remaining before v1 ships
 
 <a id="remote-user"></a>
 
-### Remote User
+### <img src="logos/RemoteUser.svg" width="22" height="22"> Remote User
 
 **Local path:** `Applications/Remote User/`
 **GitHub:** — (no repository yet)
-**Type:** Desktop + Android Application
-**Status:** ⚪ Planned — feasibility research in progress
+**Type:** Desktop Application (Windows) + Web Client (Android browser)
+**Status:** 🟡 In Development — architecture defined (feasibility research complete), prototype next
 **Visibility:** Public
 
-**Description:** Remote control of the computer from an Android device (tablet or phone). Two sides: a desktop app and an Android app. A tap on the tablet moves the mouse pointer to that position and clicks; an on-screen side icon substitutes the right click; the tablet's native keyboard types on the computer. Phase 1 targets only the most primitive remote communication (close an application, type an instruction into a focused text box — e.g. an agent prompt in VSCode). Later phases add per-application awareness: app-specific state tracking, notifications, and extra functions. Implementation language is open per Rule #21 and will be decided by the ongoing feasibility research.
+**Description:** Remote control of the computer from an Android device (tablet or phone). The PC runs a Python server that streams the screen and injects input; the tablet runs no native app — it opens a web page (PWA) served by the PC itself, paired by scanning a QR code. A tap on the tablet moves the mouse pointer to that position and clicks; a floating side icon substitutes the right click; the tablet's native keyboard types on the computer (full Unicode). One monitor is displayed and controlled at a time, with an explicit switch button. Phase 1 targets only the most primitive remote communication (close an application, type an instruction into a focused text box — e.g. an agent prompt in VSCode). Later phases add per-application awareness: app-specific state tracking, notifications, and extra functions.
+
+**Tech Stack:** Python 3.13, FastAPI, dxcam (DXGI screen capture), ctypes/SendInput, vanilla JS PWA client, WebSocket
+
+**Architecture:** LAN-only, token-authenticated WebSocket — dxcam capture → JPEG per frame → browser canvas; touch/keyboard events return as JSON → Win32 `SendInput`. No internet communication, no cloud.
+
+**Docs:** [README](Applications/Remote%20User/README.md)
 
 ---
 
