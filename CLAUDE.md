@@ -631,6 +631,27 @@ For the full refactor procedure to hand to a project session, see [Refactor God-
 
 ---
 
+### Rule #21: Right Language for the Job — Python Is Not a Default
+
+**This monorepo has NO house language. Every new project (and every new module) picks the language and stack most adequate for its task — never by habit.**
+
+Python dominates the existing projects for a historical reason: it was the language the owner wrote fluently. In the agent era that constraint is GONE — the owner specifies behavior (pseudocode, specs, inbox files per Rule #18) and sessions write the code. Implementation language is therefore a free variable, chosen purely on merit:
+
+- **Performance profile** — hot paths, latency, memory footprint (a systems language beats a scripting language where it matters)
+- **Ecosystem** — the libraries and frameworks that actually solve the problem
+- **Target platform** — Windows desktop, web, service, embedded, mobile
+- **Deployment** — single EXE, installer, browser, background daemon
+
+Procedure for every NEW project:
+
+1. **Before any code**, answer in writing (in the project's `README.md` or `CLAUDE.md`): *"Which language/stack fits this task best, and why?"* — with at least one alternative considered.
+2. If the best tool is not Python — **use it**. "We already know Python" is not an argument anymore.
+3. Language-specific sections of this file (PyInstaller build pipeline, py-spy profiling, `logging` recipes) are **recipes for Python projects, not a mandate**. Non-Python projects define their own equivalents (build, logging, profiling) following the same principles.
+
+All universal rules (#1–#20) apply in every language.
+
+---
+
 <a id="version-commit-system"></a>
 
 ## Version & Commit System
@@ -1118,4 +1139,5 @@ flowchart LR
 17. **After desktop work** — Ask about BUILD and GIT RELEASE
 18. **Hidden projects stay hidden** — Never name them in any tracked file
 19. **Cohesive modules** — One responsibility per file; a god-file is a bug (Rule #20)
-20. **When unsure → ASK** — Better 100 questions than 1 bug
+20. **Right language for the job** — No house language; pick the most adequate stack per task (Rule #21)
+21. **When unsure → ASK** — Better 100 questions than 1 bug
