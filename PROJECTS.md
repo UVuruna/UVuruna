@@ -7,16 +7,16 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 ## Table of Contents
 
-- [AI & Machine Learning](#ai)
+- [Machine Learning](#machine-learning)
 - [Desktop Applications & Utilities](#desktop)
 - [Web Projects](#web)
 - [Games & Experiments](#games)
 
 ---
 
-<a id="ai"></a>
+<a id="machine-learning"></a>
 
-## 🤖 AI & Machine Learning
+## 🤖 Machine Learning
 
 ---
 
@@ -24,7 +24,7 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 ### <img src="logos/InputDNA.svg" width="22" height="22"> Input DNA
 
-**Local path:** `AI/Uncanny Valley/Input DNA/`
+**Local path:** `Machine Learning/Input DNA/`
 **GitHub:** [UVuruna/InputDNA](https://github.com/UVuruna/InputDNA)
 **Type:** Desktop Application (Windows)
 **Status:** 🟢 Active
@@ -45,7 +45,21 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 **Build:** PyInstaller + NSIS, UAC-admin elevation (required for `SetWindowsHookEx`), Windows Defender exclusions, Task Scheduler autostart
 
-**Docs:** [README](AI/Uncanny%20Valley/Input%20DNA/README.md)
+**Docs:** [README](Machine%20Learning/Input%20DNA/README.md)
+
+---
+
+<a id="unreal-voice-sampler"></a>
+
+### Unreal Voice Sampler 🔒
+
+**Local path:** `Machine Learning/Unreal Voice Sampler/`
+**GitHub:** — (no public repository)
+**Type:** Desktop Application (Windows)
+**Status:** ⚪ Planned
+**Visibility:** Private
+
+**Description:** Voice counterpart of Input DNA — the second module of the UVirtual platform. Where Input DNA captures how a person moves the mouse and types, Unreal Voice Sampler captures how they sound: records voice samples through the microphone and trains a personal voice model toward the same virtual-replica goal.
 
 ---
 
@@ -59,7 +73,7 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 ### <img src="logos/Vitals.svg" width="22" height="22"> Vitals (formerly PMUsage)
 
-**Local path:** `Gadgets/PMUsage/`
+**Local path:** `Gadgets/Vitals/`
 **GitHub:** [UVuruna/ProcessMemoryUsage](https://github.com/UVuruna/ProcessMemoryUsage)
 **Type:** Desktop Application (Windows)
 **Status:** 🟢 Active
@@ -73,7 +87,7 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 **Build:** PyInstaller + NSIS, standard user (no UAC elevation), Registry `HKCU` autostart
 
-**Docs:** [README](Gadgets/PMUsage/README.md)
+**Docs:** [README](Gadgets/Vitals/README.md)
 
 ---
 
@@ -120,11 +134,11 @@ Travel); build/release pipeline remaining before v1 ships
 
 ---
 
-<a id="auto-openrgb"></a>
+<a id="ultra-vivid"></a>
 
-### <img src="logos/AutoOpenRGB.svg" width="22" height="22"> Auto OpenRGB
+### <img src="logos/UltraVivid.svg" width="22" height="22"> Ultra Vivid (formerly Auto OpenRGB)
 
-**Local path:** `Gadgets/Auto OpenRGB/`
+**Local path:** `Gadgets/Ultra Vivid/`
 **GitHub:** [UVuruna/Auto-OpenRGB](https://github.com/UVuruna/Auto-OpenRGB)
 **Type:** Utility / Automation (Windows)
 **Status:** 🟢 Active
@@ -139,28 +153,6 @@ Travel); build/release pipeline remaining before v1 ships
 - Auto-generated VBS keyboard shortcuts for manual switching
 - Task Scheduler integration for background execution
 - PySide6 GUI for profile management
-
----
-
-<a id="autoread"></a>
-
-### <img src="logos/AutoRead.svg" width="22" height="22"> AutoRead
-
-**Local path:** `Gadgets/AutoRead/`
-**GitHub:** [UVuruna/AutoRead](https://github.com/UVuruna/AutoRead)
-**Type:** Automation Script
-**Status:** 🔵 Maintained
-**Visibility:** Public
-
-**Description:** Python automation tool for completing online e-learning courses. Uses screen capture and OCR (tesseract) to read countdown timers from the screen, then automatically clicks through course sections and waits the required duration before proceeding. Keyboard shortcuts allow calibrating screen regions at runtime.
-
-**Tech Stack:** Python, pyautogui (mouse/keyboard), pytesseract (OCR), OpenCV, keyboard
-
-**Key Features:**
-- Automatic course navigation and link clicking
-- Timer detection and timed waiting via OCR
-- Configurable screen regions via keyboard shortcuts at runtime
-- Link color detection, scroll controls
 
 ---
 
@@ -188,20 +180,6 @@ Travel); build/release pipeline remaining before v1 ships
 - Session logging with performance metrics
 - GodMode privileged admin access
 - Multi-user support with role-based access
-
----
-
-<a id="unreal-voice-sampler"></a>
-
-### Unreal Voice Sampler 🔒
-
-**Local path:** `Applications/Unreal Voice Sampler/`
-**GitHub:** — (no public repository)
-**Type:** Desktop Application (Windows)
-**Status:** ⚪ Planned
-**Visibility:** Private
-
-**Description:** Reserved project — voice sampling tool. Name registered, no code yet.
 
 ---
 
@@ -330,10 +308,10 @@ Early Python projects — local under `Games/`, each with its own GitHub reposit
 
 **Local path:** `Games/ChessGame/`
 **GitHub:** [UVuruna/Chess](https://github.com/UVuruna/Chess)
-**Status:** 🔴 Archived
+**Status:** 🎓 Legacy
 **Visibility:** Public
 
-**Description:** Chess game implementation in Python.
+**Description:** Chess game implementation in Python. Written during the learning years — kept as a record of progress, not representative of current work.
 
 **Tech Stack:** Python
 
@@ -343,10 +321,10 @@ Early Python projects — local under `Games/`, each with its own GitHub reposit
 
 **Local path:** `Games/TicTacToe/`
 **GitHub:** [UVuruna/TicTacToe](https://github.com/UVuruna/TicTacToe)
-**Status:** 🔴 Archived
+**Status:** 🎓 Legacy
 **Visibility:** Public
 
-**Description:** Classic Tic-Tac-Toe game in Python.
+**Description:** Classic Tic-Tac-Toe game in Python. Written during the learning years — kept as a record of progress, not representative of current work.
 
 **Tech Stack:** Python
 
@@ -360,5 +338,6 @@ Early Python projects — local under `Games/`, each with its own GitHub reposit
 | 🟡 In Development | Currently being built |
 | 🔵 Maintained | Stable, occasional updates |
 | 🔴 Archived | No longer maintained |
+| 🎓 Legacy | Learning-era project — kept as a record of progress, not representative of current work |
 | ⚪ Planned | Registered, not yet started |
 | 🔒 | Private — description public, source code not |

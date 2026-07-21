@@ -12,10 +12,10 @@ UVuruna is a personal development organization. All projects live in this monore
 
 ```
 📁 UVuruna (git)/
-  📁 AI/            ← AI/ML projects
   📁 Applications/  ← Desktop and automation applications
   📁 Gadgets/       ← Small utilities and tools
   📁 Games/         ← Games and experiments
+  📁 Machine Learning/ ← ML projects (behavior capture and replication)
   📁 WebSites/      ← Web projects
   📁 logos/         ← Project logos (SVG), one per project
   📝 CLAUDE.md      ← This file (universal rules for all projects)
@@ -37,7 +37,7 @@ UVuruna is a personal development organization. All projects live in this monore
 ### Folder Structure Policy
 
 - **Maximum 2 levels: `Category/Project/`.** No deeper nesting.
-- **One documented exception:** a platform with multiple planned modules may add ONE grouping level (e.g. `AI/Uncanny Valley/Input DNA/` — the Uncanny Valley platform).
+- **One exception allowed:** a platform with multiple planned modules may add ONE grouping level — currently unused (the former `AI/Uncanny Valley/` level was flattened into `Machine Learning/`).
 - Each project has its own git repository — the monorepo root repo tracks ONLY root documentation and `logos/` (enforced by the `.gitignore` whitelist).
 
 <a id="project-visibility"></a>

@@ -27,7 +27,7 @@
 | <img src="logos/InputDNA.svg" width="36" height="36"> | [Input DNA](https://github.com/UVuruna/InputDNA) | ML platform that captures and learns unique mouse & keyboard behavior patterns — records raw input into SQLite, trains personal models, and can replay behavior indistinguishably from the real thing |
 | <img src="logos/Vitals.svg" width="36" height="36"> | [Vitals](https://github.com/UVuruna/ProcessMemoryUsage) | Real-time CPU, Memory & Network process monitor — top N processes, historical usage peaks with timestamps, configurable refresh and display (formerly PMUsage) |
 | <img src="logos/RHMH.svg" width="36" height="36"> | [RHMH](https://github.com/UVuruna/RHMH) | Medical patient management system — records, imaging, MKB-10 diagnoses, AI-powered OCR, Google Drive sync, analytics |
-| <img src="logos/AutoOpenRGB.svg" width="36" height="36"> | [Auto OpenRGB](https://github.com/UVuruna/Auto-OpenRGB) | Automatic RGB lighting profile switching based on time of day — Task Scheduler integration, VBS keyboard shortcuts |
+| <img src="logos/UltraVivid.svg" width="36" height="36"> | [Ultra Vivid](https://github.com/UVuruna/Auto-OpenRGB) | Automatic RGB lighting profile switching based on time of day — Task Scheduler integration, VBS keyboard shortcuts (formerly Auto OpenRGB) |
 
 ### 🌐 Web
 
@@ -46,12 +46,12 @@
 |---|---------|--------|-------------|
 | <img src="logos/DOMYWatch.svg" width="22" height="22"> | [DOMY Watch](https://github.com/UVuruna/DOMY-Watch) | 🟡 In Development | Transparent 24h analog desktop clock with astronomical data — sunrise/sunset arcs, moon phases, solar noon, seasons |
 | <img src="logos/PromptPainter.svg" width="22" height="22"> | [PromptPainter](https://github.com/UVuruna/Prompt-Painter) | 🟡 In Development | Supervised image-generation runner — parses prompt-sheet markdown and drives Gemini/ChatGPT tabs over CDP |
-| <img src="logos/AutoRead.svg" width="22" height="22"> | [AutoRead](https://github.com/UVuruna/AutoRead) | 🔵 Maintained | E-learning automation tool — OCR-based timer detection, automatic course navigation |
-| | Unreal Voice Sampler 🔒 | ⚪ Planned | Voice sampling tool — reserved project |
+| | Unreal Voice Sampler 🔒 | ⚪ Planned | Voice counterpart of Input DNA — samples how a person sounds via microphone and trains a personal voice model |
 | <img src="logos/TexasHoldemPoker.svg" width="22" height="22"> | [Texas Hold'em Poker](https://github.com/UVuruna/TexasHoldemPoker) | 🔴 Archived | Poker game with real-time win-probability calculation |
-| <img src="logos/Chess.svg" width="22" height="22"> | [Chess](https://github.com/UVuruna/Chess) | 🔴 Archived | Chess game implementation in Python |
-| <img src="logos/TicTacToe.svg" width="22" height="22"> | [Tic-Tac-Toe](https://github.com/UVuruna/TicTacToe) | 🔴 Archived | Classic Tic-Tac-Toe game in Python |
+| <img src="logos/Chess.svg" width="22" height="22"> | [Chess](https://github.com/UVuruna/Chess) | 🎓 Legacy | Chess game implementation in Python — learning-era project |
+| <img src="logos/TicTacToe.svg" width="22" height="22"> | [Tic-Tac-Toe](https://github.com/UVuruna/TicTacToe) | 🎓 Legacy | Classic Tic-Tac-Toe game in Python — learning-era project |
 
 ---
 
 > 🔒 Private — description public, source code not accessible
+> 🎓 Legacy — learning-era project, kept as a record of progress
