@@ -684,6 +684,25 @@ All other universal rules apply in every language.
 
 ---
 
+### Rule #23: Self-Update Against the Latest GitHub Release
+
+**Every installable app checks the LATEST GitHub release at startup and, if it is behind, offers the user an in-app UPDATE. The last published release is the single source of truth for "current version".** (Owner decree 2026-07-22, generalized from Remote User.)
+
+The reference implementation lives in `Applications/Remote User/server/updates.py` and `Gadgets/Ultra Vivid/core/updates.py` — reuse it rather than reinventing (Rule #5):
+
+- **A small `updates` module** exposes `check(repo, enabled) -> Update | None`. It reads `api.github.com/repos/<repo>/releases/latest` (public, unauthenticated), parses the numeric version from `tag_name`, and returns an `Update(version, installer_url, page_url)` only when the release is strictly newer than the running version.
+- **`None` is a NORMAL result** for: up to date, check disabled, a dev checkout (version has no numbers), a repo with no releases yet, or ANY network failure. Logged at info, NEVER raised — the app must start fine offline (Rule #1's exception: a documented, explicit fallback).
+- **Config, not hardcode (Rule #4):** an `update` section carries `{ "repo": "<owner>/<repo>", "check": true }`. The repo is the project's own; `check` lets the user opt out.
+- **The check is off the UI/main path:** a worker thread does the network call; the result is surfaced without blocking startup (a background check, a timer-read button — never a synchronous stall).
+- **The UX offers, never forces:** a visible "Update to vX" affordance. Taking it downloads the release's installer asset to a temp dir, launches it (elevated as the installer's manifest requires), and quits so files can be replaced. A release with no installer asset falls back to opening the release page.
+- **Version source:** the running version comes from the project's single version source (`version.py` / `app_info.json`), bundled into the build so the frozen app knows its own number.
+- **Ecosystem apps update downhill:** where a companion device (phone, second client) exists, ONLY the desktop/hub app touches the internet; companions learn the version from the hub and update from it (see Remote User). One internet check per ecosystem.
+- Non-installable projects (pure libraries, websites deployed by CI) are exempt — this rule is about **installed apps the user runs a stale copy of**.
+
+Applies to every current and future installable app in this monorepo.
+
+---
+
 <a id="version-commit-system"></a>
 
 ## Version & Commit System
@@ -1174,4 +1193,5 @@ flowchart LR
 20. **Right language for the job** — No house language; most adequate stack per task; `.md` docs explain algorithms in pseudocode (Rule #21)
 21. **README opening = GitHub About** — Auto-synced via `gh repo edit --description` (Rule #22)
 22. **Owner's `UV/` inbox** — Read the gitignored `UV/` folder for owner instructions; never edit those files (Rule #18)
-23. **When unsure → ASK** — Better 100 questions than 1 bug
+23. **Self-update** — Installable apps check the latest GitHub release and offer an in-app update (Rule #23)
+24. **When unsure → ASK** — Better 100 questions than 1 bug
