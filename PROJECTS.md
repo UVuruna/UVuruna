@@ -188,16 +188,16 @@ Travel); build/release pipeline remaining before v1 ships
 ### <img src="logos/RemoteUser.svg" width="22" height="22"> Remote User
 
 **Local path:** `Applications/Remote User/`
-**GitHub:** — (no repository yet)
-**Type:** Desktop Application (Windows) + Web Client (Android browser)
-**Status:** 🟡 In Development — architecture defined (feasibility research complete), prototype next
+**GitHub:** [UVuruna/Remote-User](https://github.com/UVuruna/Remote-User)
+**Type:** Desktop Application (Windows) + Android Hybrid App (APK)
+**Status:** 🟡 In Development — v1 loop shipped (H.264 streaming, touch controls, desktop app + installer, Android APK); on-device polish ongoing
 **Visibility:** Public
 
-**Description:** Remote control of the computer from an Android device (tablet or phone). The PC runs a Python server that streams the screen and injects input; the tablet runs no native app — it opens a web page (PWA) served by the PC itself, paired by scanning a QR code. A tap on the tablet moves the mouse pointer to that position and clicks; a floating side icon substitutes the right click; the tablet's native keyboard types on the computer (full Unicode). One monitor is displayed and controlled at a time, with an explicit switch button. Phase 1 targets only the most primitive remote communication (close an application, type an instruction into a focused text box — e.g. an agent prompt in VSCode). Later phases add per-application awareness: app-specific state tracking, notifications, and extra functions.
+**Description:** Remote control of the computer from an Android phone/tablet. The PC runs a Python server (desktop app with tray + QR pairing) that streams the screen as H.264 and injects input; the phone runs a hybrid app — a Kotlin shell around the web client the PC itself serves. A browser on the phone only ever sees the install funnel (Install → Open the app → paired automatically); everything else happens in the app: the finger steers the cursor, buttons click/drag/scroll, the phone keyboard types on the PC (full Unicode), images from the phone paste straight into the focused box. Works at home over LAN and anywhere via Tailscale, both guided entirely in-app. Updates flow downhill: the desktop checks GitHub Releases, the phone updates from the PC.
 
-**Tech Stack:** Python 3.13, FastAPI, dxcam (DXGI screen capture), ctypes/SendInput, vanilla JS PWA client, WebSocket
+**Tech Stack:** Python 3.13, FastAPI, dxcam (DXGI), ffmpeg H.264 (NVENC/QSV/AMF/libx264 → fMP4/MSE), ctypes/SendInput, PySide6 + tray, vanilla JS client, Kotlin WebView shell (APK), Tailscale mesh, WebSocket
 
-**Architecture:** LAN-only, token-authenticated WebSocket — dxcam capture → JPEG per frame → browser canvas; touch/keyboard events return as JSON → Win32 `SendInput`. No internet communication, no cloud.
+**Architecture:** Token-authenticated WebSocket — DXGI capture → per-client ffmpeg H.264 fMP4 → MSE canvas (JPEG region-streaming fallback); input JSON → Win32 `SendInput`. LAN + Tailscale (the app stores both addresses and probes at start). PyInstaller + NSIS installer bundles ffmpeg and the APK; the server serves the APK at `/app.apk`.
 
 **Docs:** [README](Applications/Remote%20User/README.md)
 
