@@ -11,7 +11,7 @@ This file provides guidance to Claude Code for **ALL projects** in this reposito
 UVuruna is a personal development organization. All projects live in this monorepo, organized by category:
 
 ```
-📁 UVuruna (git)/
+📁 UVuruna/
   📁 Applications/  ← Desktop and automation applications
   📁 Gadgets/       ← Small utilities and tools
   📁 Games/         ← Games and experiments
