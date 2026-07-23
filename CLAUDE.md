@@ -833,7 +833,7 @@ Build scripts read from this file for company-level metadata. **Never duplicate 
 }
 ```
 
-### Build Pipeline (5 Steps)
+### Build Pipeline (6 Steps)
 
 ```mermaid
 %%{init: {'flowchart': {'subGraphTitleMargin': {'top': 0, 'bottom': 35}}}}%%
@@ -842,7 +842,8 @@ flowchart LR
     B --> C[PyInstaller]
     C --> D[Sign EXE]
     D --> E[NSIS Installer]
-    E --> F[dist/Setup.exe]
+    E --> G[Sign Installer]
+    G --> F[dist/Setup.exe]
 ```
 
 **Step 1 — SVG → ICO** (`svg_to_ico.py`)
@@ -866,7 +867,17 @@ flowchart LR
 - Certificate: `setup/cert/{ProjectName}.pfx`
 - Password: read from `setup/cert/password.txt` — **NEVER hardcode in `build.py`**
 - Timestamp server: `http://timestamp.digicert.com`
-- Prevents Windows SmartScreen warnings on first run
+- Signs the inner `dist/{ProjectName}/{ProjectName}.exe`
+- **CRITICAL — sign BOTH artifacts.** Signing must be a reusable function
+  applied to the inner exe here AND to the final installer after Step 6
+  (`sign_file(exe)` here, `sign_file(installer)` after NSIS). Signing ONLY
+  the inner exe ships an **unsigned installer** — the file the user actually
+  downloads and runs — which completely defeats the SmartScreen mitigation
+  below. (This was a real, long-standing pipeline defect: the old order
+  signed the exe, then wrapped it in an unsigned installer and called that
+  the deliverable.)
+- Prevents Windows SmartScreen warnings on first run — **only if the
+  installer is signed**, not merely the inner exe
 
 **Step 5 — NSIS Installer** (`makensis.exe`)
 - Compression: LZMA solid (maximum compression)
@@ -877,6 +888,13 @@ flowchart LR
   - Standard user apps → Registry `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`
   - UAC-elevated apps → Task Scheduler `/rl highest` (Registry Run silently skips elevated apps)
 - Output: `dist/{ProjectName}_Setup.exe`
+
+**Step 6 — Sign Installer** (`signtool.exe`, same cert as Step 4)
+- Sign the final `dist/{ProjectName}_Setup.exe` — the distributed artifact
+- Same certificate, password, and timestamp server as Step 4 (reuse the
+  `sign_file` helper — Rule #5, no duplicate signing code)
+- Verify after signing: `Get-AuthenticodeSignature dist\{ProjectName}_Setup.exe`
+  must not report `NotSigned`
 
 ### Certificate Management
 
