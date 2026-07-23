@@ -833,7 +833,7 @@ Build scripts read from this file for company-level metadata. **Never duplicate 
 }
 ```
 
-### Build Pipeline (6 Steps)
+### Build Pipeline (7 Steps)
 
 ```mermaid
 %%{init: {'flowchart': {'subGraphTitleMargin': {'top': 0, 'bottom': 35}}}}%%
@@ -843,7 +843,8 @@ flowchart LR
     C --> D[Sign EXE]
     D --> E[NSIS Installer]
     E --> G[Sign Installer]
-    G --> F[dist/Setup.exe]
+    G --> V[Verify]
+    V --> F[dist/Setup.exe]
 ```
 
 **Step 1 — SVG → ICO** (`svg_to_ico.py`)
@@ -895,6 +896,30 @@ flowchart LR
   `sign_file` helper — Rule #5, no duplicate signing code)
 - Verify after signing: `Get-AuthenticodeSignature dist\{ProjectName}_Setup.exe`
   must not report `NotSigned`
+
+**Step 7 — Verify (fail-closed gate)** — the last thing `build.py` does
+- **Why this step exists:** every prior step fails SILENTLY. PyInstaller
+  without `--version-file` still builds an exe — just with an empty
+  CompanyName (so company legends list it as "Unknown"). A skipped installer
+  signing just yields an unsigned file. The build returns exit 0 and *looks*
+  done while shipping a broken artifact. The pipeline was historically
+  verified by "did the steps run", never by "does the artifact meet the
+  contract" — and each project's `build.py` is a hand-written copy that can
+  silently drift from this spec. This step makes drift impossible to ship.
+- **Assert on the OUTPUT, not the recipe.** A `verify_build(exe, installer)`
+  function reads the built artifacts and FAILS the build (`sys.exit(1)`)
+  unless ALL hold:
+  - exe `CompanyName` == `company.json` `company_name` (Step 2 really ran)
+  - exe `FileVersion` contains the project version (Step 2 embedded it)
+  - when a signing cert is configured: BOTH the inner exe AND the final
+    installer carry an Authenticode signature (Steps 4 & 6 really ran)
+- Reads metadata/signature via `(Get-Item exe).VersionInfo` and
+  `Get-AuthenticodeSignature` (self-signed → status is not `Valid` but is
+  never `NotSigned`; treat only `NotSigned`/empty as "unsigned").
+- Signing asserts are skipped only when signing itself is skipped (no cert /
+  no password) — the documented-optional path. Everything else is mandatory.
+- **This gate is required in every desktop project's `build.py`.** Reference
+  implementation: `Gadgets/Ultra Vivid/setup/build.py` (`verify_build`).
 
 ### Certificate Management
 
