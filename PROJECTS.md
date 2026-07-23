@@ -161,7 +161,7 @@ Travel); build/release pipeline remaining before v1 ships
 ### <img src="logos/IconForge.svg" width="22" height="22"> Icon Forge
 
 **Local path:** `Gadgets/Icon Forge/`
-**GitHub:** — (local developer utility)
+**GitHub:** [UVuruna/Icon-Forge](https://github.com/UVuruna/Icon-Forge)
 **Type:** Desktop Utility (Windows)
 **Status:** 🟢 Active
 **Visibility:** Public
