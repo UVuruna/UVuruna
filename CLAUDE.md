@@ -92,8 +92,8 @@ User: "Fix the session detection"
 2. **Verify no duplicates** — Did you introduce duplicate code?
 3. **Check dependent components** — Did the change break anything?
 4. **Commit** — See [Version & Commit System](#version-commit-system)
-5. **Ask about BUILD** — "Should I run the BUILD?" *(desktop apps only)*
-6. **Ask about GIT RELEASE** — "Should I create a GIT RELEASE?" *(desktop apps only)*
+5. **BUILD** — run the full build pipeline *(installable apps only; automatic, do NOT ask)*
+6. **GIT RELEASE** — tag, push, and publish the release with the signed installer *(installable apps only; **automatic, do NOT ask** — Rule #24)*
 
 ### When Creating a New Project
 
@@ -703,6 +703,21 @@ Applies to every current and future installable app in this monorepo.
 
 ---
 
+### Rule #24: Always Ship a GIT RELEASE — Never Stop at Local `dist/` (owner decree 2026-07-23, SHOUTED)
+
+**Every session that produces a successful build of an installable app MUST immediately create a GIT RELEASE. Do NOT ask — this is standing, durable authorization.** The owner installs and updates ONLY through the official GitHub release (the Rule #23 self-update path); the local `dist/` artifact is a build by-product, never the deliverable. A build that is not released is **invisible to the update mechanism and therefore useless** — it forces the owner to hand-install stale software, the exact failure this rule kills.
+
+- **The release is part of finishing the work, exactly like the build.** After the build's verify gate passes (metadata + signatures), the session tags the new version, pushes the branch and tag, and runs `gh release create` with the **signed installer** as the artifact — see the [GIT RELEASE Procedure](#git-release-procedure). No "Should I create a GIT RELEASE?" question, ever.
+- **A release requires a fresh, verified build.** Build → verify → tag → push → `gh release create`, in one unbroken flow. Never release an artifact the current session did not just build and verify.
+- **Version** comes from the single version source (Rule #23) and is bumped for the release per the commit convention (zero-padded patch); the tag is `v{version}`. Never re-release an existing tag — bump first.
+- **Release notes** = the commits since the previous tag.
+- **Scope:** every installable app that HAS a GitHub repo. A project with no repo yet still builds; creating the repo to enable releases is the owner's call (surface it, don't stall). Hidden projects (never on GitHub, Rule #23-exempt) are the only ones that skip the release.
+- **This is outward-facing publishing**, and the owner has PERMANENTLY authorized it here — the general "confirm outward-facing actions first" guidance does not apply to this specific, decreed action. (Everything else outward-facing still needs confirmation.)
+
+This supersedes any earlier "ask about GIT RELEASE" / "GIT RELEASE requires the owner's yes" wording anywhere in this repo. Applies to every current and future installable app in this monorepo.
+
+---
+
 <a id="version-commit-system"></a>
 
 ## Version & Commit System
@@ -750,12 +765,14 @@ Applies to every current and future installable app in this monorepo.
 4. Commit with next version number and descriptive message
 5. Repeat for remaining groups if multiple commits needed
 
-### Post-Work Questions (Desktop Apps Only)
+### Post-Work — BUILD + RELEASE (Installable Apps Only)
 
-After all commits, ALWAYS ask:
+After all commits, **automatically and without asking** (Rule #24):
 
-1. **"Should I run the BUILD?"** — triggers the full build pipeline
-2. **"Should I create a GIT RELEASE?"** — creates GitHub release with installer as artifact
+1. **BUILD** — run the full build pipeline
+2. **GIT RELEASE** — create the GitHub release with the signed installer as the artifact
+
+The owner updates ONLY through the official GitHub release, never the local `dist/`. Do NOT ask "should I build / release?" — a build that is not released is useless to the owner.
 
 ---
 
@@ -935,17 +952,22 @@ python setup/create_cert.py
 
 Only recreate if the certificate expires or is corrupted.
 
+<a id="git-release-procedure"></a>
+
 ### GIT RELEASE Procedure
 
+**Mandatory and automatic after every successful build (Rule #24) — never gated behind a question.**
+
 ```bash
-# 1. Verify build output exists
+# 1. Verify build output exists (built + verified THIS session)
 ls dist/
 
-# 2. Create and push version tag
+# 2. Push the branch, then create and push the version tag
+git push origin HEAD
 git tag v{version}
 git push origin v{version}
 
-# 3. Create GitHub release with installer as artifact
+# 3. Create GitHub release with the SIGNED installer as artifact
 gh release create v{version} "dist/{ProjectName}_Setup.exe" \
   --title "v{version}" \
   --notes "$(git log --oneline {prev_tag}..HEAD)"
@@ -1230,11 +1252,12 @@ flowchart LR
 14. **Plans are discussions** — Don't write code previews in plans
 15. **Verify dependencies** — Check what your change affects before touching it
 16. **Version commits** — `0.0.000 description`, logical grouping by topic
-17. **After desktop work** — Ask about BUILD and GIT RELEASE
+17. **After installable-app work** — BUILD **and** GIT RELEASE, automatically, never asking (Rule #24)
 18. **Hidden projects stay hidden** — Never name them in any tracked file
 19. **Cohesive modules** — One responsibility per file; a god-file is a bug (Rule #20)
 20. **Right language for the job** — No house language; most adequate stack per task; `.md` docs explain algorithms in pseudocode (Rule #21)
 21. **README opening = GitHub About** — Auto-synced via `gh repo edit --description` (Rule #22)
 22. **Owner's `UV/` inbox** — Read the gitignored `UV/` folder for owner instructions; never edit those files (Rule #18)
 23. **Self-update** — Installable apps check the latest GitHub release and offer an in-app update (Rule #23)
-24. **When unsure → ASK** — Better 100 questions than 1 bug
+24. **Always GIT RELEASE** — Every successful build of an installable app ships an official release; never stop at local `dist/` (Rule #24)
+25. **When unsure → ASK** — Better 100 questions than 1 bug
