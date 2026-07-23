@@ -51,7 +51,7 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 <a id="unreal-voice-sampler"></a>
 
-### Unreal Voice Sampler 🔒
+### <img src="logos/UnrealVoiceSampler.svg" width="22" height="22"> Unreal Voice Sampler 🔒
 
 **Local path:** `Machine Learning/Unreal Voice Sampler/`
 **GitHub:** — (no public repository)
@@ -153,6 +153,26 @@ Travel); build/release pipeline remaining before v1 ships
 - Auto-generated VBS keyboard shortcuts for manual switching
 - Task Scheduler integration for background execution
 - PySide6 GUI for profile management
+
+---
+
+<a id="icon-forge"></a>
+
+### <img src="logos/IconForge.svg" width="22" height="22"> Icon Forge
+
+**Local path:** `Gadgets/Icon Forge/`
+**GitHub:** — (local developer utility)
+**Type:** Desktop Utility (Windows)
+**Status:** 🟢 Active
+**Visibility:** Public
+
+**Description:** SVG/PNG → ICO converter and manager for the desktop `VSCode Projects` quick-open shortcut folder. Renders each project's logo into a crisp multi-resolution ICO (16–256px, supersampled) and stamps it onto that project's `.lnk`, so every project and every category ROOT folder opens in VS Code from a distinct, recognizable icon. Creates any shortcut that is missing.
+
+**Tech Stack:** Python 3.13, PySide6 (QSvgRenderer), Pillow, PowerShell (WScript.Shell)
+
+**Architecture:** Manifest-driven. `manifest.json` maps each entry (project or category ROOT) to its source SVG, target folder and shortcut; project logos are read directly from the monorepo `logos/` folder (no duplication). The engine renders ICOs (computed, gitignored) and delegates `.lnk` writing to a PowerShell helper. Ships a CLI (`run.py`) and a dark-themed PySide6 GUI.
+
+**Docs:** [README](Gadgets/Icon%20Forge/README.md)
 
 ---
 

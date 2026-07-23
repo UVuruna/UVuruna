@@ -46,8 +46,9 @@
 |---|---------|--------|-------------|
 | <img src="logos/DOMYWatch.svg" width="22" height="22"> | [DOMY Watch](https://github.com/UVuruna/DOMY-Watch) | 🟡 In Development | Transparent 24h analog desktop clock with astronomical data — sunrise/sunset arcs, moon phases, solar noon, seasons |
 | <img src="logos/PromptPainter.svg" width="22" height="22"> | [PromptPainter](https://github.com/UVuruna/Prompt-Painter) | 🟡 In Development | Supervised image-generation runner — parses prompt-sheet markdown and drives Gemini/ChatGPT tabs over CDP |
+| <img src="logos/IconForge.svg" width="22" height="22"> | Icon Forge | 🟢 Active | SVG/PNG → ICO converter that stamps distinct icons onto the desktop VSCode quick-open shortcuts for every project and category folder |
 | <img src="logos/RemoteUser.svg" width="22" height="22"> | Remote User | 🟡 In Development | Remote control of the computer from an Android tablet/phone — PC streams its screen to a browser PWA over LAN, tap moves the mouse and clicks, native keyboard types |
-| | Unreal Voice Sampler 🔒 | ⚪ Planned | Voice counterpart of Input DNA — samples how a person sounds via microphone and trains a personal voice model |
+| <img src="logos/UnrealVoiceSampler.svg" width="22" height="22"> | Unreal Voice Sampler 🔒 | ⚪ Planned | Voice counterpart of Input DNA — samples how a person sounds via microphone and trains a personal voice model |
 | <img src="logos/TexasHoldemPoker.svg" width="22" height="22"> | [Texas Hold'em Poker](https://github.com/UVuruna/TexasHoldemPoker) | 🔴 Archived | Poker game with real-time win-probability calculation |
 | <img src="logos/Chess.svg" width="22" height="22"> | [Chess](https://github.com/UVuruna/Chess) | 🎓 Legacy | Chess game implementation in Python — learning-era project |
 | <img src="logos/TicTacToe.svg" width="22" height="22"> | [Tic-Tac-Toe](https://github.com/UVuruna/TicTacToe) | 🎓 Legacy | Classic Tic-Tac-Toe game in Python — learning-era project |
