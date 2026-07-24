@@ -68,6 +68,32 @@ All values are TOKENS — they live in the project's config/theme file
 | `text-primary` | `#F5F5F5` | body text — pure `#FFFFFF` glares |
 | `text-secondary` | `#A0A0A0`–`#B3B3B3` | captions, labels |
 
+### Light surfaces (elevation rises TOWARD white — the inverse of dark)
+
+| Token | Value | Use |
+|-------|-------|-----|
+| `surface-0` | `#ECEEF6`–`#F5F2ED` (carry the app's dark tint as a faint hue) | window / page background |
+| `surface-1` | `#FFFFFF` | cards, panels — the RAISED surface is the whitest |
+| `surface-2` | `#DFE2EE` | table headers, chrome, pressed states |
+| `border` | `#C7CBDD` — a real 1px line, not white-alpha | dividers, card edges |
+| `text-primary` | `#16161F` | body text — pure `#000000` is as harsh as pure white on dark |
+| `text-secondary` | `#4C5162`–`#676D80` | captions, labels |
+
+Two rules that catch most bad light modes:
+
+- **Elevation inverts.** On dark, higher = lighter; on light, higher = whiter
+  while the page sits a step down. Reusing the dark ordering makes cards look
+  sunken.
+- **A dark palette's accent is usually too light for a light one.** Deepen it
+  until it clears 4.5:1 against white (a crimson `#E94560` → `#D1274A`), and
+  let the ORIGINAL become the hover shade — the hover then brightens on light
+  and on dark alike.
+
+**Every theme-varying color darkens on light and lightens on dark** — including
+data colors (categorical series, threshold scales), not just chrome. Derive
+them: keep hue and saturation, move lightness to a per-theme target. One
+authored hue set then serves both themes with no second table (root Rule #19).
+
 ### Accent
 
 **ONE primary interactive hue per app** (indigo / cyan / gold family), used for
@@ -251,6 +277,27 @@ Glow = same effect, accent color at 10–20% alpha, offset (0, 0).
 
 QSS has no transitions — use `QPropertyAnimation` on geometry / opacity /
 color properties alongside static QSS state styling.
+
+### Live theme switching
+
+QSS strings bake in whatever palette was read when they were built, so a
+runtime Dark/Light flip needs the palette read **late**, never at import:
+
+- Palette access is a `theme()` FUNCTION call, not a module constant. A
+  module-level f-string (`STYLE = f"...{Colors.TEXT}..."`) and a default
+  argument (`def label(color=Colors.TEXT)`) both evaluate once at import and
+  can never be flipped.
+- A `ThemeManager(QObject)` with a `changed` signal owns the active palette;
+  every widget that holds a stylesheet connects a single `_apply_theme()`
+  restyle method to it. One method per window beats scattered `setStyleSheet`
+  calls at construction time.
+- A per-widget stylesheet WINS over its parent's. If a child (e.g. a
+  `QHeaderView`) was styled directly, the restyle must reach it too, or it
+  stays in the old theme.
+- Modal dialogs are exempt — the theme cannot change while one is open, so
+  reading the palette once at construction is correct and simpler.
+
+Reference implementation: `Gadgets/Vitals/app/theme.py`.
 
 ---
 
