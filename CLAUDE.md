@@ -724,6 +724,26 @@ This supersedes any earlier "ask about GIT RELEASE" / "GIT RELEASE requires the 
 
 ---
 
+### Rule #25: Fixed Means Verified — No Recurring Ghosts (owner decree 2026-07-26)
+
+**When the owner asks for something to be fixed, the session ends in exactly ONE of three honest states — and nothing else:**
+
+1. **FIXED** — the ROOT CAUSE is identified and named, the fix is implemented, and it is VERIFIED with evidence (a regression test that pins the behavior, a real run, concrete output — Guideline #1). "It should work now" is not a state.
+2. **CANNOT FIX HERE** — explained concretely WHY (missing information, out of this session's reach, needs an owner decision), with what WOULD unblock it.
+3. **IMPOSSIBLE** — stated plainly, with the technical reason.
+
+**Never say "solved" for a symptom patch.** Born from a real failure (DOMY Watch Encyclopedia, 2026-07-26): the same "crashes/hangs on open" problem was declared fixed across multiple sessions and kept returning — each session had treated a symptom while the root cause (heavy image generation at dialog-open time, invalidated and re-paid after every asset change) survived untouched. The owner's words: *"jako me stresira što identične probleme prolazimo više puta — ili ga reši, ili mi objasni zašto ne možeš, ili mi reci da je nemoguće, ali nemoj da mi govoriš rešeno."*
+
+**A problem that RETURNS after being declared fixed is proof the previous diagnosis was wrong.** The recurrence itself becomes the top-priority evidence:
+
+- Stop and find the ROOT CAUSE — the mechanism that regenerates the problem — not the nearest silencing patch. Ask: "what makes this come BACK?"
+- **Pin the fix with a regression test** named after the failure, so no future change can silently reintroduce it.
+- **Record it in session memory AND in the component's `.md`** (root cause, fix, date) so no future session re-treats the symptom in ignorance of the history.
+
+Applies to every project in this monorepo, current and future.
+
+---
+
 <a id="version-commit-system"></a>
 
 ## Version & Commit System
@@ -1266,4 +1286,5 @@ flowchart LR
 22. **Owner's `UV/` inbox** — Read the gitignored `UV/` folder for owner instructions; never edit those files (Rule #18)
 23. **Self-update** — Installable apps check the latest GitHub release and offer an in-app update (Rule #23)
 24. **Always GIT RELEASE** — Every successful build of an installable app ships an official release; never stop at local `dist/` (Rule #24)
-25. **When unsure → ASK** — Better 100 questions than 1 bug
+25. **Fixed means verified** — FIXED (root cause + regression test) / CANNOT / IMPOSSIBLE, never a false "solved"; a recurring problem means the last diagnosis was wrong (Rule #25)
+26. **When unsure → ASK** — Better 100 questions than 1 bug
