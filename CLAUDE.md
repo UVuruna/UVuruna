@@ -416,7 +416,7 @@ Proposal: read only once. Do you agree?"
 
 ### Rule #9: Sub-Agents and Progress Visibility
 
-**Use sub-agents whenever tasks can run in parallel.**
+**Use sub-agents when independent tasks can genuinely run in parallel — always within the Rule #15 triage class and caps.**
 
 When two or more independent tasks exist with no shared state or sequential dependency, launch them simultaneously using the Task tool. Do not execute them one-by-one.
 
@@ -518,20 +518,26 @@ def fetch_data(): ...
 
 ---
 
-### Rule #15: Model Economy — Weakest Model That Can Do the Job
+### Rule #15: Token Economy — Fewest Tokens That Deliver the Asked Result
 
-**Token budget discipline is a requirement, not a preference.** The session model (top tier) is the ORCHESTRATOR: it thinks, decides, and does ordinary work INLINE — it delegates only when delegation genuinely pays.
+**Token budget discipline is a requirement, not a preference. The owner's plan has a HARD weekly cap — overspending means literal days with NO work possible.** The quality of the requested result is never traded for tokens; what is minimized is the cost of REACHING it. The session model (top tier) is the ORCHESTRATOR: it thinks, decides, and does ordinary work INLINE — it delegates only when delegation genuinely pays.
 
-1. **Default = inline work, zero subagents.** Ordinary implementation, docs, fixes, tests and verification are done directly — a local test run is cheaper and more reliable than a verification agent.
-2. **Subagents only when they pay:** genuinely parallel independent tasks (Rule #9), work needing isolation, or research/reviews the owner asked for.
-3. **Model tiering — for every delegated task, assess its complexity FIRST, then pick the WEAKEST model that can do the job:**
+Born from a real failure (Vitals, 2026-07-26): a "window opens off-screen" report — a two-step inline fix — was answered with a 64-agent workflow plus a pile of unrequested extras, burning ~10% of the weekly budget in under 3 hours of trivial tasks.
+
+1. **Triage FIRST — before the first tool call, state the task's size class in one written line:**
+   - **Trivial** — reproduce + fix in a couple of steps (MOST bug reports are this) → fully inline, zero agents;
+   - **Standard** — one feature / refactor / doc pass → inline, plus at most a few agents for genuinely independent parallel pieces;
+   - **Wide** — cross-cutting audit / migration / research → agents or a workflow, sized to what the owner actually asked for.
+   Orchestration must never exceed the stated class. If the task proves bigger mid-way, SAY so and get a yes before scaling up.
+2. **Bugs: fix first, investigate after.** Reproduce with the cheapest probe (one throwaway script, one log line), fix, verify locally. Deep analysis and fleet reviews come only after the cheap path fails — or when the owner explicitly asks.
+3. **Default = inline work, zero subagents.** Ordinary implementation, docs, fixes, tests and verification are done directly — a local test run is cheaper and more reliable than a verification agent. Subagents only when they pay: genuinely parallel independent tasks (Rule #9), work needing isolation, or research/reviews the owner asked for. A multi-agent workflow runs ONLY on the owner's explicit request in that session — never self-granted. One background workflow at a time.
+4. **Model tiering — for every delegated task, assess its complexity FIRST, then pick the WEAKEST model that can do the job:**
    - `haiku` — mechanical work: link checking, file inventories, grep-like sweeps, formatting audits, doc consistency, simple web lookups;
    - `sonnet` — standard research, code reviews, web research with synthesis;
    - `opus` — only genuinely hard verification (math, geometry, tricky concurrency), a couple per run at most;
    - the top-tier session model is NEVER used for routine subagent work.
-4. **Reuse instead of rerun:** resume interrupted workflows (`resumeFromRunId`); read existing research/journal files before launching a new agent for something already answered.
-5. **Scope prompts tightly:** a subagent gets exact files and a structured deliverable (Rule #9), never "look around the project".
-6. **One background workflow at a time.**
+5. **Only the requested scope.** Unrequested fixes, features and refactors noticed along the way are PROPOSED at the end, never implemented uninvited — unasked work burns tokens twice: once to write it, once for the owner to review and unwind it.
+6. **Reuse instead of rerun:** resume interrupted workflows (`resumeFromRunId`); read existing research/journal files before launching a new agent for something already answered. Scope prompts tightly: a subagent gets exact files and a structured deliverable (Rule #9), never "look around the project".
 
 Projects may add STRICTER caps in their own `CLAUDE.md`, never looser ones.
 
@@ -1247,7 +1253,7 @@ flowchart LR
 9. **No Defensive Programming** — Trust internal guarantees; let impossible scenarios fail loudly
 10. **Constructive disagreement** — Explain if you disagree, propose an alternative
 11. **Sub-Agents** — Parallelize independent tasks; report progress every 20–30s
-12. **Model economy** — Weakest model that can do the job; session model orchestrates (Rule #15)
+12. **Token economy** — Triage first (trivial/standard/wide); bugs = fix first, investigate after; weakest capable model; workflows only on the owner's explicit ask (Rule #15)
 13. **Modern UI** — Read DESIGN.md first; a gray blocky interface is a bug (Rule #16)
 14. **Plans are discussions** — Don't write code previews in plans
 15. **Verify dependencies** — Check what your change affects before touching it
