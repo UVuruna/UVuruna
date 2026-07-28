@@ -181,7 +181,7 @@ Travel); build/release pipeline remaining before v1 ships
 ### <img src="logos/3DPreview.svg" width="22" height="22"> 3D Preview
 
 **Local path:** `Gadgets/3D Preview/`
-**GitHub:** — (repo pending)
+**GitHub:** [UVuruna/3D-Preview](https://github.com/UVuruna/3D-Preview)
 **Type:** Embeddable Component (Web + Desktop)
 **Status:** 🟢 Active
 **Visibility:** Public
@@ -196,7 +196,9 @@ Travel); build/release pipeline remaining before v1 ships
 - Orbit controls: drag rotate, wheel zoom, right-drag pan
 - Parametric primitives computed from JSON specs (Rule #19): axes gizmo with per-arm colors/labels, cube; more shapes are added as builders, never as model files
 - glTF/GLB model loading (URL or raw bytes) and binary GLB export
+- Framing measures the content's real silhouette, so a shape fills its container instead of the bounding box it happens to sit in
 - Transparent-background mode for see-through desktop widgets
+- Runnable demo app (`python main.py`) and a browser demo page — both double as the integration example
 - First consumers: DOMY Watch (labeled axes gizmo); Vaske Komarnici screen configurator planned
 
 **Docs:** [README](Gadgets/3D%20Preview/README.md)
