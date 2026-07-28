@@ -193,13 +193,15 @@ Travel); build/release pipeline remaining before v1 ships
 **Architecture:** One rendering implementation — `src/` bundles to a self-contained IIFE (`web/preview3d.min.js`, committed so consumers never need Node); websites load it directly, the Python package loads the same bundle through QWebEngineView and mirrors the JS API method-for-method (JSON specs and base64 model bytes across the bridge). Render-on-demand loop — an idle preview costs no GPU.
 
 **Key Features:**
-- Orbit controls: drag rotate, wheel zoom, right-drag pan
-- Parametric primitives computed from JSON specs (Rule #19): axes gizmo with per-arm colors/labels, cube; more shapes are added as builders, never as model files
+- Orbit controls by mouse and keyboard: drag/arrows rotate, wheel zoom, right-drag and Ctrl+arrows pan
+- Seven view presets plus a perspective ↔ orthographic switch — orthographic is the only projection in which a cube seen down its body diagonal is an exact regular hexagon
+- Per-element control by name: show, hide, dim, solo one of several alternatives, or remove; materials are cloned on first change so dimming one part never dims its neighbours
+- Parametric primitives computed from JSON specs (Rule #19): axes gizmo with per-arm colors and multiple switchable labels, cube with six addressable faces; specs nest, so an assembly is one JSON tree
 - glTF/GLB model loading (URL or raw bytes) and binary GLB export
 - Framing measures the content's real silhouette, so a shape fills its container instead of the bounding box it happens to sit in
-- Transparent-background mode for see-through desktop widgets
+- Optional ground grid sized to the content, transparent-background mode, and a live camera readout (azimuth, elevation, distance)
 - Runnable demo app (`python main.py`) and a browser demo page — both double as the integration example
-- First consumers: DOMY Watch (labeled axes gizmo); Vaske Komarnici screen configurator planned
+- First consumers: DOMY Watch (Character Cube in its Encyclopedia); Vaske Komarnici screen configurator planned
 
 **Docs:** [README](Gadgets/3D%20Preview/README.md)
 
