@@ -186,13 +186,14 @@ Travel); build/release pipeline remaining before v1 ships
 **Status:** 🟢 Active
 **Visibility:** Public
 
-**Description:** Embeddable 3D previewer — one Three.js core with orbit controls (rotate, zoom, pan), embedded by Python desktop GUIs as a PySide6 widget or by websites with a single script tag. Simple shapes (axes gizmo, cube) are computed from parametric JSON specs instead of stored model files; glTF/GLB load and export included.
+**Description:** Embeddable 3D previewer with two interchangeable renderers — a Three.js core for websites and rich models, and a QPainter one for Qt apps that cannot carry a browser engine. Both give free orbit, view presets and a perspective/orthographic switch, and let every scene element be shown, hidden or dimmed by name.
 
-**Tech Stack:** JavaScript (Three.js, esbuild), Python 3.11+ (PySide6 / QWebEngineView), hatchling
+**Tech Stack:** JavaScript (Three.js, esbuild), Python 3.11+ (PySide6, QWebEngineView, QPainter), hatchling
 
-**Architecture:** One rendering implementation — `src/` bundles to a self-contained IIFE (`web/preview3d.min.js`, committed so consumers never need Node); websites load it directly, the Python package loads the same bundle through QWebEngineView and mirrors the JS API method-for-method (JSON specs and base64 model bytes across the bridge). Render-on-demand loop — an idle preview costs no GPU.
+**Architecture:** Two back ends behind one API. The WEB renderer bundles `src/` into a self-contained IIFE (`web/preview3d.min.js`, committed so consumers never need Node); websites load it directly and the Python widget loads the same bundle through QWebEngineView, with camera state coming back over a Qt web channel. The LIGHT renderer is pure Python software 3D — project, depth-sort, paint with QPainter — for apps that must not ship a browser engine. Everything both must agree on lives in one `shared/spec.json`, and a conformance test drives both from the same specs and compares part trees, framing and camera state.
 
 **Key Features:**
+- Two interchangeable renderers: the web core (files, real materials, browsers) and a QPainter one that adds nothing to an installer — swap the class, nothing else changes
 - Orbit controls by mouse and keyboard: drag/arrows rotate, wheel zoom, right-drag and Ctrl+arrows pan
 - Seven view presets plus a perspective ↔ orthographic switch — orthographic is the only projection in which a cube seen down its body diagonal is an exact regular hexagon
 - Per-element control by name: show, hide, dim, solo one of several alternatives, or remove; materials are cloned on first change so dimming one part never dims its neighbours
