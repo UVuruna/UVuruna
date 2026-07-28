@@ -186,11 +186,11 @@ Travel); build/release pipeline remaining before v1 ships
 **Status:** 🟢 Active
 **Visibility:** Public
 
-**Description:** Embeddable 3D previewer with two interchangeable renderers — a Three.js core for websites and rich models, and a QPainter one for Qt apps that cannot carry a browser engine. Both give free orbit, view presets and a perspective/orthographic switch, and let every scene element be shown, hidden or dimmed by name.
+**Description:** Embeddable 3D previewer with two interchangeable renderers — a Three.js core for websites and rich models, and a QPainter one for Qt apps that cannot carry a browser engine. Both give free orbit, view presets, per-element visibility and opacity, and self-playing animation scenes with play, pause, single-frame stepping and scrubbing.
 
 **Tech Stack:** JavaScript (Three.js, esbuild), Python 3.11+ (PySide6, QWebEngineView, QPainter), hatchling
 
-**Architecture:** Two back ends behind one API. The WEB renderer bundles `src/` into a self-contained IIFE (`web/preview3d.min.js`, committed so consumers never need Node); websites load it directly and the Python widget loads the same bundle through QWebEngineView, with camera state coming back over a Qt web channel. The LIGHT renderer is pure Python software 3D — project, depth-sort, paint with QPainter — for apps that must not ship a browser engine. Everything both must agree on lives in one `shared/spec.json`, and a conformance test drives both from the same specs and compares part trees, framing and camera state.
+**Architecture:** Two back ends behind one API. The WEB renderer bundles `src/` into a self-contained IIFE (`web/preview3d.min.js`, committed so consumers never need Node); websites load it directly and the Python widget loads the same bundle through QWebEngineView, with camera and playback state coming back over a Qt web channel. The LIGHT renderer is pure Python software 3D — project, depth-sort, paint with QPainter — for apps that must not ship a browser engine. Animations are data, not code: a scene is a JSON descriptor of keyframes over flat parameters (camera angles, dolly, projection, per-part opacity and visibility, switch-group choice), so the identical descriptor plays in both. Everything both must agree on lives in `shared/spec.json` and `shared/scenes.json`, and two conformance suites drive both from the same data — comparing part trees, framing and camera state, and every shipped scene at t = 0, ½ and 1.
 
 **Key Features:**
 - Two interchangeable renderers: the web core (files, real materials, browsers) and a QPainter one that adds nothing to an installer — swap the class, nothing else changes
@@ -198,6 +198,7 @@ Travel); build/release pipeline remaining before v1 ships
 - Seven view presets plus a perspective ↔ orthographic switch — orthographic is the only projection in which a cube seen down its body diagonal is an exact regular hexagon
 - Per-element control by name: show, hide, dim, solo one of several alternatives, or remove; materials are cloned on first change so dimming one part never dims its neighbours
 - Parametric primitives computed from JSON specs (Rule #19): axes gizmo with per-arm colors and multiple switchable labels, cube with six addressable faces; specs nest, so an assembly is one JSON tree
+- Self-playing animation scenes written as JSON keyframes, with play, pause, restart, single-frame stepping, a scrub slider, 0.5×–2× speed and an instant mode that jumps to the end state; five ship with the component, including one that flies down the cube's body diagonal and switches to orthographic to reveal the hexagon
 - glTF/GLB model loading (URL or raw bytes) and binary GLB export
 - Framing measures the content's real silhouette, so a shape fills its container instead of the bounding box it happens to sit in
 - Optional ground grid sized to the content, transparent-background mode, and a live camera readout (azimuth, elevation, distance)
