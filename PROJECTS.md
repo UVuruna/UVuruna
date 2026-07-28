@@ -176,6 +176,33 @@ Travel); build/release pipeline remaining before v1 ships
 
 ---
 
+<a id="3d-preview"></a>
+
+### <img src="logos/3DPreview.svg" width="22" height="22"> 3D Preview
+
+**Local path:** `Gadgets/3D Preview/`
+**GitHub:** — (repo pending)
+**Type:** Embeddable Component (Web + Desktop)
+**Status:** 🟢 Active
+**Visibility:** Public
+
+**Description:** Embeddable 3D previewer — one Three.js core with orbit controls (rotate, zoom, pan), embedded by Python desktop GUIs as a PySide6 widget or by websites with a single script tag. Simple shapes (axes gizmo, cube) are computed from parametric JSON specs instead of stored model files; glTF/GLB load and export included.
+
+**Tech Stack:** JavaScript (Three.js, esbuild), Python 3.11+ (PySide6 / QWebEngineView), hatchling
+
+**Architecture:** One rendering implementation — `src/` bundles to a self-contained IIFE (`web/preview3d.min.js`, committed so consumers never need Node); websites load it directly, the Python package loads the same bundle through QWebEngineView and mirrors the JS API method-for-method (JSON specs and base64 model bytes across the bridge). Render-on-demand loop — an idle preview costs no GPU.
+
+**Key Features:**
+- Orbit controls: drag rotate, wheel zoom, right-drag pan
+- Parametric primitives computed from JSON specs (Rule #19): axes gizmo with per-arm colors/labels, cube; more shapes are added as builders, never as model files
+- glTF/GLB model loading (URL or raw bytes) and binary GLB export
+- Transparent-background mode for see-through desktop widgets
+- First consumers: DOMY Watch (labeled axes gizmo); Vaske Komarnici screen configurator planned
+
+**Docs:** [README](Gadgets/3D%20Preview/README.md)
+
+---
+
 <a id="rhmh"></a>
 
 ### <img src="logos/RHMH.svg" width="22" height="22"> RHMH — Patient Management System
