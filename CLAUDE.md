@@ -112,6 +112,8 @@ Every new project MUST be registered in the root documentation immediately:
 
 When goals conflict, this is the order — higher wins.
 
+**S. STRUCTURE — supreme, above everything below (owner decree 2026-07-29).** A program is a STRUCTURE of small, cohesive modules — never an accretion of code that happens to run. "It works" is not the bar: a single 10-million-line file can work. Every piece of code lands in the module whose RESPONSIBILITY it serves — and when no such module exists, a NEW one is created (with its `.md`), instead of appending to whichever file was open. This priority outranks performance, readability, everything: see Rule #20's THE STRUCTURE LAW for the enforcement that makes it real.
+
 **A. Performance (code efficiency).** Absolute priority on hot paths — loops over large data, rendering, I/O, anything called repeatedly. Off the hot path, do NOT micro-optimize at the cost of clarity: an optimization with no measurable gain is a net loss.
 
 **B. Readability.** Clear structure, honest names, small focused functions. Everything that is not a hot path is written for the reader first.
@@ -637,6 +639,17 @@ gui_part2.py  (lines 3000–6000)   # same god-file, now in three drawers
 - The MD-first system (Rule #3) assumes this rule — "one `.md` beside each significant script" is meaningless when the whole project is one script.
 
 For the full refactor procedure to hand to a project session, see [Refactor God-Files](REFACTOR-GODFILES.md).
+
+#### THE STRUCTURE LAW — enforcement with teeth (owner decree 2026-07-29, SUPREME)
+
+**The written rule above did NOT hold on its own.** The owner has insisted on modular structure since the first project, and the record shows insistence without enforcement fails: PromptPainter `gui.py` reached 8,800+ lines; DOMY Watch accumulated `defaults.py` 3,498, `render/layers.py` ~3,700 and `constants.py` 1,772 — all flagged, all tolerated, because no test failed. In these projects only what breaks the build holds (the palette law, the asset-tree law, the theme-completion law all prove it). Therefore:
+
+1. **Placement is law, not style.** New code goes into the module whose responsibility it serves, or into a NEW module created for it (with its `.md`). Appending to whichever file was open is a DEFECT of the same severity as a failing test.
+2. **Defined once, whole, in its section.** Config files and data tables live under named section banners; a table/class/constant is written ONCE, complete, in its section. Post-definition patching (`TABLE["x"]["y"] = ...` far below the table, or an entry dumped at file end) is FORBIDDEN.
+3. **Every project MUST carry a structure guard test** that FAILS the build when any file crosses the Violation threshold (~1,000 lines), except files named in a **RATCHET allowlist** inside the test: each entry documents WHY and names the split session that owes the fix. The allowlist may only SHRINK — adding an entry requires the owner's explicit approval in that same session.
+4. **This law outranks feature work.** A session that must extend an over-threshold file first splits it — or obtains the owner's explicit deferral, recorded as the ratchet entry. "I'll just add my lines and go" is the exact behavior this law exists to kill.
+
+Priority S in [Priorities](#priorities) is this law's place in the hierarchy: above performance, above everything.
 
 ---
 
@@ -1280,7 +1293,7 @@ flowchart LR
 16. **Version commits** — `0.0.000 description`, logical grouping by topic
 17. **After installable-app work** — BUILD **and** GIT RELEASE, automatically, never asking (Rule #24)
 18. **Hidden projects stay hidden** — Never name them in any tracked file
-19. **Cohesive modules** — One responsibility per file; a god-file is a bug (Rule #20)
+19. **STRUCTURE IS SUPREME** — Priority S: code lands in the module whose responsibility it serves or a new module is born; god-files are guarded by a mandatory ratchet test that fails the build (Rule #20, THE STRUCTURE LAW)
 20. **Right language for the job** — No house language; most adequate stack per task; `.md` docs explain algorithms in pseudocode (Rule #21)
 21. **README opening = GitHub About** — Auto-synced via `gh repo edit --description` (Rule #22)
 22. **Owner's `UV/` inbox** — Read the gitignored `UV/` folder for owner instructions; never edit those files (Rule #18)
