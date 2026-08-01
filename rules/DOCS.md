@@ -221,6 +221,11 @@ Stated exceptions (the test encodes them explicitly, never silently):
 - **Links INTO `UV/`** (the owner's gitignored inbox) are not asserted — the
   target set is volatile by design
 - **Data `.md` files** (fixtures, sample sheets) sit in the test's EXEMPT list
+- **Monorepo-root docs are referenced as plain text, never markdown links** —
+  a project-level link guard cannot assert targets outside the project, so
+  `[x](../../rules/CODE.md)`-style links falsely pass or fail; write
+  `rules/CODE.md` in backticks instead (project `CLAUDE.md` files with the
+  Router table are the one place such links live, and they are guard-exempt)
 
 Link rules (unchanged from MD-First 1.0):
 
