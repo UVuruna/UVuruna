@@ -7,6 +7,7 @@ sessions too — see Read-Only on Init.)
 ## Table of Contents
 
 - [Plans Are Discussions](#plans)
+- [Present Before Building](#present)
 - [Constructive Disagreement](#disagreement)
 - [Read-Only on Init](#init)
 - [Rule Classes — Law / Gate / Style](#rule-classes)
@@ -27,6 +28,31 @@ sessions too — see Read-Only on Init.)
   the approach, and START ONLY AFTER CONFIRMATION
 
 ---
+
+<a id="present"></a>
+
+## Present Before Building (owner decree 2026-08-01)
+
+Before implementing, the agent shows how it UNDERSTOOD the task. The obligation
+scales with the triage class AUTOMATICALLY — the agent never asks whether a
+sketch is wanted; the class decides:
+
+| Task class | Before implementation |
+|------------|----------------------|
+| **Trivial** (small fix, mechanical change) | Nothing — one sentence of intent in the response |
+| **Standard — new functionality / algorithm** | **Algorithm sketch**: short Mermaid + why this approach + how the instructions were understood + what is unclear → wait for the owner's yes |
+| **Standard — new or changed GUI element** | **Layout sketch** (text wireframe / Mermaid block, per [Docs Rules](DOCS.md) `__flow/` conventions) → wait |
+| **Wide** (big task, many instructions) | **Echo-brief**: ALL instructions regrouped into cohesive wholes + "this is how I understood everything" + open questions → work starts only after confirmation |
+
+- **The approved sketch is not throwaway work:** after implementation it seeds
+  the file's `__flow/` doc — written once, used twice.
+- This pairs with Owner Guardrail #5 (vocabulary mix-ups): the sketch is the
+  mechanism that catches a misunderstanding at the cost of one message instead
+  of one implementation.
+- **Pre-authorized autonomous runs** cannot wait for a yes: the sketch /
+  echo-brief goes into the final report instead (same precedent as the
+  MIGRATE-DOCS target map).
+- Class: **GATE** — a Definition-of-Done item in every task brief.
 
 <a id="disagreement"></a>
 

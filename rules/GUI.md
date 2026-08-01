@@ -2,6 +2,8 @@
 
 **Who reads this:** every session doing ANY GUI work — new interface, redesign,
 visual polish, theming, i18n.
+A new or changed GUI element starts with a layout sketch shown to the owner —
+[Present Before Building](PLAN.md#present).
 
 ## Table of Contents
 

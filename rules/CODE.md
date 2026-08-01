@@ -3,6 +3,8 @@
 **Who reads this:** every session that writes or changes code — features, fixes,
 refactors. Read the target folder's `___folder.md` (and `__about/` docs of the
 files you touch) BEFORE editing; update docs after ([DOCS](DOCS.md)).
+New functionality starts with an algorithm sketch shown to the owner —
+[Present Before Building](PLAN.md#present).
 
 ## Table of Contents
 

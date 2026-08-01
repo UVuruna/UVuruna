@@ -115,6 +115,9 @@ Every project carries **four guard tests + Claude Code hooks**
 - **Ask before assuming.** Identify ambiguities and ask; propose the approach;
   start after confirmation. Better 100 questions than 1 bug. Constructive
   disagreement is a duty ([Plan Rules](rules/PLAN.md)).
+- **Present before building:** implementation starts only after the envisioned
+  algorithm / GUI sketch (or echo-brief for Wide tasks) has been shown —
+  scaled by triage class, automatically ([Plan Rules](rules/PLAN.md)).
 - **Token economy (owner decree 2026-07-26 — HARD weekly cap):** triage FIRST,
   in one written line — **Trivial** (inline, zero agents; most bug reports) /
   **Standard** (inline + at most a few agents for genuinely parallel pieces) /
