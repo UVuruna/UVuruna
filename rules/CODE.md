@@ -74,6 +74,12 @@ live and dumps the new entry at the end of the file.
 3. **Post-definition patching is FORBIDDEN.** `TABLE["x"]["y"] = ...` far below
    the table, `.update(...)` at module level, or an entry dumped at file end are
    defects — the guard test fails the build on them.
+4. **Checkable semantics for the guard** (so implementations don't diverge):
+   after the module docstring and imports, the file's FIRST top-level statement
+   must be preceded by a section banner; every top-level definition belongs to
+   the banner above it. The guard fails on: any top-level definition before the
+   first banner (imports/docstring exempt), duplicate dict keys, and
+   post-definition patching of an earlier module-level table.
 
 ```python
 # ❌ FORBIDDEN — new variant dumped at file end, far from its family

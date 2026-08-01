@@ -70,7 +70,14 @@ record the map in the final report and proceed.
 
 ## Phase 2 — Docs Migration
 
-Folder by folder:
+**Step 0 — write `tests/test_doc_links.py` FIRST** (spec in Phase 3 /
+[Code Rules](rules/CODE.md)) and run it after EVERY folder you migrate.
+Relative-link depth (`../` counts change when docs move into `__about/`/`__flow/`)
+is the DOMINANT failure mode of this migration — especially with parallel
+agents. Caught per-folder it is a one-line fix; caught at the end it is an
+archaeology dig. (Lesson from the PromptPainter pilot, 2026-08-01.)
+
+Then, folder by folder:
 
 1. Create `__about/` (and `__flow/` where the folder has Algorithmic-tier
    files); move each legacy doc to its new home with its basename matching the
@@ -83,7 +90,10 @@ Folder by folder:
    connections, design decisions. Create it where it never existed
 4. DELETE every legacy beside-script doc after its content has moved — no
    duplicates left behind
-5. Maintain the chain upward: parent `___folder.md` and `README.md` links
+5. **Cross-cutting legacy docs** that map to no single file (feature
+   narratives, aggregated overviews): verify their claims against code, fold
+   the still-true gaps into the owning per-file/folder docs, then DELETE them
+6. Maintain the chain upward: parent `___folder.md` and `README.md` links
 
 <a id="phase-3"></a>
 

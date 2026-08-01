@@ -97,6 +97,18 @@ The project's `test_docs_coverage.py` encodes the tier assignment (trivial
 list / flow-required list) — changing a file's tier means updating that test in
 the same commit.
 
+Tier judgment rules (lessons from the 2026-08-01 pilot):
+
+- **Nature beats the line band.** The ~60-line bound is a heuristic; a 300-line
+  `__init__.py` of pure mechanical re-exports is still Trivial. When nature and
+  line count disagree, nature decides — and the coverage test's tier list
+  records the override.
+- An `__init__.py` at Standard tier or above documents as
+  `__about/__init__.md` — the identical-basename rule applies unchanged.
+- `.md` files that are DATA, not documentation (e.g. `tests/fixtures/*.md`
+  sample sheets), are exempt from the navigation chain via an explicit EXEMPT
+  list inside `test_doc_links.py`.
+
 ---
 
 <a id="templates"></a>
