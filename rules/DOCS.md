@@ -90,8 +90,18 @@ accumulated 441 doc files against 298 code files).
 |------|-----------|------------|
 | **Trivial** | glue, `__init__`, re-exports, < ~60 lines of plain wiring | one line in `___folder.md` only — NO own docs |
 | **Standard** | ordinary module | `__about/{name}.md` |
-| **Algorithmic** | real algorithm, GUI window/widget, config/data table, protocol | `__about/{name}.md` **+** `__flow/{name}.md` |
+| **Algorithmic** | a file whose logic a DIAGRAM genuinely tells better than the code itself | `__about/{name}.md` **+** `__flow/{name}.md` |
 | tests/ | test modules | `___tests.md` folder doc only |
+
+**The flow doc must EARN its place (owner decision 2026-08-01).** Being a
+widget, a config table or a protocol does NOT automatically make a file
+Algorithmic — the first pilot migrations proved that reading turns ~80% of
+files "Algorithmic" and doubles the doc count. The test: *would the diagram
+just restate the code?* Then the file is Standard. Reserve `__flow/` for
+real multi-step algorithms, nontrivial GUI layouts and configs whose
+structure needs a picture. (Projects migrated before this narrowing carry
+wider flow lists — they get trimmed in a dedicated revision pass, recorded
+as a debt.)
 
 The project's `test_docs_coverage.py` encodes the tier assignment (trivial
 list / flow-required list) — changing a file's tier means updating that test in
