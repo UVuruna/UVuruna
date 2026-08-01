@@ -75,6 +75,10 @@ folder held 28 scripts + 28 docs = 56 entries). Every code folder now has:
   - config file → visual tree of its sections and keys
 - Double underscore sorts the two doc folders directly under `___folder.md` and
   above the code — the folder shows its structure at a glance.
+- **Flat, root-level-only projects** (files directly in the project root, no
+  packages): `__about/` and `__flow/` sit directly under the project root; the
+  project `README.md` plays the `___folder.md` role — no separate root folder
+  doc.
 
 ---
 

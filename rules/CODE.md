@@ -117,7 +117,16 @@ projects get them via [MIGRATE-DOCS.md](../MIGRATE-DOCS.md).
 
 **RATCHET allowlist rules:** each entry names the file, WHY it stays whole, and
 the session that owes the split. The list may only SHRINK — adding an entry
-requires the owner's explicit approval in that same session.
+requires the owner's explicit approval in that same session. An entry's remedy
+is not always a split: a generated artifact stays whole by nature (documented
+as such), and VENDORED third-party code's remedy is deletion/unvendoring —
+name the actual remedy in the entry.
+
+**Guard scope note:** `test_config_sections.py` checks MODULE-LEVEL statements
+only. A config-like table living inside a class body is invisible to it — that
+is itself a placement smell: lift it to a module-level config (a refactor
+candidate), never force-add the file to `CONFIG_FILES` where the guard cannot
+check anything.
 `test_config_sections.py` carries the same mechanism (a `PATCHING_RATCHET`) for
 legacy post-definition patching that cannot be folded in without behavior risk.
 
