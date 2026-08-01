@@ -25,9 +25,9 @@
 | | Project | Description |
 |---|---------|-------------|
 | <img src="logos/InputDNA.svg" width="36" height="36"> | [Input DNA](https://github.com/UVuruna/InputDNA) | ML platform that captures and learns unique mouse & keyboard behavior patterns — records raw input into SQLite, trains personal models, and can replay behavior indistinguishably from the real thing |
-| <img src="logos/Vitals.svg" width="36" height="36"> | [Vitals](https://github.com/UVuruna/Vitals) | Real-time CPU, Memory & Network process monitor — top N processes, historical usage peaks with timestamps, configurable refresh and display (formerly PMUsage) |
+| <img src="logos/Vitals.svg" width="36" height="36"> | [Vitals](https://github.com/UVuruna/Vitals) | Real-time CPU, Memory & Network process monitor — top N processes, historical usage peaks with timestamps, configurable refresh and display |
 | <img src="logos/RHMH.svg" width="36" height="36"> | [RHMH](https://github.com/UVuruna/RHMH) | Medical patient management system — records, imaging, MKB-10 diagnoses, AI-powered OCR, Google Drive sync, analytics |
-| <img src="logos/UltraVivid.svg" width="36" height="36"> | [Ultra Vivid](https://github.com/UVuruna/Ultra-Vivid) | Automatic RGB lighting profile switching based on time of day — Task Scheduler integration, VBS keyboard shortcuts (formerly Auto OpenRGB) |
+| <img src="logos/UltraVivid.svg" width="36" height="36"> | [Ultra Vivid](https://github.com/UVuruna/Ultra-Vivid) | Automatic RGB lighting profile switching based on time of day — Task Scheduler integration, VBS keyboard shortcuts |
 
 ### 🌐 Web
 
@@ -36,7 +36,7 @@
 | <img src="logos/MladenVuruna.svg" width="36" height="36"> | [Mladen Vuruna](https://github.com/UVuruna/mladenvuruna) | Personal portfolio for a Serbian writer and artist — books with page-flip animation, essays, art gallery, visitor analytics — live at [mladenvuruna.com](https://mladenvuruna.com) |
 | <img src="logos/ColorizeSVG.svg" width="36" height="36"> | [SVG Styler](https://github.com/UVuruna/SVG-Styler) | Interactive web tool for real-time SVG color editing — circular knob sliders for brightness, contrast, saturation, hue, and more |
 | <img src="logos/PrirodniSokovi.svg" width="36" height="36"> | [Prirodni Sokovi](https://github.com/UVuruna/Prirodni-Sokovi) | E-commerce website for a natural juice company — product catalog, ingredients, time-based theme system (4 daily themes) |
-| <img src="logos/VaskeKomarnici.svg" width="36" height="36"> | [Vaske Komarnici](https://github.com/UVuruna/Vaske-Komarnici) | Commercial website for mosquito screen products — catalog with 3 product categories, ordering system, SVG colorization |
+| <img src="logos/VaskeKomarnici.svg" width="36" height="36"> | [Vaske Komarnici](https://github.com/UVuruna/Vaske-Komarnici) | Commercial website for mosquito screen products — catalog with 3 product categories, ordering system, SVG colorization — live at [vaske-komarnici.com](https://vaske-komarnici.com) |
 
 ---
 
@@ -44,7 +44,7 @@
 
 | | Project | Status | Description |
 |---|---------|--------|-------------|
-| <img src="logos/DOMYWatch.svg" width="22" height="22"> | [DOMY Watch](https://github.com/UVuruna/DOMY-Watch) | 🟡 In Development | Transparent 24h analog desktop clock with astronomical data — sunrise/sunset arcs, moon phases, solar noon, seasons |
+| <img src="logos/WatchAcademy.svg" width="22" height="22"> | [Watch Academy](https://github.com/UVuruna/Watch-Academy) | 🟡 In Development | Transparent 24h analog desktop clock with astronomical data — sunrise/sunset arcs, moon phases, solar noon, seasons |
 | <img src="logos/PromptPainter.svg" width="22" height="22"> | [PromptPainter](https://github.com/UVuruna/Prompt-Painter) | 🟡 In Development | Supervised image-generation runner — parses prompt-sheet markdown and drives Gemini/ChatGPT tabs over CDP |
 | <img src="logos/IconForge.svg" width="22" height="22"> | [Icon Forge](https://github.com/UVuruna/Icon-Forge) | 🟢 Active | SVG/PNG → ICO converter that stamps distinct icons onto the desktop VSCode quick-open shortcuts for every project and category folder |
 | <img src="logos/3DPreview.svg" width="22" height="22"> | [3D Preview](https://github.com/UVuruna/3D-Preview) | 🟢 Active | Embeddable 3D previewer with two interchangeable renderers — a Three.js core for websites and rich models, and a QPainter one for Qt apps that cannot carry a browser engine; both play self-animating scenes written as JSON keyframes |

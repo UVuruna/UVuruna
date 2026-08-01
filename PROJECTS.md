@@ -69,9 +69,9 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 ---
 
-<a id="pmUsage"></a>
+<a id="vitals"></a>
 
-### <img src="logos/Vitals.svg" width="22" height="22"> Vitals (formerly PMUsage)
+### <img src="logos/Vitals.svg" width="22" height="22"> Vitals
 
 **Local path:** `Gadgets/Vitals/`
 **GitHub:** [UVuruna/Vitals](https://github.com/UVuruna/Vitals)
@@ -107,12 +107,12 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 ---
 
-<a id="domy-watch"></a>
+<a id="watch-academy"></a>
 
-### <img src="logos/DOMYWatch.svg" width="22" height="22"> DOMY Watch
+### <img src="logos/WatchAcademy.svg" width="22" height="22"> Watch Academy
 
 **Local path:** `Gadgets/DOMY Watch/`
-**GitHub:** [UVuruna/DOMY-Watch](https://github.com/UVuruna/DOMY-Watch)
+**GitHub:** [UVuruna/Watch-Academy](https://github.com/UVuruna/Watch-Academy)
 **Type:** Desktop Application (Windows)
 **Status:** 🟡 In Development — core feature-complete (dial, computation
 core, skin/theme/roster system, Settings, Encyclopedia, Guide, Time
@@ -136,7 +136,7 @@ Travel); build/release pipeline remaining before v1 ships
 
 <a id="ultra-vivid"></a>
 
-### <img src="logos/UltraVivid.svg" width="22" height="22"> Ultra Vivid (formerly Auto OpenRGB)
+### <img src="logos/UltraVivid.svg" width="22" height="22"> Ultra Vivid
 
 **Local path:** `Gadgets/Ultra Vivid/`
 **GitHub:** [UVuruna/Ultra-Vivid](https://github.com/UVuruna/Ultra-Vivid)
@@ -203,7 +203,7 @@ Travel); build/release pipeline remaining before v1 ships
 - Framing measures the content's real silhouette, so a shape fills its container instead of the bounding box it happens to sit in
 - Optional ground grid sized to the content, transparent-background mode, and a live camera readout (azimuth, elevation, distance)
 - Runnable demo app (`python main.py`) and a browser demo page — both double as the integration example
-- First consumers: DOMY Watch (Character Cube in its Encyclopedia); Vaske Komarnici screen configurator planned
+- First consumers: Watch Academy (Character Cube in its Encyclopedia); Vaske Komarnici screen configurator planned
 
 **Docs:** [README](Gadgets/3D%20Preview/README.md)
 
@@ -288,7 +288,7 @@ Travel); build/release pipeline remaining before v1 ships
 
 <a id="colorize-svg"></a>
 
-### <img src="logos/ColorizeSVG.svg" width="22" height="22"> SVG Styler (Colorize SVG)
+### <img src="logos/ColorizeSVG.svg" width="22" height="22"> SVG Styler
 
 **Local path:** `WebSites/Colorize SVG/`
 **GitHub:** [UVuruna/SVG-Styler](https://github.com/UVuruna/SVG-Styler)
