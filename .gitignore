@@ -1,5 +1,5 @@
 # Ignore everything in this monorepo root by default.
-# Only the documentation files and logos are tracked on GitHub.
+# Only the documentation files, rulebooks and logos are tracked on GitHub.
 # Each project has its own git repository.
 
 *
@@ -8,11 +8,15 @@
 !CLAUDE.md
 !README.md
 !PROJECTS.md
-!NAMING.md
 !DESIGN.md
+!MIGRATE-DOCS.md
 !REFACTOR-GODFILES.md
 !company.json
 !.gitignore
+
+# Rulebooks per job type
+!rules/
+!rules/**
 
 # PRIVATE.md is intentionally NOT whitelisted — hidden projects index stays local
 
