@@ -1,14 +1,19 @@
 # DESIGN.md — UVuruna Design System
 
-Universal UI design system for **all** UVuruna projects — desktop (PySide6/Qt)
-and web (HTML/CSS/JS). Required reading before building or redesigning ANY GUI
-(root CLAUDE.md, Rule #16).
+Universal UI design system for **all** UVuruna projects. The design LANGUAGE
+here — dark-first, tokens, soft depth, typography — is **stack-agnostic**: it
+mandates NO language or library. The GUI stack itself is chosen per project for
+responsiveness and modern visual impression ([Start Rules](rules/START.md));
+the recipe sections below cover the stacks already in use (Qt, web), and a new
+stack adds its own recipe section on first use. Required reading before
+building or redesigning ANY GUI ([GUI Rules](rules/GUI.md)).
 
 **How this file works:**
 - Read it FIRST — it exists so we do NOT re-research the internet for every project.
 - If it does not cover your stack, or the *Last researched* date is over a year old,
-  launch a web-research agent (cheapest capable tier, Rule #15) and **fold the
-  findings back in here**.
+  launch a web-research agent (cheapest capable tier, per the constitution's
+  token economy) and **fold the findings back in here** — including a recipe
+  section for the new stack.
 - Projects may define their own theme (own hues, own personality) ON TOP of this
   system — the quality bar itself is non-negotiable.
 
