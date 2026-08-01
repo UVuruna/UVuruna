@@ -143,7 +143,9 @@ an option; silently ratcheting without surfacing is a defect.
 
 **`tests/run_guards.py`** — a small wrapper that runs the four tests via
 `pytest.main`, prints failures to stderr, and exits **2** on failure (exit 2 is
-what makes a hook BLOCKING). It must stay fast (< ~2 s) and deterministic —
+what makes a hook BLOCKING). A project whose environment has no pytest may
+call the guard functions directly instead — the contract (exit 2, stderr,
+speed) is what matters, and the test files stay pytest-discoverable. It must stay fast (< ~2 s) and deterministic —
 guards only, never the full app suite. When the project's own suite already
 lives elsewhere (e.g. `support/tests/`), the guards still live in a root
 `tests/` of their own — the hook contract and the speed budget demand it.
