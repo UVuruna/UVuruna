@@ -88,9 +88,21 @@ Split **one module at a time**, verifying after each move:
 
 1. Move one cohesive unit (a class or tightly-coupled class group) into its new file
 2. Update **ALL** imports and callers — find every one with Grep (Rule #6)
-3. **Delete** the moved code from the original file — never leave a copy
-4. Launch the application and exercise the moved functionality — it must behave identically
-5. Only then move the next unit
+3. **The monkeypatch trap (the #1 zero-behavior-change hazard):**
+   `from X import f` binds the name in the CONSUMER's module globals — after
+   moving `f`, a test that patches the OLD owner module silently stops
+   patching what the consumer reads. For every moved name, Grep the test
+   suite for `monkeypatch`/`patch` sites and retarget them to the module
+   whose globals the consumer actually reads
+4. **Delete** the moved code from the original file — never leave a copy
+5. Verify, scaled to the split's size:
+   - normal case: launch the application and exercise the moved
+     functionality after each move — identical behavior
+   - very large splits (> ~2,000 lines, wide caller fan-out, or a slow
+     suite): per move run a compile/import check + the targeted test subset;
+     then ONE full suite + ONE real launch at the end. Never skip the final
+     launch
+6. Only then move the next unit
 
 The original file shrinks with every step and ends as either a small focused module itself or just the package entry point.
 

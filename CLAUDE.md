@@ -98,7 +98,8 @@ Every project carries **four guard tests + Claude Code hooks**
 | Brainstorm / plan with the owner | [Plan Rules](rules/PLAN.md) |
 | Implement features / fix bugs | [Code Rules](rules/CODE.md) + the folder's `___folder.md` |
 | Any GUI work | [GUI Rules](rules/GUI.md) + [DESIGN.md](DESIGN.md) |
-| Write / migrate documentation | [Docs Rules](rules/DOCS.md) (+ [MIGRATE-DOCS.md](MIGRATE-DOCS.md)) |
+| Write documentation | [Docs Rules](rules/DOCS.md) |
+| Migrate an existing project onto this system | [MIGRATE-DOCS.md](MIGRATE-DOCS.md) + [Docs Rules](rules/DOCS.md) |
 | Build / release an installable | [Ship Rules](rules/SHIP.md) |
 | Split a god-file | [REFACTOR-GODFILES.md](REFACTOR-GODFILES.md) |
 

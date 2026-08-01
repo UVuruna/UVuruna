@@ -7,7 +7,9 @@ session discovers its own targets in Phase 0.
 
 God-files found along the way are a SEPARATE task —
 [REFACTOR-GODFILES.md](REFACTOR-GODFILES.md) — unless the owner has explicitly
-bundled both into this session.
+bundled both into this session. **When splits ARE bundled: split FIRST, then
+document** — documenting a file you are about to dissolve wastes the work
+(lesson from the Watch Academy pilot, 2026-08-01).
 
 ## Table of Contents
 
@@ -89,7 +91,9 @@ Then, folder by folder:
 3. Update `___folder.md`: file table with tiers and links (per the template),
    connections, design decisions. Create it where it never existed
 4. DELETE every legacy beside-script doc after its content has moved — no
-   duplicates left behind
+   duplicates left behind. **These deletions are PRE-AUTHORIZED by this brief**
+   — the general ask-before-deleting rule is satisfied by the owner assigning
+   the migration
 5. **Cross-cutting legacy docs** that map to no single file (feature
    narratives, aggregated overviews): verify their claims against code, fold
    the still-true gaps into the owning per-file/folder docs, then DELETE them
@@ -109,6 +113,9 @@ Then, folder by folder:
    to the standard, keep its ratchet content, update references
 3. `tests/run_guards.py` (fast wrapper, exit 2 on failure) +
    `.claude/settings.json` hooks (PostToolUse + Stop) per the spec
+   — **check `.gitignore`:** `.claude/settings.json` and every folder doc must
+   be TRACKED (add `!` exceptions where a broad ignore pattern swallows them,
+   e.g. a doc inside an ignored asset dir) — enforcement must survive a clone
 4. Update the project `CLAUDE.md`: point to the root constitution + Router,
    state project-specific laws only — delete any restated root rules
 
@@ -141,7 +148,8 @@ x.y.NNN+2 Enforcement — guard tests, run_guards, Claude Code hooks
 ## Hard Constraints
 
 1. **Zero code behavior change.** Allowed source edits: section banner COMMENTS
-   for the config law — nothing else. God-file splitting is NOT this task
+   for the config law, and fixing `.md` references inside comments/docstrings
+   that the migration moved — nothing else. God-file splitting is NOT this task
    unless explicitly bundled.
 2. **Tier discipline.** No `__flow/` docs for glue files, no docs at all for
    Trivial tier — deleting a useless doc is progress, not loss.

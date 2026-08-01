@@ -99,10 +99,11 @@ the same commit.
 
 Tier judgment rules (lessons from the 2026-08-01 pilot):
 
-- **Nature beats the line band.** The ~60-line bound is a heuristic; a 300-line
-  `__init__.py` of pure mechanical re-exports is still Trivial. When nature and
-  line count disagree, nature decides — and the coverage test's tier list
-  records the override.
+- **Nature beats the line band — in BOTH directions.** The ~60-line bound is a
+  heuristic; a 300-line `__init__.py` of pure mechanical re-exports is still
+  Trivial, and an 86-line Qt widget is still Algorithmic. When nature and line
+  count disagree, nature decides — and the coverage test's tier list records
+  the override.
 - An `__init__.py` at Standard tier or above documents as
   `__about/__init__.md` — the identical-basename rule applies unchanged.
 - `.md` files that are DATA, not documentation (e.g. `tests/fixtures/*.md`
@@ -200,6 +201,14 @@ Mermaid-or-nested-list approach, always text.
 **From the project `README.md` you must be able to reach EVERY `.md` file** by
 following links: `README.md → ___module.md → __about/*, __flow/*`. This is
 enforced by `test_doc_links.py` — unreachable or broken = failed build.
+
+Stated exceptions (the test encodes them explicitly, never silently):
+
+- **Excluded directories:** `.claude/`, `UV/`, caches, vendored/build dirs —
+  their `.md` files are neither walked nor required
+- **Links INTO `UV/`** (the owner's gitignored inbox) are not asserted — the
+  target set is volatile by design
+- **Data `.md` files** (fixtures, sample sheets) sit in the test's EXEMPT list
 
 Link rules (unchanged from MD-First 1.0):
 

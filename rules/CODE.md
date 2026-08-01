@@ -62,7 +62,8 @@ variants — and a later session, adding one color, doesn't even look where shap
 live and dumps the new entry at the end of the file.
 
 1. **Named section banners.** Every config/data file is organized under visible
-   section banners:
+   section banners — a comment line containing a run of **at least 8**
+   box-drawing/`=` characters plus the section name:
 
    ```python
    # ═══════════════════════════ POINTER SHAPES ═══════════════════════════
@@ -115,6 +116,15 @@ projects get them via [MIGRATE-DOCS.md](../MIGRATE-DOCS.md).
 **RATCHET allowlist rules:** each entry names the file, WHY it stays whole, and
 the session that owes the split. The list may only SHRINK — adding an entry
 requires the owner's explicit approval in that same session.
+`test_config_sections.py` carries the same mechanism (a `PATCHING_RATCHET`) for
+legacy post-definition patching that cannot be folded in without behavior risk.
+
+**Autonomous-session protocol:** a pre-authorized autonomous run that hits a
+genuine violation it cannot safely fix MAY add a ratchet entry marked
+`pending owner ratification`, and MUST surface it at the TOP of its final
+report. The owner then ratifies it (entry stays, properly owed) or rejects it
+(the next session fixes the violation). Silently leaving a guard red is never
+an option; silently ratcheting without surfacing is a defect.
 
 **`tests/run_guards.py`** — a small wrapper that runs the four tests via
 `pytest.main`, prints failures to stderr, and exits **2** on failure (exit 2 is
@@ -147,7 +157,9 @@ guards only, never the full app suite.
 
 - **PostToolUse** (`--fast`: structure + config-sections only) bites the moment
   a file is saved — the agent gets blocking feedback immediately, not at build
-  time.
+  time. The wrapper reads the hook JSON on stdin and **exits 0 immediately for
+  non-source files** (docs edits must not pay the guard cost hundreds of times
+  in a docs session).
 - **Stop** runs all four guards — the agent literally cannot declare the work
   finished while a guard is red.
 - Non-Python projects implement the same four guards in their own stack; the
