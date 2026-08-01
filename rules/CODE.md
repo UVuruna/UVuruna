@@ -122,6 +122,10 @@ is not always a split: a generated artifact stays whole by nature (documented
 as such), and VENDORED third-party code's remedy is deletion/unvendoring —
 name the actual remedy in the entry.
 
+**`CONFIG_FILES` seeding:** genuinely config-centric modules only — a file
+that is mostly algorithm with one small table stays OUT; when in doubt, keep
+the seed narrow and record the judgment in the report/OPEN-QUESTIONS.
+
 **Guard scope note:** `test_config_sections.py` checks MODULE-LEVEL statements
 only. A config-like table living inside a class body is invisible to it — that
 is itself a placement smell: lift it to a module-level config (a refactor
