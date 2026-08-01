@@ -190,7 +190,9 @@ Pseudocode (language-neutral — the owner must be able to follow it in any stac
 ```
 
 GUI files sketch their zones; config files draw their section/key tree — same
-Mermaid-or-nested-list approach, always text.
+Mermaid-or-nested-list approach, always text. A config module with REAL logic
+(cached loaders, derivation) adds pseudocode under the tree — the tree shows
+the data, the pseudocode the behavior.
 
 ---
 
@@ -214,6 +216,19 @@ Link rules (unchanged from MD-First 1.0):
 
 - Links point to `.md` files (scripts only via the explicit "(script)" link)
 - Link text is human-readable — NEVER a raw path
+- **Exception:** inside a `___folder.md` FILE TABLE, the compact
+  `[about](__about/x.md) · [flow](__flow/x.md)` form is allowed — everywhere
+  else the human-readable rule holds
+- **Target not migrated yet?** When the target's `__about/` doc is not
+  guaranteed to exist (mid-migration, other folder's turn), link its
+  `___folder.md` instead — never a path you hope will exist
+- **Mind the depth:** from `app/__about/x.md`, the folder doc of `core/` is
+  `../../core/___core.md`; from `core/browser/__about/x.md` it is
+  `../../../core/___core.md` — one `../` per level including the doc subfolder
+- **No callers?** Write `Used by: none (entry point / not yet wired)` explicitly
+  — never leave the section off. A FALSE connection claim inherited from a
+  legacy doc is dropped, with a Design Decisions note when the correction is
+  load-bearing
 
 | Target | Link text | Example |
 |--------|-----------|---------|

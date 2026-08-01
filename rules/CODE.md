@@ -131,7 +131,14 @@ an option; silently ratcheting without surfacing is a defect.
 **`tests/run_guards.py`** — a small wrapper that runs the four tests via
 `pytest.main`, prints failures to stderr, and exits **2** on failure (exit 2 is
 what makes a hook BLOCKING). It must stay fast (< ~2 s) and deterministic —
-guards only, never the full app suite.
+guards only, never the full app suite. When the project's own suite already
+lives elsewhere (e.g. `support/tests/`), the guards still live in a root
+`tests/` of their own — the hook contract and the speed budget demand it.
+
+**Guard self-test rule:** a newly installed or modified guard must be SHOWN
+failing on a planted real violation and then passing after its removal — never
+merely "installed". A guard that cannot even be collected reports success by
+never running (a real, observed failure mode).
 
 **Claude Code hooks — `.claude/settings.json` in every project:**
 

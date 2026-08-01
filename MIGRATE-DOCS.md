@@ -46,7 +46,9 @@ flowchart LR
 
 ## Phase 0 — Inventory
 
-Before touching anything, measure and report:
+Before touching anything, measure and report. Treat any numbers a
+project-specific brief quotes as a FLOOR — the pilots consistently found more
+(11 god-files where 3 were named, 154 archive files where 20 were assumed):
 
 1. All source files (path, line count) — excluding vendored/build dirs
 2. All existing `.md` docs and which convention they follow (beside-script /
@@ -98,6 +100,15 @@ Then, folder by folder:
    narratives, aggregated overviews): verify their claims against code, fold
    the still-true gaps into the owning per-file/folder docs, then DELETE them
 6. Maintain the chain upward: parent `___folder.md` and `README.md` links
+7. **Multi-agent passes:** a point-in-time link check is NOT sufficient —
+   sibling agents delete legacy docs you may have just linked. Every agent
+   re-verifies its links immediately before finishing, and the orchestrator
+   runs a final repair sweep over the whole project
+
+**Expectation setting:** tier discipline genuinely deletes legacy docs, but
+`__flow/` is net-new — the total doc count is REPLACED, not shrunk (both pilots
+ended with more `.md` files than they started with, all of them earning their
+keep). Judge the migration by truth and structure, not by the raw count.
 
 <a id="phase-3"></a>
 
