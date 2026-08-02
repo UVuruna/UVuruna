@@ -267,7 +267,7 @@ Travel); build/release pipeline remaining before v1 ships
 ### <img src="logos/MladenVuruna.svg" width="22" height="22"> Mladen Vuruna
 
 **Local path:** `WebSites/MladenVuruna/`
-**GitHub:** [UVuruna/mladenvuruna](https://github.com/UVuruna/mladenvuruna)
+**GitHub:** [UVuruna/mladenvuruna](https://github.com/UVuruna/Mladen-Vuruna)
 **Type:** Website
 **Status:** 🟢 Live — [mladenvuruna.com](https://mladenvuruna.com)
 **Visibility:** Public

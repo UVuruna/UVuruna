@@ -33,7 +33,7 @@
 
 | | Project | Description |
 |---|---------|-------------|
-| <img src="logos/MladenVuruna.svg" width="36" height="36"> | [Mladen Vuruna](https://github.com/UVuruna/mladenvuruna) | Personal portfolio for a Serbian writer and artist — books with page-flip animation, essays, art gallery, visitor analytics — live at [mladenvuruna.com](https://mladenvuruna.com) |
+| <img src="logos/MladenVuruna.svg" width="36" height="36"> | [Mladen Vuruna](https://github.com/UVuruna/Mladen-Vuruna) | Personal portfolio for a Serbian writer and artist — books with page-flip animation, essays, art gallery, visitor analytics — live at [mladenvuruna.com](https://mladenvuruna.com) |
 | <img src="logos/ColorizeSVG.svg" width="36" height="36"> | [SVG Styler](https://github.com/UVuruna/SVG-Styler) | Interactive web tool for real-time SVG color editing — circular knob sliders for brightness, contrast, saturation, hue, and more |
 | <img src="logos/PrirodniSokovi.svg" width="36" height="36"> | [Prirodni Sokovi](https://github.com/UVuruna/Prirodni-Sokovi) | E-commerce website for a natural juice company — product catalog, ingredients, time-based theme system (4 daily themes) |
 | <img src="logos/VaskeKomarnici.svg" width="36" height="36"> | [Vaske Komarnici](https://github.com/UVuruna/Vaske-Komarnici) | Commercial website for mosquito screen products — catalog with 3 product categories, ordering system, SVG colorization — live at [vaske-komarnici.com](https://vaske-komarnici.com) |
