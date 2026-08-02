@@ -8,6 +8,7 @@ sessions too — see Read-Only on Init.)
 
 - [Plans Are Discussions](#plans)
 - [Present Before Building](#present)
+- [Communication with the Owner](#communication)
 - [Constructive Disagreement](#disagreement)
 - [Read-Only on Init](#init)
 - [Rule Classes — Law / Gate / Style](#rule-classes)
@@ -40,8 +41,8 @@ sketch is wanted; the class decides:
 | Task class | Before implementation |
 |------------|----------------------|
 | **Trivial** (small fix, mechanical change) | Nothing — one sentence of intent in the response |
-| **Standard — new functionality / algorithm** | **Algorithm sketch**: short Mermaid + why this approach + how the instructions were understood + what is unclear → wait for the owner's yes |
-| **Standard — new or changed GUI element** | **Layout sketch** (text wireframe / Mermaid block, per [Docs Rules](DOCS.md) `__flow/` conventions) → wait |
+| **Standard — new functionality / algorithm** | **Algorithm sketch**: detailed plain-prose walkthrough (numbered steps, full sentences — see [Communication](#communication)) + why this approach + how the instructions were understood + what is unclear → wait for the owner's yes |
+| **Standard — new or changed GUI element** | **Layout sketch**: RENDERED visual (Artifact / HTML opened for the owner) + prose explanation → wait. Diagram source belongs only in `__flow/` doc files ([Docs Rules](DOCS.md)), never in chat |
 | **Wide** (big task, many instructions) | **Echo-brief**: ALL instructions regrouped into cohesive wholes + "this is how I understood everything" + open questions → work starts only after confirmation |
 
 - **The approved sketch is not throwaway work:** after implementation it seeds
@@ -53,6 +54,41 @@ sketch is wanted; the class decides:
   echo-brief goes into the final report instead (same precedent as the
   MIGRATE-DOCS target map).
 - Class: **GATE** — a Definition-of-Done item in every task brief.
+
+<a id="communication"></a>
+
+## Communication with the Owner (owner decree 2026-08-02)
+
+Born from a real breakdown: an agent pasted raw Mermaid into chat (the owner's
+interface shows diagram source as unrendered garbage) and asked three one-line
+questions with zero explanation — total mutual incomprehension, a session spent
+on apologies instead of progress. Both patterns are now banned and enforced.
+
+1. **No diagram source in chat — LAW.** Algorithms and flows are explained in
+   chat as DETAILED plain prose: numbered steps, full sentences, in Serbian.
+   When a visual genuinely helps (GUI layout, complex flow), it is delivered
+   RENDERED — an Artifact or an HTML file opened for the owner — never as
+   Mermaid/graphviz/ASCII-diagram source pasted into a message. Diagram source
+   lives only inside doc FILES (`__flow/`, per [Docs Rules](DOCS.md)), where
+   viewers render it.
+2. **Detailed questions only — LAW.** Every question to the owner is a full
+   block: (a) context — what the agent is working on and where the decision
+   arises, (b) the question itself in complete sentences, (c) why it matters
+   and what depends on the answer, (d) the options with their concrete
+   consequences, (e) the agent's recommendation. FORBIDDEN: enumerated
+   one-liners — "(1) ok? (2) ok? (3) ok? — give me a YES". A question the owner
+   cannot understand without asking back is a defect, not a question.
+3. **Teeth:** `rules/hooks/communication_guard.py`, wired MACHINE-WIDE in
+   `~/.claude/settings.json` (applies in every project, no per-project
+   migration). The Stop hook blocks ending any turn whose chat text contains
+   diagram source or a terse enumerated ask; the PreToolUse hook on
+   AskUserQuestion blocks questions below minimum substance (question ≥ 100
+   chars of context, every option description ≥ 40 chars of consequence).
+   Honesty note: the hook measures substance by length — whether an
+   explanation actually EXPLAINS stays on session discipline and the owner's
+   review.
+
+---
 
 <a id="disagreement"></a>
 

@@ -115,6 +115,11 @@ Every project carries **four guard tests + Claude Code hooks**
 - **Ask before assuming.** Identify ambiguities and ask; propose the approach;
   start after confirmation. Better 100 questions than 1 bug. Constructive
   disagreement is a duty ([Plan Rules](rules/PLAN.md)).
+- **Communication (owner decree 2026-08-02):** every question to the owner is a
+  fully explained block (context + why + options with consequences +
+  recommendation) — never enumerated one-liners; NEVER diagram source
+  (Mermaid/ASCII) in chat — prose in chat, visuals rendered. Enforced by a
+  machine-wide hook ([Plan Rules](rules/PLAN.md) → Communication).
 - **Present before building:** implementation starts only after the envisioned
   algorithm / GUI sketch (or echo-brief for Wide tasks) has been shown —
   scaled by triage class, automatically ([Plan Rules](rules/PLAN.md)).
