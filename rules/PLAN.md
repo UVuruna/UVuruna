@@ -41,8 +41,8 @@ sketch is wanted; the class decides:
 | Task class | Before implementation |
 |------------|----------------------|
 | **Trivial** (small fix, mechanical change) | Nothing — one sentence of intent in the response |
-| **Standard — new functionality / algorithm** | **Algorithm sketch**: detailed plain-prose walkthrough (numbered steps, full sentences — see [Communication](#communication)) + why this approach + how the instructions were understood + what is unclear → wait for the owner's yes |
-| **Standard — new or changed GUI element** | **Layout sketch**: RENDERED visual (Artifact / HTML opened for the owner) + prose explanation → wait. Diagram source belongs only in `__flow/` doc files ([Docs Rules](DOCS.md)), never in chat |
+| **Standard — new functionality / algorithm** | **Algorithm sketch**: VISUAL (box-drawing sketch in chat; rendered Artifact/HTML page when complex — see [Communication](#communication)) + detailed prose walkthrough + why this approach + how the instructions were understood + what is unclear → wait for the owner's yes |
+| **Standard — new or changed GUI element** | **Layout sketch**: VISUAL wireframe (box-drawing in chat; rendered Artifact/HTML when complex) + prose explanation → wait. Mermaid source belongs only in `__flow/` doc files ([Docs Rules](DOCS.md)), never in chat |
 | **Wide** (big task, many instructions) | **Echo-brief**: ALL instructions regrouped into cohesive wholes + "this is how I understood everything" + open questions → work starts only after confirmation |
 
 - **The approved sketch is not throwaway work:** after implementation it seeds
@@ -64,13 +64,20 @@ interface shows diagram source as unrendered garbage) and asked three one-line
 questions with zero explanation — total mutual incomprehension, a session spent
 on apologies instead of progress. Both patterns are now banned and enforced.
 
-1. **No diagram source in chat — LAW.** Algorithms and flows are explained in
-   chat as DETAILED plain prose: numbered steps, full sentences, in Serbian.
-   When a visual genuinely helps (GUI layout, complex flow), it is delivered
-   RENDERED — an Artifact or an HTML file opened for the owner — never as
-   Mermaid/graphviz/ASCII-diagram source pasted into a message. Diagram source
-   lives only inside doc FILES (`__flow/`, per [Docs Rules](DOCS.md)), where
-   viewers render it.
+1. **A visual is OBLIGATORY, and it must render in the owner's eyes — LAW.**
+   Presenting an algorithm, a GUI element, or a config-file structure ALWAYS
+   carries a visual representation next to the detailed prose walkthrough
+   (numbered steps, full sentences, in Serbian) — visuals are the default,
+   never a rarity to be avoided. The MEDIUM scales with complexity:
+   - **Simple** → a Unicode box-drawing / ASCII sketch directly in the chat
+     message (plain text renders as-is in every interface — this is what
+     "rendered normally" for the owner before).
+   - **Complex** → a RENDERED page the owner opens: an Artifact or an HTML
+     file — real diagram, not source.
+   - **NEVER** Mermaid/graphviz source pasted into a chat message — the
+     owner's interface shows it as raw code garbage. Diagram source lives only
+     inside doc FILES (`__flow/`, per [Docs Rules](DOCS.md)), where viewers
+     render it.
 2. **Detailed questions only — LAW.** Every question to the owner is a full
    block: (a) context — what the agent is working on and where the decision
    arises, (b) the question itself in complete sentences, (c) why it matters
