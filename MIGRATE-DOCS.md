@@ -81,7 +81,9 @@ record the map in the final report and proceed.
 Relative-link depth (`../` counts change when docs move into `__about/`/`__flow/`)
 is the DOMINANT failure mode of this migration — especially with parallel
 agents. Caught per-folder it is a one-line fix; caught at the end it is an
-archaeology dig. (Lesson from the PromptPainter pilot, 2026-08-01.)
+archaeology dig. (Lesson from the PromptPainter pilot, 2026-08-01.) The
+per-folder cadence is a MULTI-AGENT mitigation; a single continuous session
+may batch several folders between checks.
 
 Then, folder by folder:
 

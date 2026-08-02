@@ -155,7 +155,11 @@ lives elsewhere (e.g. `support/tests/`), the guards still live in a root
 **Guard self-test rule:** a newly installed or modified guard must be SHOWN
 failing on a planted real violation and then passing after its removal — never
 merely "installed". A guard that cannot even be collected reports success by
-never running (a real, observed failure mode).
+never running (a real, observed failure mode). **Plant-revert safety:** undo a
+plant by removing exactly what you planted (or commit legitimate edits BEFORE
+planting) — never `git checkout -- <file>` on a file carrying uncommitted real
+work; it reverts to HEAD, not to "before the plant" (a real, observed
+mistake).
 
 **Claude Code hooks — `.claude/settings.json` in every project:**
 

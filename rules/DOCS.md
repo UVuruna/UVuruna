@@ -248,6 +248,8 @@ Link rules (unchanged from MD-First 1.0):
 - **Mind the depth:** from `app/__about/x.md`, the folder doc of `core/` is
   `../../core/___core.md`; from `core/browser/__about/x.md` it is
   `../../../core/___core.md` — one `../` per level including the doc subfolder
+- **Linking to a Trivial-tier file** (which has no `__about/` doc): link its
+  folder's `___folder.md` — the file's one-line entry lives there
 - **No callers?** Write `Used by: none (entry point / not yet wired)` explicitly
   — never leave the section off. A FALSE connection claim inherited from a
   legacy doc is dropped, with a Design Decisions note when the correction is
