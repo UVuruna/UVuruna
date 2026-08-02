@@ -54,7 +54,9 @@ project-specific brief quotes as a FLOOR — the pilots consistently found more
 2. All existing `.md` docs and which convention they follow (beside-script /
    folder-doc / none)
 3. **Tier classification of EVERY source file** per [Docs Rules](rules/DOCS.md)
-   → Tiers: Trivial / Standard / Algorithmic / tests
+   → Tiers: Trivial / Standard / Algorithmic / tests. When god-file splits are
+   bundled, tiers are assigned against the Phase-1 TARGET map (the post-split
+   file set), not the current files
 4. God-files (> ~1,000 lines) — listed for the ratchet (and for a separate
    REFACTOR-GODFILES session unless bundled)
 5. Config-law targets: the config/data files that will be named in
@@ -123,7 +125,10 @@ keep). Judge the migration by truth and structure, not by the raw count.
 2. A project with an EXISTING structure guard under a non-standard name: rename
    to the standard, keep its ratchet content, update references
 3. `tests/run_guards.py` (fast wrapper, exit 2 on failure) +
-   `.claude/settings.json` hooks (PostToolUse + Stop) per the spec
+   `.claude/settings.json` hooks (PostToolUse + Stop) per the spec.
+   **Wire the hooks LAST, after all guards are green** — a blocking Stop hook
+   installed while docs guards are legitimately red mid-migration jams the
+   session
    — **check `.gitignore`:** `.claude/settings.json` and every folder doc must
    be TRACKED (add `!` exceptions where a broad ignore pattern swallows them,
    e.g. a doc inside an ignored asset dir) — enforcement must survive a clone
@@ -137,7 +142,12 @@ keep). Judge the migration by truth and structure, not by the raw count.
 1. `python tests/run_guards.py` → all four guards GREEN (structure law green
    modulo the seeded ratchet)
 2. The project's own test suite: run it BEFORE Phase 2 (baseline) and now —
-   identical results; this migration changes no behavior
+   identical results; this migration changes no behavior. **A project with NO
+   suite builds a minimal behavioral baseline first** — for a GUI app, a
+   launch-and-screenshot harness that exercises the core windows/features
+   (the Vitals pilot proved this is the single most valuable artifact of such
+   a session); for a non-GUI project, at minimum compile+import smoke of
+   every module
 3. Spot-check the chain by hand: README → a deep `__flow/` doc in ≤ 4 clicks
 
 <a id="phase-5"></a>

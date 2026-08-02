@@ -64,8 +64,10 @@ variants — and a later session, adding one color, doesn't even look where shap
 live and dumps the new entry at the end of the file.
 
 1. **Named section banners.** Every config/data file is organized under visible
-   section banners — a comment line containing a run of **at least 8**
-   box-drawing/`=` characters plus the section name:
+   section banners. Canonical form — ONE comment line, the section name on
+   that same line, with a run of **at least 8** box-drawing/`=` characters
+   (multi-line `# ---` sandwiches are not banners; every project's guard must
+   recognize the same form or the law means different things per repo):
 
    ```python
    # ═══════════════════════════ POINTER SHAPES ═══════════════════════════
