@@ -152,6 +152,10 @@ guards only, never the full app suite. When the project's own suite already
 lives elsewhere (e.g. `support/tests/`), the guards still live in a root
 `tests/` of their own — the hook contract and the speed budget demand it.
 
+**Guard tree-scanning note:** when a project's guards scan `.py` sources, the
+guard modules themselves (`tests/`) match — exclude the guards' own directory
+in `iter_source_files()`/tier classification, or the suite flags itself.
+
 **Guard self-test rule:** a newly installed or modified guard must be SHOWN
 failing on a planted real violation and then passing after its removal — never
 merely "installed". A guard that cannot even be collected reports success by

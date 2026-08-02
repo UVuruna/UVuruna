@@ -178,6 +178,10 @@ x.y.NNN+2 Enforcement — guard tests, run_guards, Claude Code hooks
    Trivial tier — deleting a useless doc is progress, not loss.
 3. **Truth over volume.** A migrated doc must be verified against current code;
    flag (don't silently fix) any code bug you notice while verifying.
+   If the working tree carries UNRELATED uncommitted owner changes: document
+   the current DISK state (it is the truth), leave the owner's WIP unstaged
+   and untouched, and flag the resulting doc-vs-fresh-clone gap explicitly in
+   the report/OPEN-QUESTIONS.
 4. **No version-suffix files;** edit and move directly — Git keeps history.
 5. **Honest states** — the session ends FIXED / CANNOT FIX HERE / IMPOSSIBLE
    per the constitution, with evidence.
