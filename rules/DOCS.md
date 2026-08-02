@@ -78,7 +78,9 @@ folder held 28 scripts + 28 docs = 56 entries). Every code folder now has:
 - **Flat, root-level-only projects** (files directly in the project root, no
   packages): `__about/` and `__flow/` sit directly under the project root; the
   project `README.md` plays the `___folder.md` role — no separate root folder
-  doc.
+  doc. This provision applies PER LOOSE FILE, not per project: a project with
+  packages AND loose root scripts documents the loose scripts in root-level
+  `__about/`/`__flow/` while its packages follow the normal folder layout.
 
 ---
 
@@ -103,7 +105,9 @@ Algorithmic — the first pilot migrations proved that reading turns ~80% of
 files "Algorithmic" and doubles the doc count. The test: *would the diagram
 just restate the code?* Then the file is Standard. Reserve `__flow/` for
 real multi-step algorithms, nontrivial GUI layouts and configs whose
-structure needs a picture. (Projects migrated before this narrowing carry
+structure needs a picture. Concrete signals that a file EARNS its flow:
+a background-thread or process handoff, cascading multi-level state, a real
+state machine, nontrivial geometry/math, a protocol with ordered steps. (Projects migrated before this narrowing carry
 wider flow lists — they get trimmed in a dedicated revision pass, recorded
 as a debt.)
 
