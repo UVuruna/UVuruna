@@ -29,6 +29,7 @@ monorepo, organized by category:
   📝 DESIGN.md         ← Universal UI design system (stack-agnostic language + per-stack recipes)
   📝 MIGRATE-DOCS.md   ← Task brief: bring an existing project onto MD-First 2.0 + enforcement
   📝 REFACTOR-GODFILES.md ← Task brief: god-file split procedure
+  📝 MIGRATE-GUI.md    ← Task brief: GUI responsiveness verification + front migration (4 phases)
   📝 PRIVATE.md        ← LOCAL-ONLY index of hidden projects (never tracked)
   ⚙️ company.json      ← Company/developer info (shared by all build pipelines)
 ```
@@ -102,6 +103,7 @@ Every project carries **four guard tests + Claude Code hooks**
 | Migrate an existing project onto this system | [MIGRATE-DOCS.md](MIGRATE-DOCS.md) + [Docs Rules](rules/DOCS.md) |
 | Build / release an installable | [Ship Rules](rules/SHIP.md) |
 | Split a god-file | [REFACTOR-GODFILES.md](REFACTOR-GODFILES.md) |
+| Verify / migrate a GUI's responsiveness | [MIGRATE-GUI.md](MIGRATE-GUI.md) + [GUI Rules](rules/GUI.md) |
 
 ---
 

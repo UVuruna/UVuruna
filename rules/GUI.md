@@ -9,6 +9,7 @@ A new or changed GUI element starts with a layout sketch shown to the owner —
 
 - [Law — Logic Before Looks](#logic-first)
 - [Modern UI — No Old-Fashioned Interfaces](#modern-ui)
+- [Law — Responsiveness](#responsiveness)
 - [Stack Choice for GUIs](#stack)
 - [Translation Policy](#translation)
 
@@ -59,16 +60,53 @@ Procedure for the visual pass (or any redesign):
 
 ---
 
+<a id="responsiveness"></a>
+
+## LAW — Responsiveness (owner decree 2026-08-04)
+
+**Modern looks and responsiveness are NOT a trade-off — we keep BOTH.** Games
+composite full 3D scenes at hundreds of frames per second; a desktop GUI with
+tables and panels is trivial work for a GPU. When our GUIs lag on resize, move,
+or in-window changes (expand/collapse, state switches), the cause is TECHNIQUE
+— never "too much beauty". Binding rules for every GUI, in every stack:
+
+1. **The UI thread renders and takes input — nothing else.** No OCR, no browser
+   automation, no long queries, no file I/O. Workers run in separate
+   **processes** (in Python specifically: never threads for CPU-bound work —
+   the GIL stalls the event loop even though Qt itself renders in C++).
+2. **Updates arrive batched, never per-event.** An aggregator groups worker
+   output and delivers it to the GUI 10–30 times per second (every 33–100 ms).
+   The user perceives it as instant; the event queue stays empty. The
+   aggregator's message format doubles as the IPC contract if the front ever
+   migrates ([MIGRATE-GUI.md](../MIGRATE-GUI.md)).
+3. **Effects are GPU-composited or they do not ship.** The banned list
+   (guard-greppable per stack; GPU replacements live in
+   [DESIGN.md](../DESIGN.md)):
+   - Qt: `QGraphicsDropShadowEffect` (CPU-rendered blur),
+     `WA_TranslucentBackground` and frameless-window hacks that take move/resize
+     away from DWM
+   - any stack: per-tick layout mutation from code where a compositor animation
+     exists (WPF animations, CSS `transform`/`opacity`)
+4. **Large lists and tables are virtualized** — render the visible rows, never
+   the dataset.
+
+Classes: rule 3 is **LAW** — a banned-API guard test greps the project's stack
+list; rules 1, 2 and 4 are **GATE** — Definition-of-Done items for every GUI
+task.
+
+---
+
 <a id="stack"></a>
 
 ## Stack Choice for GUIs
 
 The design LANGUAGE in DESIGN.md (dark-first, tokens, soft depth, typography)
-is **stack-agnostic** — it does not mandate any library. The GUI stack is chosen
-per project ([START](START.md) → Technology Selection) by what best delivers
-**responsiveness and a modern visual impression** for that application — never
-by habit. DESIGN.md carries recipes for stacks already in use (Qt, web); a new
-stack gets its recipe section on first use.
+is **stack-agnostic** — it does not mandate any library. For NEW projects the
+stack comes from the default decision tree in [START](START.md) → Technology
+Selection (C# + WPF front by default; Python only as worker processes behind
+IPC) — departures need the written justification there. DESIGN.md carries
+recipes for stacks already in use (Qt, web); a new stack gets its recipe
+section on first use.
 
 ---
 

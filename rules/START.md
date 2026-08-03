@@ -68,7 +68,30 @@ The [appendix below](#uv-tables) holds UV word-pair tables — **inspiration onl
 historical, not normative). Every new project picks the stack most adequate for
 its task. The choice is a DECISION WITH A PAPER TRAIL, never a habit.
 
-Answer in writing, in the project's `README.md` (or `CLAUDE.md`):
+**GUI default policy (owner decree 2026-08-04, class GATE — a Step-3 checklist
+item).** Python is no longer a candidate for the GUI layer of new projects: its
+GUI stacks repeatedly failed the responsiveness bar (resize / move / in-window
+lag) that the owner requires ALONGSIDE a modern look — never instead of it
+([GUI](GUI.md) → Responsiveness). Python remains first choice exactly where it
+is strongest: automation, OCR, ML, scripting — as a backend worker, never as
+the front. The decision tree:
+
+| Project shape | First choice |
+|---------------|--------------|
+| No GUI — script / automation / ML | **Python** (still first choice) |
+| CLI / background service, footprint matters | Go or Rust (single binary) |
+| Desktop GUI, backend not Python-bound | **C# / .NET + WPF**, Fluent-themed per [DESIGN.md](../DESIGN.md) |
+| Desktop GUI, backend needs the Python ecosystem (OCR / ML / Playwright) | **C# WPF front ◄─ IPC (JSON) ─► Python worker processes** — the front only renders and takes input; ALL work lives in workers; updates arrive batched ([GUI](GUI.md) → Responsiveness) |
+| Cross-platform desktop genuinely required | **Avalonia** (C#, same split model) |
+| Website | Static + vanilla JS; framework only when state demands it |
+| Game | Engine (Godot, Unity) or web canvas |
+
+Web-tech desktop fronts (Tauri / WebView2 / Electron) are chosen ONLY when the
+owner explicitly demands a CSS/web design AND accepts, eyes open, their known
+live-resize artifacts on Windows — the exact symptom this policy exists to kill.
+
+Departures from the tree are possible — but only through the written
+justification below. Answer in the project's `README.md` (or `CLAUDE.md`):
 *"Which language/stack fits this task best, and why?"* — with **at least one
 alternative considered and rejected for stated reasons**.
 
@@ -82,16 +105,6 @@ Criteria, in the order they usually decide:
 5. **GUI responsiveness & modern feel** — for any project with a GUI, the stack
    must be able to deliver the [DESIGN.md](../DESIGN.md) quality bar with smooth,
    responsive rendering. "We already know X" is not an argument.
-
-Orientation map (starting candidates, not dogma):
-
-| Project type | First candidates | When Python still wins |
-|--------------|------------------|------------------------|
-| Desktop tool with OS hooks / ML | Python + PySide6 | pynput/psutil/PyTorch ecosystem lives here |
-| Visually rich desktop app | Tauri / Electron (web UI), Flutter | when the GUI is secondary to a Python core |
-| Website | Static + vanilla JS, framework only when state demands it | practically never |
-| Game | Engine (Godot, Unity) or web canvas | quick prototype |
-| CLI / background service | Go or Rust (single binary, tiny footprint) | quick scripting |
 
 Language-specific recipes elsewhere in the rules (PyInstaller pipeline, py-spy,
 `logging`) are **recipes for Python projects, not a mandate** — a non-Python
