@@ -74,6 +74,15 @@ on apologies instead of progress. Both patterns are now banned and enforced.
      "rendered normally" for the owner before).
    - **Complex** → a RENDERED page the owner opens: an Artifact or an HTML
      file — real diagram, not source.
+   - **A rendered page commits to ONE explicit color scheme — LAW (owner
+     2026-08-03).** Born from a real breakdown: a proposal page styled with
+     adaptive light/dark theme tokens (`prefers-color-scheme` media queries /
+     host theme stamping) rendered as white-on-white garbage in the artifact
+     viewer — the host displayed the light palette inside a dark shell. A
+     rendered page NEVER relies on the viewer's theme detection: it declares
+     one scheme (dark, matching the owner's environment, unless he asks
+     otherwise) and sets background AND text color together, explicitly, on
+     the page body — never inheriting either half of the pair from the host.
    - **NEVER** Mermaid/graphviz source pasted into a chat message — the
      owner's interface shows it as raw code garbage. Diagram source lives only
      inside doc FILES (`__flow/`, per [Docs Rules](DOCS.md)), where viewers
