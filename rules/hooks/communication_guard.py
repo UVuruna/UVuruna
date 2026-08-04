@@ -10,6 +10,11 @@ across ALL sessions on this machine (wired in ~/.claude/settings.json):
                      question block instead of fully explained questions.
   PreToolUse hook  — matcher AskUserQuestion: blocks questions that lack the
                      minimum substance (context + explanation + option detail).
+  PreToolUse hook  — matcher Artifact: blocks publishing a rendered page that
+                     relies on the viewer's theme detection (prefers-color-scheme
+                     / data-theme tokens) or that never sets its own background —
+                     the exact recipe that rendered white-on-white garbage for
+                     the owner (PLAN.md -> Communication, LAW of 2026-08-03).
 
 Contract: exit 2 = BLOCK (stderr is fed back to the agent); exit 0 = pass.
 Fail-open on any parse error — a broken guard must never brick a session.
@@ -52,6 +57,32 @@ BLOCK_TERSE = (
     "the decision arises, (b) the question itself in complete sentences, (c) why it "
     "matters and what depends on the answer, (d) the options with their concrete "
     "consequences, (e) your recommendation. Write it in Serbian, then end the turn."
+)
+
+ADAPTIVE_THEME_RE = re.compile(
+    r"prefers-color-scheme|\[\s*data-theme|data-theme\s*=", re.I
+)
+BACKGROUND_RE = re.compile(r"background(-color)?\s*:", re.I)
+
+BLOCK_ARTIFACT_THEME = (
+    "COMMUNICATION LAW (rules/PLAN.md -> Communication with the Owner, LAW of "
+    "2026-08-03): this page styles itself with ADAPTIVE theme tokens "
+    "(prefers-color-scheme media queries / data-theme stamping). In the owner's "
+    "artifact viewer this has repeatedly rendered as WHITE TEXT ON WHITE "
+    "BACKGROUND. A rendered page commits to ONE explicit scheme: dark (matching "
+    "the owner's environment) unless he asked otherwise, with background AND "
+    "text color both set explicitly on the page body as fixed hex values - no "
+    "media queries, no data-theme selectors, nothing inherited from the host. "
+    "Rewrite the stylesheet with fixed colors and publish again."
+)
+
+BLOCK_ARTIFACT_NO_BG = (
+    "COMMUNICATION LAW (rules/PLAN.md -> Communication with the Owner, LAW of "
+    "2026-08-03): this page never sets its own background color, so it inherits "
+    "the host shell's - the exact recipe for white-on-white garbage. Set an "
+    "explicit fixed background AND text color on the page body (dark scheme, "
+    "matching the owner's environment, unless he asked otherwise), then publish "
+    "again."
 )
 
 BLOCK_ASK_TOOL = (
@@ -144,6 +175,30 @@ def check_stop(payload: dict) -> None:
         block(BLOCK_TERSE)
 
 
+def check_artifact(payload: dict) -> None:
+    """Block publishing a page that depends on the viewer's theme.
+
+    Reads the file the Artifact call is about to publish. Fail-open on
+    anything unreadable (list action, missing path, IO error) - the guard
+    exists to catch the adaptive-theme recipe, not to brick publishing.
+    """
+    tool_input = payload.get("tool_input") or {}
+    if tool_input.get("action") == "list":
+        return
+    path = tool_input.get("file_path")
+    if not path:
+        return
+    try:
+        with open(path, encoding="utf-8", errors="replace") as fh:
+            page = fh.read()
+    except OSError:
+        return
+    if ADAPTIVE_THEME_RE.search(page):
+        block(BLOCK_ARTIFACT_THEME)
+    if "<style" in page.lower() and not BACKGROUND_RE.search(page):
+        block(BLOCK_ARTIFACT_NO_BG)
+
+
 def check_ask_user_question(payload: dict) -> None:
     tool_input = payload.get("tool_input") or {}
     for question in tool_input.get("questions") or []:
@@ -171,6 +226,8 @@ def main() -> None:
         check_stop(payload)
     elif event == "PreToolUse" and payload.get("tool_name") == "AskUserQuestion":
         check_ask_user_question(payload)
+    elif event == "PreToolUse" and payload.get("tool_name") == "Artifact":
+        check_artifact(payload)
     sys.exit(0)
 
 

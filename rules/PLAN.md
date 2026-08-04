@@ -99,7 +99,13 @@ on apologies instead of progress. Both patterns are now banned and enforced.
    migration). The Stop hook blocks ending any turn whose chat text contains
    diagram source or a terse enumerated ask; the PreToolUse hook on
    AskUserQuestion blocks questions below minimum substance (question ≥ 100
-   chars of context, every option description ≥ 40 chars of consequence).
+   chars of context, every option description ≥ 40 chars of consequence); the
+   PreToolUse hook on Artifact (added 2026-08-04, after the white-on-white
+   law of 2026-08-03 was violated AGAIN by an agent following generic
+   artifact styling guidance over this rulebook) blocks publishing any page
+   whose stylesheet contains adaptive theme tokens (`prefers-color-scheme`,
+   `data-theme`) or that never sets its own background — the page must carry
+   ONE fixed explicit scheme.
    Honesty note: the hook measures substance by length — whether an
    explanation actually EXPLAINS stays on session discipline and the owner's
    review.
