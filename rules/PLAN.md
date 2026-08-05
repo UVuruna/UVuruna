@@ -98,6 +98,31 @@ had to re-demand work he had already defined.
   session with unchecked tasks and no `WAITING_ON_OWNER: yes` is blocked, with
   the open tasks fed back.
 
+### Loud Incompleteness (owner decree 2026-08-05)
+
+**Anything not fully done is announced LOUDLY, never slipped past in
+mid-text.** Born from a real breakdown: a session reported a large rework as
+finished and mentioned only in passing, deep inside the report, that two items
+were "recorded as debt" — and both debt claims were WRONG (the agent had not
+looked at the assets folder, and had misnamed an element that exists). The
+owner reads reports diagonally; a quietly buried "nisam" is functionally a
+lie.
+
+1. **The final message of any working session OPENS with a section titled
+   "NISAM URADIO" (or "NOT DONE")** listing every item that is unfinished,
+   partial, deferred or reinterpreted — BEFORE any successes are described.
+   No such items → the section says so in one line. — **LAW**
+2. **Every debt, the moment it is recorded, is ALSO appended to
+   `.claude/session-tasks.md` as an open `- [ ]` task** in the same commit
+   that records it. The session-tasks guard then physically refuses to end
+   the session silently — the owner sees the debt as an open task, not as a
+   footnote. — **GATE** (rides the existing session-tasks teeth)
+3. **A debt claim must name the EVIDENCE looked at** ("checked assets/x/, no
+   art exists"; "grepped render/, no such element") — a debt without evidence
+   is a guess, and a wrong guess about "impossible" is the costliest lie of
+   all: it cancels planned work. Misunderstandings are asked about LOUDLY at
+   the moment of doubt, never resolved silently into a debt.
+
 ---
 
 <a id="present"></a>
