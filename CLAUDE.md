@@ -30,6 +30,7 @@ monorepo, organized by category:
   📝 MIGRATE-DOCS.md   ← Task brief: bring an existing project onto MD-First 2.0 + enforcement
   📝 REFACTOR-GODFILES.md ← Task brief: god-file split procedure
   📝 MIGRATE-GUI.md    ← Task brief: GUI responsiveness verification + front migration (4 phases)
+  📝 MIGRATE-LAYOUT.md ← Task brief: install the Space & Legibility teeth in an existing GUI
   📝 PRIVATE.md        ← LOCAL-ONLY index of hidden projects (never tracked)
   ⚙️ company.json      ← Company/developer info (shared by all build pipelines)
 ```
@@ -71,8 +72,8 @@ When goals conflict, higher wins:
 ## The Laws
 
 Mechanically enforced — violating one fails a build or blocks a session's end.
-Every project carries **four guard tests + Claude Code hooks**
-(spec: [Code Rules](rules/CODE.md) → Enforcement).
+Every project carries **four guard tests + Claude Code hooks** (a GUI project
+carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
 
 1. **THE STRUCTURE LAW** — placement by responsibility; >~1,000-line files fail
    the guard unless ratcheted → [Code Rules](rules/CODE.md)
@@ -88,6 +89,10 @@ Every project carries **four guard tests + Claude Code hooks**
    **IMPOSSIBLE** (technical reason). Never "solved" for a symptom patch; a
    problem that returns proves the previous diagnosis wrong — record root cause
    in the component's docs and session memory.
+6. **THE SPACE & LEGIBILITY LAW** (owner decree 2026-08-05) — nothing the user
+   must read is ever cut off, and nothing starves while its window holds empty
+   space; the fix order is free space → reflow → raised minimum → scroll
+   → [GUI Rules](rules/GUI.md)
 
 <a id="router"></a>
 
@@ -104,6 +109,7 @@ Every project carries **four guard tests + Claude Code hooks**
 | Build / release an installable | [Ship Rules](rules/SHIP.md) |
 | Split a god-file | [REFACTOR-GODFILES.md](REFACTOR-GODFILES.md) |
 | Verify / migrate a GUI's responsiveness | [MIGRATE-GUI.md](MIGRATE-GUI.md) + [GUI Rules](rules/GUI.md) |
+| Install the layout teeth in an existing GUI | [MIGRATE-LAYOUT.md](MIGRATE-LAYOUT.md) + [GUI Rules](rules/GUI.md) |
 
 ---
 

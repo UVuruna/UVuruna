@@ -8,6 +8,7 @@ A new or changed GUI element starts with a layout sketch shown to the owner —
 ## Table of Contents
 
 - [Law — Logic Before Looks](#logic-first)
+- [Law — Space & Legibility](#space)
 - [Modern UI — No Old-Fashioned Interfaces](#modern-ui)
 - [Law — Responsiveness](#responsiveness)
 - [Stack Choice for GUIs](#stack)
@@ -33,6 +34,81 @@ of work in every GUI project:
 **Agent duty:** when the owner requests visual polish before the logic is
 feature-complete, the agent MUST flag it (this is Owner Guardrail #1 — see
 [PLAN](PLAN.md)) — and proceed only if the owner confirms after the warning.
+
+---
+
+<a id="space"></a>
+
+## LAW — Space & Legibility (owner decree 2026-08-05)
+
+**Nothing the user must read may be cut off, and no element may starve while
+its window has empty space.** These are the two failures the owner has had to
+report by hand in project after project:
+
+```
+BUG A — element scrolls, window empty          BUG B — content clipped / elided
+┌──────────────────────────────────┐           ┌──────────────────────────────────┐
+│ ┌──────────────┐▲                │           │ Left   │Shortcut ▾│Prev│ ift+tab │
+│ │ esc          │█                │           │ Right  │Shortcut ▾│Next│ tab     │
+│ │ Prev         │█ ← SCROLLBAR    │           │ Bottom │Shortcut ▾│Find│ ctrl+f  │
+│ │ Next         │▼                │           └──────────────────────────────────┘
+│ └──────────────┘                 │              "shift+tab" rendered "ift+tab"
+│                                  │              "e.g. ctrl+shift+p" → "e.g. ..."
+│         E M P T Y                │              …while the column to the left
+│         (300+ px unused)         │                had slack to give up
+└──────────────────────────────────┘
+```
+
+Both have one cause: **space was distributed by how the layout happened to be
+written, instead of by who needs it.** This law fixes the distribution order.
+
+### The resolution ladder — an element that does not fit is fixed IN THIS ORDER
+
+A later step is legal ONLY when every earlier step is exhausted:
+
+1. **TAKE THE FREE SPACE.** The starving element grows into the window's unused
+   space. Stretch/`Grid` star-sizing belongs to content that needs it; a spacer,
+   a filler or a trailing stretch NEVER outranks content that does not fit.
+2. **REFLOW.** No free space left → wrap the text, break the row into several
+   rows, move to a second column, let neighbours with slack give their slack up
+   first.
+3. **RAISE THE WINDOW MINIMUM.** Still does not fit → the window's minimum size
+   is too small; raise it, and the window can no longer be shrunk below it.
+4. **SCROLL — last.** A scrollbar is legal ONLY when the window is genuinely
+   full in that axis. **A visible scrollbar with unused space in the same window
+   is a bug**, not a style choice.
+
+### Never, in any situation
+
+- **Ellipsis or truncation on content the user must read** — a shortcut, a name,
+  a value, a path. An unreadable control is worse than a bigger window.
+- **Clipped elements** — half a character, a cut-off edge. If it renders, it
+  renders whole.
+- **Fixed height/width on a widget that carries text**, and any hard size that
+  makes step 1 impossible.
+- **A neighbour holding slack next to a starving element.**
+
+### Every window declares a minimum size, and it is COMPUTED
+
+The minimum is the size at which the fullest state of the window still satisfies
+everything above — derived from measured content (longest real string, tallest
+real row), never guessed at a round number. At the declared minimum the window
+must be fully legible; that is exactly what the audit test checks.
+
+### Classes and teeth
+
+| # | Rule | Class | Guarded by |
+|---|------|-------|-----------|
+| 1 | No banned clipping/eliding/hard-size API in GUI sources | **LAW** | `rules/hooks/layout_guard.py` (PreToolUse, machine-wide) + `tests/test_layout_law.py` (per project) |
+| 2 | No clipping, no elision, no scroll-with-free-space at runtime | **LAW** | `tests/test_layout_audit.py` — instantiates every window offscreen at its declared minimum and larger, walks the widget tree ([MIGRATE-LAYOUT.md](../MIGRATE-LAYOUT.md)) |
+| 3 | A session that touched a GUI file ships layout proof | **GATE** | `rules/hooks/layout_guard.py` (Stop, machine-wide) — `.claude/layout-proof.md` for the current session |
+| 4 | The ladder order itself (free space → reflow → minimum → scroll) | **GATE** | Definition of Done of every GUI task; the audit test catches its visible consequences |
+
+Honesty note on what the teeth CANNOT bite: no test knows that a layout is
+*ugly*, or that a reflow into two rows was the tasteful choice over a wider
+window. The guards catch the two failures above — cut content, and a scrollbar
+next to empty space — mechanically and every time. Taste stays with the session
+and the owner's review.
 
 ---
 

@@ -135,6 +135,19 @@ projects get them via [MIGRATE-DOCS.md](../MIGRATE-DOCS.md).
 | `tests/test_docs_coverage.py` | a source file lacks the docs its tier requires (spec in [DOCS](DOCS.md)) |
 | `tests/test_doc_links.py` | any project `.md` is unreachable from `README.md`, or any relative `.md` link is broken |
 
+**GUI projects carry two more** (THE SPACE & LEGIBILITY LAW —
+[GUI](GUI.md) → Law — Space & Legibility; installed via
+[MIGRATE-LAYOUT.md](../MIGRATE-LAYOUT.md), templates in `rules/templates/`):
+
+| Test | Fails the build when |
+|------|----------------------|
+| `tests/test_layout_law.py` | a GUI source elides/trims text, forces a scrollbar, disables wrapping, or hard-sizes a text-bearing widget — unless the line carries `layout-law: exempt - <reason>` or the file is in its `RATCHET` |
+| `tests/test_layout_audit.py` | a window opened offscreen at its declared minimum (and larger) clips a widget, cannot fit its own text, has no declared minimum, or shows a scrollbar while a spacer in the same window holds unused space |
+
+The audit is the only guard that INSTANTIATES the product; it stays in the full
+Stop run, never in `--fast`. It has **no ratchet** by design — a runtime layout
+failure is a visible bug, and ratcheting one would report it as solved.
+
 **RATCHET allowlist rules:** each entry names the file, WHY it stays whole, and
 the session that owes the split. The list may only SHRINK — adding an entry
 requires the owner's explicit approval in that same session. An entry's remedy
