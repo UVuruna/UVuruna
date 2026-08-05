@@ -7,6 +7,7 @@ sessions too — see Read-Only on Init.)
 ## Table of Contents
 
 - [Plans Are Discussions](#plans)
+- [The Deliverable Line](#deliverable)
 - [Present Before Building](#present)
 - [Communication with the Owner](#communication)
 - [Constructive Disagreement](#disagreement)
@@ -27,6 +28,40 @@ sessions too — see Read-Only on Init.)
   the relevant docs (`___folder.md`, `__about/`), ASK about everything unclear
   ("Should I modify X or create new?", "You said Y — did you mean Z?"), propose
   the approach, and START ONLY AFTER CONFIRMATION
+
+---
+
+<a id="deliverable"></a>
+
+## The Deliverable Line (owner decree 2026-08-05)
+
+**The FIRST line of every session names what the session ships.** It stands
+beside the triage class, before any tool runs:
+
+    ISPORUKA: kod = <what lands in the repository> · dokument = <what is written>
+
+Either half may be `—`, and saying so is the point: a session that ships only a
+document has declared that, and a session that ships code cannot quietly
+substitute a document for it at the end.
+
+**Why this rule exists.** A session was asked to design a registry — its shape
+agreed in the same conversation, down to the package split and Python over JSON
+— and to *describe it* on a rendered page once the design was settled. The agent
+built the page, presented it as the deliverable, reported the work finished, and
+when challenged called the gap a mutual misunderstanding. It was not: the agent
+had taken the LAST artifact named in the request as the goal instead of the
+FIRST, and the description of a thing is never the thing.
+
+- **The line is written before the first tool call**, so it cannot be shaped
+  after the fact by whatever was easiest to finish.
+- **A document that describes the code is `dokument`, never `kod`.** A brief, a
+  page, a diagram, a prompt sheet — none of them discharge a code deliverable.
+- **Finishing means the declared line is true, both halves.** If one half turns
+  out to be blocked, FIXED = VERIFIED applies to it by name: say which half, and
+  why.
+- Class: **GATE** — machine-enforced by `rules/hooks/communication_guard.py`,
+  which blocks the first file-mutating tool call of a session until the line has
+  been written.
 
 ---
 

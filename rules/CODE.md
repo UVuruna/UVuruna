@@ -30,13 +30,31 @@ work. This law outranks performance, readability, everything.
    docs). Appending to whichever file was open is a DEFECT of the same severity
    as a failing test. Before writing, ALWAYS check: does a module (or a section
    within the right file) already own this responsibility?
-2. **Thresholds (per file):**
+2. **Thresholds (per file) — counted in LINES OF LOGIC:**
 
-   | Lines | Status | Action |
+   | Lines of logic | Status | Action |
    |-------|--------|--------|
    | ≤ ~500 | Normal | Nothing — size alone is fine |
    | ~500–1,000 | Smell | ASK in writing: "Does this file hold more than one responsibility?" |
    | > ~1,000 | Violation | Split by responsibility — or a documented ratchet entry (below) |
+
+   **A declarative table is not logic** (owner ruling 2026-08-05). The
+   threshold measures what a reader must hold in their head at once —
+   BEHAVIOUR. A registry, a roster, a lookup table is a DIRECTORY: sibling
+   entries of one kind, read by looking one up, never top to bottom. Splitting
+   such a table across files makes one subject live in several places and
+   forces the reader to chase imports to compare two entries — the opposite of
+   what this law is for. The guard therefore subtracts top-level assignments
+   whose value is a pure literal (dict/list/tuple/set, plus the module
+   docstring) before applying the threshold, so a file that is ALL table may be
+   as long as its subject is. **The moment a table computes** — a call, a
+   comprehension or a lambda inside the literal — **it is logic again** and
+   counts in full.
+
+   Born from a real over-correction: a theme registry of 35 sibling entries was
+   cut into eight group files purely to get under 1,000 lines, which made one
+   subject unreadable. It went back into one file the same day and the MEASURE
+   was fixed instead.
 
 3. **Split by RESPONSIBILITY, never mechanically.** `gui_part1.py`/`gui_part2.py`
    is forbidden; so is the opposite extreme (dozens of 30-line files = import
@@ -112,7 +130,7 @@ projects get them via [MIGRATE-DOCS.md](../MIGRATE-DOCS.md).
 
 | Test | Fails the build when |
 |------|----------------------|
-| `tests/test_structure_law.py` | any source file exceeds ~1,000 lines and is not in the RATCHET allowlist |
+| `tests/test_structure_law.py` | any source file exceeds ~1,000 lines OF LOGIC (declarative tables subtracted) and is not in the RATCHET allowlist |
 | `tests/test_config_sections.py` | a file listed in its `CONFIG_FILES` has: module-level post-definition patching of an earlier table (`X[...] = ...` / `X.update(...)`), duplicate dict keys, or top-level definitions outside any section banner |
 | `tests/test_docs_coverage.py` | a source file lacks the docs its tier requires (spec in [DOCS](DOCS.md)) |
 | `tests/test_doc_links.py` | any project `.md` is unreachable from `README.md`, or any relative `.md` link is broken |

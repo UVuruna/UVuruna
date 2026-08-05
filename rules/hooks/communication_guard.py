@@ -10,6 +10,10 @@ across ALL sessions on this machine (wired in ~/.claude/settings.json):
                      question block instead of fully explained questions.
   PreToolUse hook  — matcher AskUserQuestion: blocks questions that lack the
                      minimum substance (context + explanation + option detail).
+  PreToolUse hook  — matcher Write|Edit|NotebookEdit: blocks the first
+                     file-mutating call of a session until THE DELIVERABLE LINE
+                     has been written (PLAN.md -> The Deliverable Line, GATE of
+                     2026-08-05).
   PreToolUse hook  — matcher Artifact: blocks publishing a rendered page that
                      relies on the viewer's theme detection (prefers-color-scheme
                      / data-theme tokens) or that never sets its own background —
@@ -37,6 +41,15 @@ DIAGRAM_SOURCE_RE = re.compile(
     re.M,
 )
 ENUM_MARKER_RE = re.compile(r"\(\d\)")
+# THE DELIVERABLE LINE (PLAN.md, GATE of 2026-08-05): "ISPORUKA: kod = ... ·
+# dokument = ...". Accepted in either language and with either separator, since
+# the point is the DECLARATION, not its punctuation. Both halves must be named
+# — a line that mentions only one of them is the very substitution the rule
+# exists to stop.
+DELIVERABLE_RE = re.compile(
+    r"^\s*(ISPORUKA|DELIVERABLE)\b.*?\b(kod|code)\b.*?\b(dokument|document|doc)\b",
+    re.I | re.M | re.S,
+)
 
 BLOCK_DIAGRAM = (
     "COMMUNICATION LAW (rules/PLAN.md -> Communication with the Owner): your chat "
@@ -47,6 +60,21 @@ BLOCK_DIAGRAM = (
     "Artifact or an HTML file opened for the owner - NEVER paste diagram source into "
     "the conversation. Diagram source is allowed only inside doc FILES (__flow/), "
     "never in chat."
+)
+
+BLOCK_DELIVERABLE = (
+    "THE DELIVERABLE LINE (rules/PLAN.md -> The Deliverable Line, GATE of "
+    "2026-08-05): this session has not declared what it ships, and you are "
+    "about to change a file. Write the line FIRST, in chat, beside the triage "
+    "class:\n\n"
+    "    ISPORUKA: kod = <what lands in the repository> - dokument = <what is "
+    "written>\n\n"
+    "Either half may be a dash, and saying so is the point. A document that "
+    "DESCRIBES the code is 'dokument', never 'kod' - a page, a brief, a "
+    "diagram or a prompt sheet does not discharge a code deliverable. The rule "
+    "exists because a session once built the page that described a registry, "
+    "called that the deliverable, and reported the work finished. Declare the "
+    "line, then continue."
 )
 
 BLOCK_TERSE = (
@@ -199,6 +227,42 @@ def check_artifact(payload: dict) -> None:
         block(BLOCK_ARTIFACT_NO_BG)
 
 
+def collect_session_text(transcript_path: str) -> str:
+    """ALL assistant chat text of the session — the deliverable line is
+    declared once and stands for the whole session, unlike the per-turn
+    checks above."""
+    texts = []
+    with open(transcript_path, encoding="utf-8", errors="replace") as fh:
+        for line in fh:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                entry = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if entry.get("type") == "assistant":
+                text = entry_text(entry.get("message") or {})
+                if text:
+                    texts.append(text)
+    return "\n".join(texts)
+
+
+def check_deliverable(payload: dict) -> None:
+    """Block the first file-mutating call until the session has said what
+    it ships. Fail-open on an unreadable transcript: a guard that cannot
+    read must never brick the work."""
+    path = payload.get("transcript_path") or ""
+    if not path:
+        return
+    try:
+        text = collect_session_text(path)
+    except OSError:
+        return
+    if not DELIVERABLE_RE.search(text):
+        block(BLOCK_DELIVERABLE)
+
+
 def check_ask_user_question(payload: dict) -> None:
     tool_input = payload.get("tool_input") or {}
     for question in tool_input.get("questions") or []:
@@ -228,6 +292,10 @@ def main() -> None:
         check_ask_user_question(payload)
     elif event == "PreToolUse" and payload.get("tool_name") == "Artifact":
         check_artifact(payload)
+    elif event == "PreToolUse" and payload.get("tool_name") in (
+        "Write", "Edit", "NotebookEdit",
+    ):
+        check_deliverable(payload)
     sys.exit(0)
 
 
