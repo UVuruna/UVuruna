@@ -25,8 +25,10 @@ Fail-open on any parse error — a broken guard must never brick a session.
 """
 
 import json
+import os
 import re
 import sys
+from pathlib import Path
 
 # ═══════════════════════════ THRESHOLDS ═══════════════════════════
 
@@ -251,7 +253,18 @@ def collect_session_text(transcript_path: str) -> str:
 def check_deliverable(payload: dict) -> None:
     """Block the first file-mutating call until the session has said what
     it ships. Fail-open on an unreadable transcript: a guard that cannot
-    read must never brick the work."""
+    read must never brick the work.
+
+    The chat transcript is the primary source, but NOT the only one: the
+    VSCode-extension harness flushes an assistant message's text to the
+    transcript only after the turn ends (verified live 2026-08-05 — the
+    line stood twice in chat while the file held zero copies), so a line
+    written and followed by file edits in the SAME turn is invisible here
+    and the gate would deadlock every fresh session's first working turn.
+    The same declaration at the top of the project's
+    `.claude/session-tasks.md` (the session's on-disk contract, PLAN.md ->
+    The Session Task List) is therefore accepted too (owner approval
+    2026-08-05)."""
     path = payload.get("transcript_path") or ""
     if not path:
         return
@@ -259,8 +272,19 @@ def check_deliverable(payload: dict) -> None:
         text = collect_session_text(path)
     except OSError:
         return
-    if not DELIVERABLE_RE.search(text):
-        block(BLOCK_DELIVERABLE)
+    if DELIVERABLE_RE.search(text):
+        return
+    cwd = Path(payload.get("cwd") or os.getcwd())
+    for directory in (cwd, *cwd.parents):
+        tasks_file = directory / ".claude" / "session-tasks.md"
+        try:
+            if tasks_file.is_file() and DELIVERABLE_RE.search(
+                tasks_file.read_text(encoding="utf-8", errors="replace")
+            ):
+                return
+        except OSError:
+            pass
+    block(BLOCK_DELIVERABLE)
 
 
 def check_ask_user_question(payload: dict) -> None:

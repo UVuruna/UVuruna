@@ -8,6 +8,7 @@ sessions too — see Read-Only on Init.)
 
 - [Plans Are Discussions](#plans)
 - [The Deliverable Line](#deliverable)
+- [The Session Task List](#session-tasks)
 - [Present Before Building](#present)
 - [Communication with the Owner](#communication)
 - [Constructive Disagreement](#disagreement)
@@ -62,6 +63,40 @@ FIRST, and the description of a thing is never the thing.
 - Class: **GATE** — machine-enforced by `rules/hooks/communication_guard.py`,
   which blocks the first file-mutating tool call of a session until the line has
   been written.
+
+---
+
+<a id="session-tasks"></a>
+
+## The Session Task List (owner decree 2026-08-05)
+
+**When the owner opens a session with a defined task list, that list is pinned
+in a file at the START and the session cannot end until it is finished.** The
+agent writes the list to the project's `.claude/session-tasks.md` before any
+other work:
+
+    WAITING_ON_OWNER: yes|no
+    - [ ] task as the owner defined it …
+    - [x] finished task …
+
+**Why this rule exists.** Sessions repeatedly drifted into pure conversation —
+the owner opened with concrete tasks, the discussion ran long, and the agent
+came to treat chatting as the job, losing the original list entirely. The owner
+had to re-demand work he had already defined.
+
+- **A task is checked ONLY when FIXED = VERIFIED** (root CLAUDE.md → The Laws):
+  root cause named, fix landed, evidence shown. Never for a symptom patch or a
+  promise.
+- **`WAITING_ON_OWNER: yes` is legal only when the turn genuinely ends with
+  questions or a presentation the owner must answer** — it goes back to `no`
+  the moment work resumes. It is the ONLY way to end a turn with open tasks.
+- The file is per project and per session: refreshed when the owner opens with
+  a new list, removed (or fully checked) when the list is done. `.claude/` is
+  excluded from the doc guards — this is harness state, not product docs.
+- Class: **GATE** — machine-enforced by `rules/hooks/session_tasks_guard.py`
+  (Stop hook, wired machine-wide in `~/.claude/settings.json`): ending a
+  session with unchecked tasks and no `WAITING_ON_OWNER: yes` is blocked, with
+  the open tasks fed back.
 
 ---
 
