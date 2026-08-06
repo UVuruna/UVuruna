@@ -108,6 +108,13 @@ ladder's order — a later step is legal only when the earlier ones are exhauste
                          in that axis
 ```
 
+Then the DESIGN REVIEW, on every window, in the same session: the audit writes
+`.claude/shots/<Window>.png` at the minimum size — **open it with the Read tool,
+look at it, and grade it 1–10 against [DESIGN.md](DESIGN.md).** Below 8/10 the
+work is not done: fix what the picture shows, re-shoot, re-grade. The owner
+pointing at a screenshot and saying "this is a 2 out of 5" is what this step
+exists to prevent, and the Stop hook verifies the image was really opened.
+
 **Suppressing a failure is not fixing it.** Widening a tolerance, dropping a
 window from the registry, or ratcheting a runtime failure are all ways of
 reporting a bug as solved — forbidden by FIXED = VERIFIED
@@ -153,5 +160,6 @@ A session under this brief ends in one honest state per FIXED = VERIFIED
 ([CLAUDE.md](CLAUDE.md) → The Laws): both guards installed and SHOWN failing on
 a planted violation then passing, every window registered (or the unregistered
 ones named with the reason), every audit failure fixed by the ladder, minimums
-computed and documented, `.claude/layout-proof.md` written for the session, docs
+computed, fitting 1280×720 and documented, every window's screenshot opened and
+graded ≥ 8/10, `.claude/layout-proof.md` written for the session, docs
 of everything touched updated, and commits per the version system.

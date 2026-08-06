@@ -91,7 +91,9 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
    in the component's docs and session memory.
 6. **THE SPACE & LEGIBILITY LAW** (owner decree 2026-08-05) — nothing the user
    must read is ever cut off, and nothing starves while its window holds empty
-   space; the fix order is free space → reflow → raised minimum → scroll
+   space; the fix order is free space → reflow → raised minimum → scroll. Every
+   window's minimum fits 1280×720, and every window an agent touches is
+   screenshotted, OPENED and graded ≥ 8/10 — below that nothing ships
    → [GUI Rules](rules/GUI.md)
 
 <a id="router"></a>

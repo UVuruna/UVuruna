@@ -21,6 +21,7 @@ hook like any other guard.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 
@@ -41,6 +42,15 @@ from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QCheckBox,
 # Factories must build the window in its FULLEST realistic state (longest real
 # strings, most rows) - an empty window proves nothing.
 WINDOWS: list[tuple[str, object]] = []
+
+# The screen every window must survive. A declared minimum bigger than this is
+# the absurd-minimum bug (a two-item menu demanding 6000px): REFLOW, never widen.
+# Raising it needs `.claude/layout-frame.json` with a stated reason.
+FLOOR_WIDTH, FLOOR_HEIGHT = 1280, 720
+
+# Screenshots the agent must OPEN and grade (>= 8/10) before the session may
+# end - the Stop half of rules/hooks/layout_guard.py checks both.
+SHOT_DIR = Path(__file__).resolve().parents[1] / ".claude" / "shots"
 
 # px of slack tolerated before a spacer counts as "unused space"
 SLACK_TOLERANCE = 24
@@ -63,10 +73,24 @@ def walk(widget: QWidget):
 
 def check_declared_minimum(window: QWidget) -> list[str]:
     minimum = window.minimumSize()
-    if minimum.width() > 0 and minimum.height() > 0:
-        return []
-    return ["no declared minimum size - the law requires one, COMPUTED from "
-            "the longest real content (setMinimumSize / setMinimumWidth)"]
+    if minimum.width() <= 0 or minimum.height() <= 0:
+        return ["no declared minimum size - the law requires one, COMPUTED "
+                "from the longest real content (setMinimumSize)"]
+    if minimum.width() > FLOOR_WIDTH or minimum.height() > FLOOR_HEIGHT:
+        return [f"ABSURD MINIMUM {minimum.width()}x{minimum.height()} - it does "
+                f"not fit the screen floor {FLOOR_WIDTH}x{FLOOR_HEIGHT}, so "
+                "the window demands a screen the user does not have. REFLOW "
+                "it (ladder step 2); widening your way out is the bug itself"]
+    return []
+
+
+def capture(window: QWidget, name: str) -> Path:
+    """The screenshot the agent must OPEN and grade. A GUI nobody looked at is
+    a GUI nobody checked."""
+    SHOT_DIR.mkdir(parents=True, exist_ok=True)
+    path = SHOT_DIR / f"{name}.png"
+    window.grab().save(str(path), "PNG")
+    return path
 
 
 def check_clipping(window: QWidget) -> list[str]:
@@ -182,6 +206,10 @@ def test_layout_audit(app: QApplication, name: str, factory) -> None:
         window.resize(width, height)
         app.processEvents()
         problems += audit(window, f"{name} @ {label} {width}x{height}")
+        if label == "minimum":
+            shot = capture(window, name)
+            print(f"SHOT {shot} - MIN {width}x{height} - now OPEN it and "
+                  f"GRADE it (>= 8/10) in .claude/layout-proof.md")
 
     window.close()
     assert not problems, (

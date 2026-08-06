@@ -22,11 +22,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Xunit;
 
 namespace Project.Tests.Layout;
@@ -43,6 +45,19 @@ public static class LayoutAuditRegistry
 
     public const double SlackTolerance = 24;   // px before free space counts
     public const double TextPadding = 8;       // px assumed frame-to-text
+
+    // The screen every window must survive. A declared minimum bigger than
+    // this is the absurd-minimum bug (a two-item menu demanding 6000px):
+    // REFLOW, never widen. Raising it needs .claude/layout-frame.json with a
+    // stated reason.
+    public const double FloorWidth = 1280;
+    public const double FloorHeight = 720;
+
+    // Screenshots the agent must OPEN and grade (>= 8/10) before the session
+    // may end - the Stop half of rules/hooks/layout_guard.py checks both.
+    public static readonly string ShotDir =
+        Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..",
+                     ".claude", "shots");
 }
 
 public class LayoutAuditTests
@@ -77,6 +92,18 @@ public class LayoutAuditTests
             return problems;
         }
 
+        if (window.MinWidth > LayoutAuditRegistry.FloorWidth ||
+            window.MinHeight > LayoutAuditRegistry.FloorHeight)
+        {
+            problems.Add($"[{name}] ABSURD MINIMUM {window.MinWidth:0}x"
+                + $"{window.MinHeight:0} - it does not fit the screen floor "
+                + $"{LayoutAuditRegistry.FloorWidth:0}x"
+                + $"{LayoutAuditRegistry.FloorHeight:0}, so the window demands "
+                + "a screen the user does not have. REFLOW it (ladder step 2); "
+                + "widening your way out is the bug itself");
+            return problems;
+        }
+
         foreach (var (label, width, height) in new[]
         {
             ("minimum", window.MinWidth, window.MinHeight),
@@ -94,9 +121,35 @@ public class LayoutAuditTests
             problems.AddRange(Elided(window).Select(p => $"{tag} {p}"));
             problems.AddRange(ScrollWithSlack(window, width, height)
                 .Select(p => $"{tag} {p}"));
+
+            if (label == "minimum")
+            {
+                var shot = Capture(window, name, width, height);
+                Console.WriteLine($"SHOT {shot} - MIN {width:0}x{height:0} - "
+                    + "now OPEN it and GRADE it (>= 8/10) in "
+                    + ".claude/layout-proof.md");
+            }
         }
 
         return problems;
+    }
+
+    /// The screenshot the agent must OPEN and grade. A GUI nobody looked at is
+    /// a GUI nobody checked.
+    private static string Capture(Window window, string name,
+                                  double width, double height)
+    {
+        Directory.CreateDirectory(LayoutAuditRegistry.ShotDir);
+        var path = Path.GetFullPath(
+            Path.Combine(LayoutAuditRegistry.ShotDir, $"{name}.png"));
+        var bitmap = new RenderTargetBitmap(
+            (int)width, (int)height, 96, 96, PixelFormats.Pbgra32);
+        bitmap.Render(window);
+        var encoder = new PngBitmapEncoder();
+        encoder.Frames.Add(BitmapFrame.Create(bitmap));
+        using var stream = File.Create(path);
+        encoder.Save(stream);
+        return path;
     }
 
     // --- the three checks --------------------------------------------------

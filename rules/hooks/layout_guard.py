@@ -113,24 +113,54 @@ BLOCK_PATTERN = (
 
 # --- the Stop proof gate ----------------------------------------------------
 
+# The screen every GUI must survive. Overridable per project in
+# .claude/layout-frame.json: {"floor_width":1280,"floor_height":720,
+# "reason":"why this project may demand more"} - a different floor without a
+# reason does not count.
+FLOOR_WIDTH = 1280
+FLOOR_HEIGHT = 720
+FRAME_FILENAME = "layout-frame.json"
+
+MIN_GRADE = 8
+MIN_SHOT_BYTES = 5000
+
+SESSION_RE = re.compile(r"^SESSION:\s*(\S+)", re.M)
+MIN_RE = re.compile(r"\bMIN\s+(\d{2,6})\s*[xX×]\s*(\d{2,6})")
+SHOT_RE = re.compile(r"\bSHOT\s+(\S+\.(?:png|jpg|jpeg))", re.I)
+GRADE_RE = re.compile(r"\bGRADE\s+(\d{1,2})(?:[.,]\d+)?\s*/\s*10")
+
+PROOF_TEMPLATE = (
+    "    SESSION: {session}\n"
+    "    - SetsDialog (gui/sets_dialog.py) - MIN 980x720 - "
+    "SHOT .claude/shots/sets_dialog.png - GRADE 9/10 - audit: PASS\n"
+)
+
 BLOCK_NO_PROOF = (
     "THE SPACE & LEGIBILITY LAW (rules/GUI.md -> Law - Space & Legibility, "
-    "GATE of 2026-08-05): this session edited GUI files and has shipped no "
-    "layout proof, so it may not end.\n"
+    "GATE of 2026-08-05): this session edited GUI files, and its layout proof "
+    "is missing or does not hold. The session may not end.\n"
     "GUI files touched:\n{files}\n"
-    "{detail}\n"
-    "Write {proof} like this - one line per window you touched, and a window "
-    "counts as PASS only when you actually checked it (audit test, or the app "
-    "opened and inspected at that size):\n\n"
-    "    SESSION: {session}\n"
-    "    - SetsDialog (gui/sets_dialog.py) - minimum 980x720 - audit: PASS - "
-    "pytest tests/test_layout_audit.py, min + 1400x900\n\n"
-    "Each window's PASS means all three hold at the declared minimum AND "
-    "larger: nothing is clipped, no text is elided, and no scrollbar is "
-    "visible while that window still has unused space in the same axis. If "
-    "one of them does not hold, FIX IT - do not write PASS. FIXED = VERIFIED "
-    "(CLAUDE.md -> The Laws) applies to the proof line as it does to any other "
-    "claim of finished work."
+    "WHAT IS WRONG:\n{detail}\n"
+    "Write {proof} - one line per window you touched:\n\n"
+    "{template}\n"
+    "Every field is checked, and every one of them is work you actually do:\n"
+    "  MIN    the window's declared minimum size. It MUST fit inside "
+    "{fw}x{fh} - a two-item menu that demands a 6000px minimum is an absurdity "
+    "the ladder was supposed to prevent (reflow, do not widen). A project that "
+    "genuinely needs a bigger floor declares it in "
+    ".claude/layout-frame.json with a reason.\n"
+    "  SHOT   a real screenshot of THAT window, captured at MIN (the audit "
+    "test writes them; widget.grab().save(...) / RenderTargetBitmap otherwise). "
+    "The file must exist and be a real image.\n"
+    "  GRADE  YOUR OWN grade of that screenshot, 1-10, after you OPEN IT with "
+    "the Read tool and look at it against DESIGN.md - crowding, alignment, "
+    "empty holes, cut text, ugly defaults. This hook verifies you actually "
+    "opened the image in this session. Anything below {grade}/10 does not "
+    "ship: fix the GUI and re-shoot. Grading your own work honestly is the "
+    "point - a 9 written under a 2/10 screenshot is a capacity lie "
+    "(CLAUDE.md -> Universal Conduct).\n"
+    "  PASS   the runtime audit passed: nothing clipped, no text elided, no "
+    "scrollbar while that window still holds unused space.\n"
 )
 
 
@@ -211,11 +241,10 @@ def find_proof_file(start: Path) -> Path | None:
     return None
 
 
-def gui_files_of_session(transcript_path: str) -> list:
-    """Every GUI file this session wrote to, oldest first, de-duplicated."""
-    touched = []
+def iter_tool_uses(transcript_path: str):
+    """(tool_name, tool_input) for every tool call of the session."""
     if not transcript_path or not os.path.isfile(transcript_path):
-        return touched
+        return
     with open(transcript_path, encoding="utf-8", errors="replace") as handle:
         for raw in handle:
             try:
@@ -227,26 +256,137 @@ def gui_files_of_session(transcript_path: str) -> list:
             if not isinstance(blocks, list):
                 continue
             for block in blocks:
-                if not isinstance(block, dict):
-                    continue
-                if block.get("type") != "tool_use":
-                    continue
-                if block.get("name") not in ("Write", "Edit", "MultiEdit",
-                                             "NotebookEdit"):
-                    continue
-                tool_input = block.get("input") or {}
-                path = (tool_input.get("file_path")
-                        or tool_input.get("notebook_path") or "")
-                if path and is_gui_file(path, written_text(tool_input)):
-                    if path not in touched:
-                        touched.append(path)
+                if isinstance(block, dict) and block.get("type") == "tool_use":
+                    yield block.get("name") or "", block.get("input") or {}
+
+
+def gui_files_of_session(transcript_path: str) -> list:
+    """Every GUI file this session wrote to, oldest first, de-duplicated."""
+    touched = []
+    for name, tool_input in iter_tool_uses(transcript_path):
+        if name not in ("Write", "Edit", "MultiEdit", "NotebookEdit"):
+            continue
+        path = (tool_input.get("file_path")
+                or tool_input.get("notebook_path") or "")
+        if path and is_gui_file(path, written_text(tool_input)):
+            if path not in touched:
+                touched.append(path)
     return touched
+
+
+def images_looked_at(transcript_path: str) -> set:
+    """Basenames of every image the session OPENED with Read - the only
+    machine-checkable trace that the agent actually looked at its own GUI."""
+    seen = set()
+    for name, tool_input in iter_tool_uses(transcript_path):
+        if name != "Read":
+            continue
+        path = tool_input.get("file_path") or ""
+        if path.lower().endswith((".png", ".jpg", ".jpeg")):
+            seen.add(Path(path).name.lower())
+    return seen
+
+
+def resolve_floor(proof: Path) -> tuple:
+    """The project's screen floor, and whether its override is justified."""
+    frame = proof.parent / FRAME_FILENAME
+    if not frame.is_file():
+        return FLOOR_WIDTH, FLOOR_HEIGHT, None
+    try:
+        data = json.loads(frame.read_text(encoding="utf-8", errors="replace"))
+    except (json.JSONDecodeError, ValueError, OSError):
+        return FLOOR_WIDTH, FLOOR_HEIGHT, f"{frame} is not readable JSON"
+    width = int(data.get("floor_width") or FLOOR_WIDTH)
+    height = int(data.get("floor_height") or FLOOR_HEIGHT)
+    reason = str(data.get("reason") or "").strip()
+    if (width, height) != (FLOOR_WIDTH, FLOOR_HEIGHT) and len(reason) < 20:
+        return (FLOOR_WIDTH, FLOOR_HEIGHT,
+                f"{frame} raises the screen floor to {width}x{height} without "
+                "a stated reason - an override needs one, in the file")
+    return width, height, None
+
+
+def proof_problems(proof: Path, text: str, session: str, touched: list,
+                   looked_at: set) -> list:
+    """Everything the proof fails to establish. Empty list = the session may
+    end."""
+    problems = []
+    root = proof.parent.parent
+
+    if session not in text:
+        problems.append(
+            f"  - it does not name this session ({session}); an earlier "
+            "session's proof does not carry over")
+
+    unproven = [p for p in touched
+                if Path(p).stem.lower() not in text.lower()]
+    if unproven:
+        problems.append("  - these touched files appear nowhere in it: "
+                        + ", ".join(unproven))
+
+    if "PASS" not in text:
+        problems.append("  - no PASS: no window is claimed to have survived "
+                        "the runtime audit")
+
+    floor_width, floor_height, frame_problem = resolve_floor(proof)
+    if frame_problem:
+        problems.append(f"  - {frame_problem}")
+
+    minimums = MIN_RE.findall(text)
+    if not minimums:
+        problems.append("  - no MIN <width>x<height>: every window declares a "
+                        "COMPUTED minimum size, and it is checked here")
+    for width, height in minimums:
+        width, height = int(width), int(height)
+        if width > floor_width or height > floor_height:
+            problems.append(
+                f"  - MIN {width}x{height} does not fit the screen floor "
+                f"{floor_width}x{floor_height}. This is the absurd-minimum "
+                "bug: the window demands a screen the user does not have. "
+                "REFLOW it (ladder step 2) - never widen your way out")
+
+    shots = SHOT_RE.findall(text)
+    if not shots:
+        problems.append("  - no SHOT <file.png>: a screenshot of each window "
+                        "at its minimum is what makes the grade real")
+    for shot in shots:
+        candidate = Path(shot)
+        if not candidate.is_absolute():
+            candidate = root / shot
+        if not candidate.is_file():
+            problems.append(f"  - SHOT {shot} does not exist on disk "
+                            f"(looked for {candidate})")
+        elif candidate.stat().st_size < MIN_SHOT_BYTES:
+            problems.append(f"  - SHOT {shot} is {candidate.stat().st_size} "
+                            "bytes - that is not a screenshot of a window")
+        elif candidate.name.lower() not in looked_at:
+            problems.append(
+                f"  - SHOT {shot} was never OPENED in this session. Read it "
+                "(the Read tool renders images) and grade what you actually "
+                "see - a grade written without looking is worthless")
+
+    grades = GRADE_RE.findall(text)
+    if not grades:
+        problems.append(
+            f"  - no GRADE <n>/10: after looking at each screenshot, grade it "
+            f"against DESIGN.md. Below {MIN_GRADE}/10 nothing ships")
+    for grade in grades:
+        if int(grade) < MIN_GRADE:
+            problems.append(
+                f"  - GRADE {grade}/10 - you graded your own GUI below the "
+                f"bar of {MIN_GRADE}/10 and that is an honest grade, so the "
+                "session does not end here: FIX what the screenshot shows, "
+                "re-shoot, re-grade. Raising the number without changing the "
+                "GUI is a capacity lie")
+
+    return problems
 
 
 def check_stop(payload: dict) -> None:
     if payload.get("stop_hook_active"):
         return  # already continuing because of a Stop hook - never loop
-    touched = gui_files_of_session(payload.get("transcript_path") or "")
+    transcript = payload.get("transcript_path") or ""
+    touched = gui_files_of_session(transcript)
     if not touched:
         return
     cwd = Path(payload.get("cwd") or os.getcwd())
@@ -255,30 +395,24 @@ def check_stop(payload: dict) -> None:
     listing = "".join(f"  - {p}\n" for p in touched)
 
     if proof is None:
-        detail = (f"No {PROOF_FILENAME} exists anywhere above {cwd}.")
         target = cwd / ".claude" / PROOF_FILENAME
+        detail = f"  - {target} does not exist: no proof at all"
+        floor_width, floor_height = FLOOR_WIDTH, FLOOR_HEIGHT
     else:
-        text = proof.read_text(encoding="utf-8", errors="replace")
         target = proof
-        missing = []
-        if session not in text:
-            missing.append(
-                f"it does not name this session ({session}) - the proof of an "
-                "earlier session does not carry over")
-        if "PASS" not in text:
-            missing.append("it contains no PASS line")
-        unproven = [p for p in touched if Path(p).stem.lower()
-                    not in text.lower()]
-        if unproven:
-            missing.append("these touched files appear nowhere in it: "
-                           + ", ".join(unproven))
-        if not missing:
+        text = proof.read_text(encoding="utf-8", errors="replace")
+        floor_width, floor_height, _ = resolve_floor(proof)
+        problems = proof_problems(proof, text, session, touched,
+                                  images_looked_at(transcript))
+        if not problems:
             return
-        detail = f"{proof} exists, but " + "; ".join(missing) + "."
+        detail = "\n".join(problems)
 
     print(
-        BLOCK_NO_PROOF.format(files=listing, detail=detail, proof=target,
-                              session=session),
+        BLOCK_NO_PROOF.format(
+            files=listing, detail=detail, proof=target,
+            template=PROOF_TEMPLATE.format(session=session),
+            fw=floor_width, fh=floor_height, grade=MIN_GRADE),
         file=sys.stderr,
     )
     sys.exit(2)
