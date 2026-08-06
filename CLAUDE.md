@@ -153,6 +153,10 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
 - **After the work:** update the docs of everything you changed (Living Docs
   Rule — [Docs Rules](rules/DOCS.md)), commit per the system below, and for
   installable apps BUILD + GIT RELEASE automatically ([Ship Rules](rules/SHIP.md)).
+  A delivering session ENDS with the per-task FINAL REPORT — status + evidence
+  per session task, then the release — mirrored to `.claude/session-report.md`
+  and gated by a machine-wide Stop hook ([Plan Rules](rules/PLAN.md) → The
+  Final Report, owner decree 2026-08-06).
 
 ---
 

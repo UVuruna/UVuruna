@@ -123,6 +123,47 @@ lie.
    all: it cancels planned work. Misunderstandings are asked about LOUDLY at
    the moment of doubt, never resolved silently into a debt.
 
+### The Final Report (owner decree 2026-08-06)
+
+**A session that delivered may not end until it has WALKED ITS OWN TASK LIST
+in a report the owner can read diagonally** — per task: status + evidence,
+then the release. Born the same day the session-tasks teeth already existed
+and still failed him: the work was done, the tasks were checked, and the
+closing message was so shapeless the owner could not tell WHAT had been done
+at all ("nemam pojma ni dal si uradio ni šta si uradio"). Finishing the work
+and saying what happened to each task are two different obligations; this one
+gates the second.
+
+1. **The final message of a delivering session IS the report**: the NOT DONE
+   section first (Loud Incompleteness), then every task from
+   `.claude/session-tasks.md` with its status — `DONE | PARTIAL | BLOCKED |
+   NOT DONE` — and its evidence (commits, tests run and their results, files,
+   measurements), then the release link when one shipped. Rendered readably
+   (tables/sections), not as a raw file dump. — **LAW**
+2. **The same report is mirrored to `.claude/session-report.md`**, stamped
+   with the session id, before the session ends:
+
+       SESSION: <session id>
+       RELEASE: <release URL | none — why no release>
+       - [x] <task text as in session-tasks.md> — DONE — <evidence>
+       - [ ] <task text> — BLOCKED — <why + what would unblock>
+
+   One line per task, the task text copied verbatim so the guard can match
+   it; the evidence tail is NOT optional — FIXED = VERIFIED applies to a
+   report line as to any claim of finished work. A fresh session writes a
+   fresh report; an earlier session's file never carries over. — **GATE**,
+   machine-enforced by `rules/hooks/report_guard.py` (Stop hook, wired
+   machine-wide in `~/.claude/settings.json`): when every task is checked and
+   the turn is not `WAITING_ON_OWNER: yes`, ending without a session-stamped
+   report that covers every task with status + evidence + a RELEASE line is
+   blocked, with what is missing fed back. While tasks are still open, the
+   session-tasks guard is the wall — this gate takes over at the finish line.
+3. **Tasks the owner adds mid-session join the list the moment they are
+   given** — appended to `.claude/session-tasks.md` as `- [ ]` in the same
+   turn, so the report at the end covers them exactly like the opening tasks.
+   The session tracks the LIST; the owner's scratch files (`UV/`) are his own
+   and are never the report's source of truth.
+
 ---
 
 <a id="present"></a>
