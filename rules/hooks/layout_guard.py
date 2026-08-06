@@ -217,11 +217,60 @@ def scan(text: str) -> list:
     return findings
 
 
+# --- SILENT AUDITS (owner decree 2026-08-06) --------------------------------
+# No window an audit builds may ever reach the owner's screen or take his
+# focus. Born live: an audit's factories called show() before
+# WA_DontShowOnScreen, so every guard run flashed the real main window
+# across the owner's desktop and broke his typing mid-sentence.
+
+AUDIT_FILE_RE = re.compile(r"test_layout_audit[^/\\]*\.(py|cs)$", re.IGNORECASE)
+
+WINDOW_BUILDER_RE = re.compile(
+    r"QApplication|tb\.Window|tk\.Tk\b|Toplevel|new\s+Window\b|"
+    r"Application\.Current")
+
+SILENCE_MARKERS = ("DontShowOnScreen", "offscreen", "-alpha", "withdraw",
+                   "RenderTargetBitmap", "ShowInTaskbar")
+
+BLOCK_LOUD_AUDIT = (
+    "SILENT AUDITS (rules/GUI.md, owner decree 2026-08-06): {path} builds "
+    "windows but carries NO way of keeping them off the owner's screen.\n"
+    "An audit that shows real windows flashes over the owner's desktop and "
+    "steals his keyboard focus on EVERY guard run - this happened live, "
+    "mid-sentence, repeatedly.\n"
+    "Add the silencing before ANY window can map: Qt - "
+    "setAttribute(WA_DontShowOnScreen, True) BEFORE every show() (or the "
+    "offscreen platform); Tk - withdraw()/geometry off-screen AND "
+    "attributes('-alpha', 0) before the first update; WPF - render to "
+    "RenderTargetBitmap, never Show()."
+)
+
+
+def check_silent_audit(path: str, text: str) -> None:
+    if not AUDIT_FILE_RE.search(path or ""):
+        return
+    if not WINDOW_BUILDER_RE.search(text):
+        return
+    # An Edit fragment inherits the silencing already in the file on disk.
+    combined = text
+    try:
+        combined += Path(path).read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        pass
+    if any(marker in combined for marker in SILENCE_MARKERS):
+        return
+    print(BLOCK_LOUD_AUDIT.format(path=path), file=sys.stderr)
+    sys.exit(2)
+
+
 def check_pre_tool_use(payload: dict) -> None:
     tool_input = payload.get("tool_input") or {}
     path = tool_input.get("file_path") or tool_input.get("notebook_path") or ""
     text = written_text(tool_input)
-    if not text or not is_gui_file(path, text):
+    if not text:
+        return
+    check_silent_audit(path, text)
+    if not is_gui_file(path, text):
         return
     findings = scan(text)
     if not findings:
