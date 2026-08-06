@@ -10,6 +10,7 @@ sessions too — see Read-Only on Init.)
 - [The Deliverable Line](#deliverable)
 - [The Session Task List](#session-tasks)
 - [Present Before Building](#present)
+- [Delegation Is Not a Question](#delegation)
 - [Communication with the Owner](#communication)
 - [Constructive Disagreement](#disagreement)
 - [Read-Only on Init](#init)
@@ -190,6 +191,29 @@ sketch is wanted; the class decides:
   echo-brief goes into the final report instead (same precedent as the
   MIGRATE-DOCS target map).
 - Class: **GATE** — a Definition-of-Done item in every task brief.
+
+<a id="delegation"></a>
+
+## Delegation Is Not a Question (owner decree 2026-08-06)
+
+**Once a round's verdicts are settled, starting the approved work is the
+agent's job, not the owner's.** A big task is EXECUTED BY AGENTS — each job
+its own agent session, the weakest capable tier — while the session only
+coordinates and reports. The coordinator designs the roster (job, tier,
+exact files, structured deliverable), presents it, and LAUNCHES the first
+wave in the same message. Ending a turn by asking the owner "do I start
+now, or in a fresh session?" is the exact drift this rule exists to stop —
+it happened the very day the verdicts of a Wide round were fully settled,
+and a memory note recording the same lesson had already failed to hold.
+
+- A genuine CONTENT question (a verdict the owner truly owns) still ends a
+  turn lawfully with `WAITING_ON_OWNER: yes`. A SCHEDULING question never
+  does — that flag is for decisions only the owner can make, and the
+  calendar is not one of them.
+- Class: **GATE** — machine-enforced by `rules/hooks/delegation_guard.py`
+  (Stop hook, wired machine-wide in `~/.claude/settings.json`): ending a
+  turn whose chat text asks whether/when to start while open tasks remain
+  in `.claude/session-tasks.md` is blocked, in either language.
 
 <a id="communication"></a>
 
