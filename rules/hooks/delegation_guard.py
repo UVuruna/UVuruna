@@ -88,8 +88,15 @@ def is_real_user_prompt(entry: dict) -> bool:
     return False
 
 
-def collect_turn_text(transcript_path: str) -> str:
-    texts = []
+def collect_final_text(transcript_path: str) -> str:
+    """The LAST assistant message only. The scheduling ask matters at the
+    moment of ENDING — and scanning the whole turn bit its own tail the
+    day this guard was born: an earlier status message QUOTED the banned
+    phrase while describing this very rule ('pitanje "kada da krenem" je
+    defekt'), and the turn-wide scan then blocked every Stop until the
+    next owner prompt. The final message is where the decision to end
+    lives; it is the only one this guard reads."""
+    final = ""
     with open(transcript_path, encoding="utf-8", errors="replace") as fh:
         for line in fh:
             line = line.strip()
@@ -99,13 +106,21 @@ def collect_turn_text(transcript_path: str) -> str:
                 entry = json.loads(line)
             except json.JSONDecodeError:
                 continue
-            if is_real_user_prompt(entry):
-                texts = []
-            elif entry.get("type") == "assistant":
+            if entry.get("type") == "assistant":
                 text = entry_text(entry.get("message") or {})
                 if text:
-                    texts.append(text)
-    return "\n".join(texts)
+                    final = text
+    return final
+
+
+# Text standing inside quotation marks is someone's words being CITED —
+# a rule being documented, an owner sentence being echoed back — never
+# the agent asking. Stripped before the ask patterns run.
+QUOTED_SPAN_RE = re.compile(r"[„\"“‚'»]([^„“”\"‚'«»]{0,120}?)[”“\"'«]")
+
+
+def strip_quotations(text: str) -> str:
+    return QUOTED_SPAN_RE.sub(" ", text)
 
 
 def open_tasks_exist(cwd: Path) -> bool:
@@ -128,12 +143,12 @@ def check_stop(payload: dict) -> None:
         return
     path = payload.get("transcript_path") or ""
     try:
-        text = collect_turn_text(path)
+        text = collect_final_text(path)
     except OSError:
         return
     if not text:
         return
-    if SCHEDULING_ASK_RE.search(text):
+    if SCHEDULING_ASK_RE.search(strip_quotations(text)):
         block(BLOCK_SCHEDULING)
 
 
