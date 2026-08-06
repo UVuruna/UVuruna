@@ -9,6 +9,7 @@ A new or changed GUI element starts with a layout sketch shown to the owner —
 
 - [Law — Logic Before Looks](#logic-first)
 - [Law — Space & Legibility](#space)
+- [The Visual Proof](#visual-proof)
 - [Modern UI — No Old-Fashioned Interfaces](#modern-ui)
 - [Law — Responsiveness](#responsiveness)
 - [Stack Choice for GUIs](#stack)
@@ -145,6 +146,58 @@ number is above the bar, the minimum fits the screen. The grade itself rests on
 the same rule as every other claim of finished work: **FIXED = VERIFIED**, and
 inflating it to end a session is a capacity lie, the one defect that defeats all
 the others.
+
+---
+
+<a id="visual-proof"></a>
+
+## The Visual Proof (owner decree 2026-08-06)
+
+Born the same day as the Silent Audits law, from the same failure: agents
+shipped a live time crown that was microscopic and mis-metaled on the real
+dial, a bottom location line that was never implemented, and jewels sitting
+sideways — while 1800 tests and every existing hook, including the DESIGN
+REVIEW above, passed clean. The reason the review above did not catch it:
+sub-agents never pass through the coordinator's Stop gates at all, and the
+implementer graded its own work on zoomed crops that never showed the defect.
+A self-graded close-up is not proof — it is the failure mode this law exists
+to name.
+
+**No session whose work changes what the user SEES may end without an
+INDEPENDENT grader's screenshot proof.** Independent means: not the agent
+that wrote the code. The grader launches the real app at its real default
+size, takes FULL-window / FULL-dial screenshots — never a cropped or zoomed
+region — and grades each one against the text of the ruling it is meant to
+satisfy (a decree, a spec line, an owner instruction). Grade ≥ 8 per touched
+ruling; below that the answer is fix, re-shoot, re-grade, exactly as in
+DESIGN REVIEW above — never round up.
+
+**Proof file:** `.claude/visual-proof.json`, JSON:
+
+```json
+{
+  "commit": "<git rev-parse HEAD of the project, exactly>",
+  "implementer": "<who wrote the code>",
+  "grader": "<who graded it — MUST differ from implementer>",
+  "items": [
+    {"ruling": "<the text being checked>", "image": "<path>", "grade": 9}
+  ]
+}
+```
+
+Every `image` must exist, be a real screenshot (≥ 200 KB or ≥ 700 px on its
+shorter side), and be newer than the commit it claims to prove — a stale
+screenshot proves nothing. `commit` must match the project's current HEAD.
+
+**Exemption:** a session that provably touched no rendering/GUI code may
+write `VISUAL_PROOF: exempt` into `.claude/session-tasks.md` instead of
+producing a proof file. The coordinator owns the honesty of that line — a
+false exemption is a lie under **FIXED = VERIFIED** ([root
+CLAUDE.md](../CLAUDE.md) Law #5), no different from an inflated grade.
+
+- Class: **GATE** — machine-enforced by `rules/hooks/visual_proof_guard.py`
+  (Stop, machine-wide). An unreadable or incomplete proof file BLOCKS — it is
+  never treated as an absent proof to fail open on.
 
 ---
 
