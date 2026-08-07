@@ -14,6 +14,28 @@ SEES may not end without an INDEPENDENT grader's proof — full-size
 screenshots, one grade >= 8 per touched ruling, from someone other than the
 implementer.
 
+SCOPE (owner decree 2026-08-07, after this hook blocked a session that had
+not touched the project it judged). The gate asks its question ONLY of the
+projects THIS session actually wrote to. Version one keyed off the harness
+cwd, so a session brainstorming a brand-new component was blocked by a
+failing grade another, still-running session had left in DOMY Watch — a
+project it had only READ one markdown file from. A gate that judges work the
+session did not do teaches agents to silence gates, which is the opposite of
+what teeth are for.
+
+  - Scope comes from the transcript: the file paths of this session's own
+    Write / Edit / NotebookEdit calls, each mapped to its project root.
+  - Paths inside `.claude/` are harness state, not product — never scope.
+  - Wrote to nothing → nothing to prove, and the session ends.
+  - Scope UNKNOWN (unreadable transcript, or the session launched subagents
+    whose writes live in their own transcripts) → fall back to the cwd
+    project, exactly as version one behaved. Unknown scope must never be
+    cheaper than known scope.
+
+Honest limit: a file written by a shell heredoc instead of the file tools is
+invisible here. Closing that would mean parsing arbitrary shell, whose false
+positives are what version one already got wrong.
+
 Class: GATE — wired machine-wide in ~/.claude/settings.json (Stop).
 Contract: exit 2 = BLOCK (stderr fed back to the agent); exit 0 = pass.
 Fail-open ONLY on harness payload errors (unreadable transcript, missing
@@ -26,6 +48,7 @@ import json
 import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 MIN_GRADE = 8
@@ -33,6 +56,14 @@ MIN_IMAGE_BYTES = 200 * 1024  # 200 KB
 MIN_IMAGE_SHORT_SIDE = 700    # px
 
 EXEMPT_MARK = "VISUAL_PROOF: exempt"
+
+# Tools that put bytes on disk. Anything else — reading, searching, running a
+# command — is not this session changing what a user sees.
+MUTATING_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
+PATH_KEYS = ("file_path", "notebook_path", "path")
+# A delegated write never appears in this transcript, so an agent launch means
+# the scope this hook can see is incomplete.
+AGENT_TOOLS = {"Task", "Agent"}
 
 BLOCK_MISSING = """THE VISUAL PROOF (rules/GUI.md -> The Visual Proof, GATE of 2026-08-06):
 this session may have changed what the user SEES, and there is no valid
@@ -82,12 +113,97 @@ def block(message: str) -> None:
 
 def find_claude_dir(cwd: Path) -> Path | None:
     """Walk cwd and its parents for a .claude/ directory (delegation_guard
-    style) — the project root is not always the harness cwd."""
+    style) — the project root is not always the harness cwd.
+
+    HOME is never a project: ~/.claude is the machine-wide harness config, and
+    the scratchpad lives under it on Windows (%LOCALAPPDATA%\\Temp). Walking
+    into it would make every temp file look like a project."""
+    try:
+        home = Path.home().resolve()
+    except (OSError, RuntimeError):
+        home = None
     for directory in (cwd, *cwd.parents):
+        if home is not None:
+            try:
+                if directory.resolve() == home:
+                    return None
+            except OSError:
+                pass
         candidate = directory / ".claude"
         if candidate.is_dir():
             return candidate
     return None
+
+
+def transcript_lines(path: str):
+    if not path or not os.path.isfile(path):
+        return
+    with open(path, encoding="utf-8", errors="replace") as handle:
+        yield from handle
+
+
+def touched_projects(payload: dict) -> tuple:
+    """(project_roots, scope_known) — the projects THIS session wrote to.
+
+    scope_known is False when the transcript cannot be read or the session
+    delegated to subagents; the caller then falls back to the cwd project."""
+    path = payload.get("transcript_path") or ""
+    if not path or not os.path.isfile(path):
+        return set(), False
+
+    temp_root = None
+    try:
+        temp_root = Path(tempfile.gettempdir()).resolve()
+    except OSError:
+        pass
+
+    roots, delegated, saw_any = set(), False, False
+    try:
+        for raw in transcript_lines(path):
+            try:
+                entry = json.loads(raw)
+            except (json.JSONDecodeError, ValueError):
+                continue
+            message = entry.get("message") or {}
+            blocks = message.get("content")
+            if not isinstance(blocks, list):
+                continue
+            for block in blocks:
+                if not isinstance(block, dict) or block.get("type") != "tool_use":
+                    continue
+                saw_any = True
+                name = block.get("name")
+                if name in AGENT_TOOLS:
+                    delegated = True
+                    continue
+                if name not in MUTATING_TOOLS:
+                    continue
+                tool_input = block.get("input") or {}
+                if not isinstance(tool_input, dict):
+                    continue
+                for key in PATH_KEYS:
+                    value = tool_input.get(key)
+                    if not value or not isinstance(value, str):
+                        continue
+                    target = Path(value)
+                    # harness state, not product — session-tasks.md and friends
+                    if ".claude" in target.parts:
+                        continue
+                    if temp_root is not None:
+                        try:
+                            if temp_root in target.resolve().parents:
+                                continue
+                        except OSError:
+                            pass
+                    claude_dir = find_claude_dir(target.parent)
+                    if claude_dir is not None:
+                        roots.add(claude_dir.parent)
+    except OSError:
+        return set(), False
+
+    if delegated or not saw_any:
+        return roots, False
+    return roots, True
 
 
 def is_exempt(claude_dir: Path) -> bool:
@@ -240,13 +356,7 @@ def validate_proof(proof_path: Path, project_root: Path) -> list:
     return problems
 
 
-def check_stop(payload: dict) -> None:
-    if payload.get("stop_hook_active"):
-        return
-    cwd = Path(payload.get("cwd") or os.getcwd())
-    claude_dir = find_claude_dir(cwd)
-    if claude_dir is None:
-        return  # no project structure here at all — nothing to gate
+def gate_project(claude_dir: Path) -> None:
     if is_exempt(claude_dir):
         return
 
@@ -263,6 +373,30 @@ def check_stop(payload: dict) -> None:
     if problems:
         detail = "\n".join(f"  - {p}" for p in problems)
         block(BLOCK_INVALID.format(proof=proof_path, detail=detail))
+
+
+def check_stop(payload: dict) -> None:
+    if payload.get("stop_hook_active"):
+        return
+
+    roots, scope_known = touched_projects(payload)
+
+    if scope_known:
+        # The session's own writes are the whole scope. No writes into any
+        # project = nothing this gate has standing to judge.
+        for project_root in sorted(roots):
+            gate_project(project_root / ".claude")
+        return
+
+    # Scope unknown (unreadable transcript, or work delegated to subagents):
+    # fall back to the cwd project, and gate every project written to as well.
+    cwd = Path(payload.get("cwd") or os.getcwd())
+    claude_dir = find_claude_dir(cwd)
+    targets = {project_root / ".claude" for project_root in roots}
+    if claude_dir is not None:
+        targets.add(claude_dir)
+    for target in sorted(targets):
+        gate_project(target)
 
 
 def main() -> None:

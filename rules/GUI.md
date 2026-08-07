@@ -195,6 +195,33 @@ producing a proof file. The coordinator owns the honesty of that line — a
 false exemption is a lie under **FIXED = VERIFIED** ([root
 CLAUDE.md](../CLAUDE.md) Law #5), no different from an inflated grade.
 
+<a id="visual-proof-scope"></a>
+
+### Scope — the gate judges only what the session DID (owner decree 2026-08-07)
+
+**A gate may only ask about projects THIS session actually wrote to.** Version
+one of the hook keyed off the harness cwd, so a session designing a brand-new
+component was blocked by a failing grade another, still-running session had
+left in DOMY Watch — a project it had only READ one markdown file from. The
+owner named the defect exactly: *"nema on šta da provjerava dizajn domija ako
+ti radiš totalno 2. projekat"*. A gate that judges work the session did not do
+trains agents to silence gates, which is the opposite of what teeth are for.
+
+- **Scope comes from the transcript** — the file paths of this session's own
+  `Write` / `Edit` / `NotebookEdit` calls, each mapped to its project root.
+  Every such project is gated; nothing else is.
+- **`.claude/` paths are never scope** — harness state, not product, exactly as
+  in the doc guards.
+- **Wrote to no project → nothing to prove**, and the session ends clean. No
+  exemption line is needed for a session that only read, searched or ran things.
+- **Scope UNKNOWN falls back to the cwd project** — an unreadable transcript,
+  or a session that launched SUBAGENTS (their writes live in their own
+  transcripts, and sub-agent GUI work is the very failure this law was born
+  from). Unknown scope must never be cheaper than known scope.
+- Honest limit: a file written by a shell heredoc instead of the file tools is
+  invisible to this scoping. Closing that would mean parsing arbitrary shell,
+  whose false positives are the bug being fixed here.
+
 - Class: **GATE** — machine-enforced by `rules/hooks/visual_proof_guard.py`
   (Stop, machine-wide). An unreadable or incomplete proof file BLOCKS — it is
   never treated as an absent proof to fail open on.
