@@ -136,6 +136,32 @@ Travel); build/release pipeline remaining before v1 ships
 
 <a id="ultra-vivid"></a>
 
+### <img src="logos/Tumbler.svg" width="22" height="22"> Tumbler
+
+**Local path:** `Gadgets/Tumbler/`
+**GitHub:** — (not published yet)
+**Type:** Embeddable Component (Web, desktop planned)
+**Status:** 🟢 Active
+**Visibility:** Public
+
+**Description:** A loading animation for every screen that has to wait: a jewelled cube that tumbles through six colours, one face at a time. Websites and applications mount it and state which version they want — emblems, a ring, a real sun and moon, a texture, a palette. Vanilla ES modules, no build step, no dependencies.
+
+**Tech Stack:** JavaScript (vanilla ES modules, CSS 3D, SVG), Python 3.13 (playground server only)
+
+**Architecture:** One module per responsibility behind a single `Tumbler.mount(target, options)` call, with `shared/spec.json` as the one source of truth every renderer reads — colours, face order, timing, which finishes and rings and emblem families exist. The web renderer restates that file in `src/spec.js` so mounting needs no `fetch` from any origin, and a guard test fails the build the moment the two drift; a future C#/WPF renderer reads the JSON, never the JavaScript. Everything drawn is COMPUTED — gradients and SVG turbulence for the textures, geometry for the rings — because three palettes times six faces would otherwise mean eighteen bitmaps per ornament in front of the very thing the user is waiting for. Ornament motion is CSS on the compositor, so the ring keeps turning while the main thread is busy.
+
+**Key Features:**
+- The core is one thing only — a cube turning through six faces in the colour-wheel order (yellow, orange, red, purple, blue, green; by position top, right, back, bottom, left, front), every step a clean quarter turn because consecutive faces share a cube edge
+- Six ring compositions, shown for whichever face is on top: a laurel wreath, water at three wavelengths, fire that leans both ways, an electric arc chasing itself, the solar corona, and the twelve lunar phases
+- A real sun and a real moon riding a circle around the cube at their actual position for the time of day, lighting the faces they face — and a full moon really lights it, from below, at a strength that follows the phase
+- Nine computed finishes, from flat enamel to watercolour-with-a-gold-frame and crackled leather; three palettes (Royal Gems, Midnight Velvet, Obsidian and Gold)
+- Six emblem families, two of them (planets, virtues) copied from the DOMY Watch canon rather than invented, since both projects walk the same six-colour wheel
+- Everything except the turning cube is opt-in, chosen at mount like any other constructor argument
+- Playground app (`python main.py`) where every combination can be tried and the exact call copied
+- Measured cost: ten cubes at once use 0.11–0.13 ms of a 16.7 ms frame, under 1 %
+
+---
+
 ### <img src="logos/UltraVivid.svg" width="22" height="22"> Ultra Vivid
 
 **Local path:** `Gadgets/Ultra Vivid/`

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect x="4" y="4" width="120" height="120" rx="24" fill="#16161F"/>
+  <rect x="4.75" y="4.75" width="118.5" height="118.5" rx="23.25" fill="none" stroke="#C9A227" stroke-opacity="0.35" stroke-width="1.5"/>
+  <!-- the ring, well clear of the cube -->
+  <circle cx="64" cy="66" r="46" fill="none" stroke="#C9A227" stroke-width="2" stroke-opacity="0.5" stroke-dasharray="5 7"/>
+  <!-- the cube, three visible faces in the axis colours: gold top, emerald front-left, copper front-right -->
+  <g stroke="#0B0D14" stroke-width="2.5" stroke-linejoin="round">
+    <polygon points="64,26 100,47 64,68 28,47" fill="#D9A62C"/>
+    <polygon points="28,47 64,68 64,110 28,89" fill="#0E7A57"/>
+    <polygon points="100,47 64,68 64,110 100,89" fill="#C25A11"/>
+  </g>
+</svg>
