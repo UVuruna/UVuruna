@@ -99,6 +99,42 @@ had to re-demand work he had already defined.
   session with unchecked tasks and no `WAITING_ON_OWNER: yes` is blocked, with
   the open tasks fed back.
 
+### THE REPEAT LAW's teeth (owner decree 2026-08-07)
+
+**A third checkbox exists, and it is the honest one:**
+
+    - [ ] not done
+    - [~] SHIPPED — gated, released, and HE has not seen it work yet
+    - [x] done, on his confirmation or on evidence from HIS machine
+
+**Why.** The owner spent a week being told ten tasks were done and finding
+half of them unchanged. Nobody lied: "done" had drifted to mean *my own test
+is green*, and a test written by the same reasoning that produced the bug
+cannot falsify that reasoning. The record shows it plainly — one bug carried
+four task numbers and four `[x]` across four rounds, and the guard that
+"proved" the last one had **pinned the defect as the intended behaviour**.
+One whole class of repeat was not a code bug at all: he was running a build
+published before the fix, because the app asked GitHub once per start. Ten
+green gates cannot beat an app he never installed.
+
+- **A repeat is a PROCESS failure first.** When the owner reports something a
+  previous round closed, the round's first deliverable is `PROCESS CAUSE:` —
+  what was claimed, what the claim rested on, and why that evidence could be
+  green while the app was broken. Then the code. — **LAW**
+- **A REPEAT task may be `[x]` only with `OWNER CONFIRMED` or
+  `HIS EVIDENCE:`** (his log, his installed binary, his screenshot, his word).
+  Otherwise `[~]`, carried into the next round's report until he closes it.
+  — **GATE**, enforced by the same hook, which blocks on a `REPEAT` block with
+  no `PROCESS CAUSE:` and on a `[x]` REPEAT with no evidence of his.
+- **`[~]` is not a demand that he test everything.** It applies to what he
+  REPORTED and we claim to have fixed — nothing else. A round still ships,
+  still closes, still releases; it simply stops calling a thing proven when
+  the only witness is its own author.
+- **Before believing a report is stale, check what he is RUNNING.** The
+  installed binary's version against the latest release answers "is this a bug
+  or an undelivered fix" in one command, and it is the cheapest question in
+  this monorepo. — **LAW**
+
 ### Loud Incompleteness (owner decree 2026-08-05)
 
 **Anything not fully done is announced LOUDLY, never slipped past in

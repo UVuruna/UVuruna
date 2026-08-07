@@ -89,7 +89,23 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
    **IMPOSSIBLE** (technical reason). Never "solved" for a symptom patch; a
    problem that returns proves the previous diagnosis wrong — record root cause
    in the component's docs and session memory.
-6. **THE SPACE & LEGIBILITY LAW** (owner decree 2026-08-05) — nothing the user
+6. **THE REPEAT LAW** (owner decree 2026-08-07) — **when the owner reports
+   something a previous round already closed, the round's FIRST deliverable is
+   why the previous round's claim was false. The application bug is second.**
+   His words: *"uvek je prioritet rešiti problem zašto je došlo do toga u
+   komunikaciji sa agentima, zašto nije ispoštovao naređenje; tek sekundarno je
+   rešiti bag aplikacije — jer nema nikakve poente da se vrtimo u krug gde
+   stalno rešavamo iste probleme."* A repeat is evidence that the PROCESS
+   failed, and a process that fails silently spends the same week again. So:
+   name the mechanism, write it into the record beside the task, and only then
+   touch the code. A task is checked `[x]` ONLY on the owner's confirmation or
+   on evidence from HIS machine (his log, his installed binary, his
+   screenshot); code written, gated and released but never seen by him is
+   `[~]` — shipped, unconfirmed — and every `[~]` is carried into the next
+   round's report until he closes it. A self-written test proves the fix
+   matches the theory, never that the theory was right
+   → [Plan Rules](rules/PLAN.md) → The Session Task List
+7. **THE SPACE & LEGIBILITY LAW** (owner decree 2026-08-05) — nothing the user
    must read is ever cut off, and nothing starves while its window holds empty
    space; the fix order is free space → reflow → raised minimum → scroll. Every
    window's minimum fits 1280×720, and every window an agent touches is
