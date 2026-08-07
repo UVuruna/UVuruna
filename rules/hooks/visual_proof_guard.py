@@ -51,6 +51,28 @@ import sys
 import tempfile
 from pathlib import Path
 
+# THE SAME DEFINITION AS THE LAYOUT GUARD (owner ruling 2026-08-07: "guard
+# treba da radi samo u sesijama tj zadacima koji menjaju GUI elemente GUI
+# fajlove a ne uvek prilikom svake izmene"). Two gates that both ask "did
+# this session change what the user SEES" must answer with ONE rule or they
+# drift. This one used to count ANY write, so a session that edited a
+# markdown constitution was asked for graded screenshots of a repository
+# that ships no application — and an impossible demand teaches agents to
+# write false exemptions, the one thing this gate must never invite.
+# Sibling import: a hook runs as a script, so its own directory is first on
+# `sys.path` anyway; the insert makes that explicit.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+try:
+    from layout_guard import is_gui_file, written_text
+except Exception:                        # never brick a session on an import
+    # Documented fallback: if the shared predicate cannot be loaded the gate
+    # goes back to its old, wider behaviour rather than going silent.
+    def is_gui_file(path, content):
+        return True
+
+    def written_text(tool_input):
+        return ""
+
 MIN_GRADE = 8
 MIN_IMAGE_BYTES = 200 * 1024  # 200 KB
 MIN_IMAGE_SHORT_SIDE = 700    # px
@@ -188,6 +210,14 @@ def touched_projects(payload: dict) -> tuple:
                     target = Path(value)
                     # harness state, not product — session-tasks.md and friends
                     if ".claude" in target.parts:
+                        continue
+                    # ONLY A GUI WRITE PUTS A PROJECT ON THIS GATE (owner
+                    # ruling 2026-08-07). Editing a doc, a config table or
+                    # a pure-logic module cannot change a pixel, and asking
+                    # for a graded screenshot of it taught agents to write
+                    # false exemptions — which is the one thing this gate
+                    # must never invite.
+                    if not is_gui_file(value, written_text(tool_input)):
                         continue
                     if temp_root is not None:
                         try:

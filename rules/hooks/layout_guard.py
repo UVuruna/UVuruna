@@ -42,6 +42,12 @@ CODE_EXTENSIONS = {".py", ".cs", ".vb", ".ts", ".tsx", ".js", ".jsx"}
 PATH_HINTS = (
     "gui", "view", "widget", "window", "dialog", "screen",
     "panel", "form", "component", "layout", "frontend",
+    # RENDERING is GUI too (owner ruling 2026-08-07). A module that paints
+    # the product's own canvas changes what the user sees exactly as a
+    # dialog does — and `render/layers/ring.py` used to pass both this
+    # gate and the visual one because "layers" is not "layout" and a
+    # QPainter is not a QWidget.
+    "render", "paint", "draw", "canvas",
 )
 EXACT_HINTS = ("ui",)
 
