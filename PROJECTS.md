@@ -136,9 +136,9 @@ Travel); build/release pipeline remaining before v1 ships
 
 <a id="ultra-vivid"></a>
 
-### <img src="logos/Tumbler.svg" width="22" height="22"> Tumbler
+### <img src="logos/LoadingCube.svg" width="22" height="22"> Loading Cube
 
-**Local path:** `Gadgets/Tumbler/`
+**Local path:** `Gadgets/Loading Cube/`
 **GitHub:** — (not published yet)
 **Type:** Embeddable Component (Web, desktop planned)
 **Status:** 🟢 Active
@@ -148,7 +148,7 @@ Travel); build/release pipeline remaining before v1 ships
 
 **Tech Stack:** JavaScript (vanilla ES modules, CSS 3D, SVG), Python 3.13 (playground server only)
 
-**Architecture:** One module per responsibility behind a single `Tumbler.mount(target, options)` call, with `shared/spec.json` as the one source of truth every renderer reads — colours, face order, timing, which finishes and rings and emblem families exist. The web renderer restates that file in `src/spec.js` so mounting needs no `fetch` from any origin, and a guard test fails the build the moment the two drift; a future C#/WPF renderer reads the JSON, never the JavaScript. Everything drawn is COMPUTED — gradients and SVG turbulence for the textures, geometry for the rings — because three palettes times six faces would otherwise mean eighteen bitmaps per ornament in front of the very thing the user is waiting for. Ornament motion is CSS on the compositor, so the ring keeps turning while the main thread is busy.
+**Architecture:** One module per responsibility behind a single `LoadingCube.mount(target, options)` call, with `shared/spec.json` as the one source of truth every renderer reads — colours, face order, timing, which finishes and rings and emblem families exist. The web renderer restates that file in `src/spec.js` so mounting needs no `fetch` from any origin, and a guard test fails the build the moment the two drift; a future C#/WPF renderer reads the JSON, never the JavaScript. Everything drawn is COMPUTED — gradients and SVG turbulence for the textures, geometry for the rings — because three palettes times six faces would otherwise mean eighteen bitmaps per ornament in front of the very thing the user is waiting for. Ornament motion is CSS on the compositor, so the ring keeps turning while the main thread is busy.
 
 **Key Features:**
 - The core is one thing only — a cube turning through six faces in the colour-wheel order (yellow, orange, red, purple, blue, green; by position top, right, back, bottom, left, front), every step a clean quarter turn because consecutive faces share a cube edge
