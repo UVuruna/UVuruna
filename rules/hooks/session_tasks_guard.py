@@ -53,7 +53,10 @@ WAITING_RE = re.compile(r"^WAITING_ON_OWNER:\s*yes\b", re.M)
 
 # A task and everything indented under it, up to the next task or heading.
 TASK_BLOCK_RE = re.compile(r"^- \[([ x~])\] (.+(?:\n(?!- \[|#).*)*)", re.M)
-REPEAT_RE = re.compile(r"\bREPEAT\b")
+# "REPEAT of task 41" — the CLAIM that this came back, not the bare word: the
+# law's own name is THE REPEAT LAW, and the first round to write it down was
+# blocked by its own guard for quoting it.
+REPEAT_RE = re.compile(r"\bREPEAT OF\b", re.I)
 PROCESS_CAUSE_RE = re.compile(r"\bPROCESS CAUSE:")
 HIS_EVIDENCE_RE = re.compile(r"\bOWNER CONFIRMED\b|\bHIS EVIDENCE:")
 
