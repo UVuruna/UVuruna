@@ -159,7 +159,14 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
   probe, investigate after. Every delegated task gets the WEAKEST model tier
   that can do it (haiku → mechanical; sonnet → standard; opus → genuinely hard;
   session model NEVER for routine subagent work) and a structured deliverable
-  with exact files. Multi-agent workflows ONLY on the owner's explicit request.
+  with exact files. **PLAN the delegation — do not avoid it:** choosing which
+  agent is enough for which piece is the coordinator's FIRST job, and a
+  session that does everything itself to dodge that choice is failing this
+  rule, not obeying it. What needs the owner's explicit request is a
+  multi-agent WORKFLOW — orchestration, fan-out, a fleet. A SINGLE scoped
+  subagent is not that, and any class above Trivial may plan one as written
+  above; a gate that REQUIRES one (rules/GUI.md → The Visual Proof needs an
+  independent grader) is authorization in itself.
   Reuse (resume, read existing research) instead of rerun.
 - **Honesty:** no capacity lies — an honest "I can't" beats a fake "I did".
   Verify before claiming: concrete evidence (files, lines, output) for any
