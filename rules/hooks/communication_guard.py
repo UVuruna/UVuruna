@@ -94,7 +94,11 @@ BLOCK_TERSE = (
 # to each image AND to the folder that groups them — never bare filenames he
 # has to hunt for by hand.
 
-IMAGE_MENTION_RE = re.compile(r"\S+\.(?:png|jpe?g|svg|gif|bmp)\b", re.I)
+# a real FILENAME before the dot — "shot_01.png" is a mention, a bare
+# "`.png`" while DISCUSSING the extension is not (first live false positive,
+# 2026-08-08, on the very message that announced this rule)
+IMAGE_MENTION_RE = re.compile(r"\b[\w][\w\-\\/.]*\.(?:png|jpe?g|svg|gif|bmp)\b",
+                              re.I)
 MD_LINK_RE = re.compile(r"\]\(")
 FENCE_RE = re.compile(r"^\s*```")
 
@@ -140,7 +144,8 @@ def visible_lines(text: str):
 def check_image_links(text: str) -> None:
     offenders = []
     for line in visible_lines(text):
-        if IMAGE_MENTION_RE.search(line) and not MD_LINK_RE.search(line):
+        prose = re.sub(r"`[^`]*`", "", line)  # inline code is quoted, not shown
+        if IMAGE_MENTION_RE.search(prose) and not MD_LINK_RE.search(line):
             offenders.append(f"  {line.strip()[:100]}")
     if offenders:
         block(BLOCK_IMAGE_LINKS.format(lines="\n".join(offenders[:8])))
