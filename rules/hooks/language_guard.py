@@ -113,6 +113,13 @@ MIN_STOPWORD_HITS = 3
 
 # the contest marker: lang-ok: <reason> on the flagged line or the line above
 LANG_OK_RE = re.compile(r"lang-ok\s*[:(\-—]\s*\S{3,}")
+# ...and its block form, for a RUN of foreign text inside an English file —
+# a translation table, a quoted passage, a roster of local names. One reason
+# for the whole block instead of a marker per line (owner ruling 2026-08-08:
+# the backend stays English, so a data table must be markable without
+# freeing the file it lives in).
+LANG_OK_BEGIN_RE = re.compile(r"lang-ok-begin\s*[:(\-—]\s*\S{3,}")
+LANG_OK_END_RE = re.compile(r"lang-ok-end\b")
 
 BLOCK = (
     "THE LANGUAGE LAW (root CLAUDE.md -> Universal Conduct, teeth of "
@@ -199,7 +206,16 @@ def scan(text: str) -> list:
     lines = text.splitlines()
     findings = []
     stopword_hits: dict = {}
+    inside_block = False
     for number, line in enumerate(lines, start=1):
+        if LANG_OK_BEGIN_RE.search(line):
+            inside_block = True
+            continue
+        if LANG_OK_END_RE.search(line):
+            inside_block = False
+            continue
+        if inside_block:
+            continue
         previous = lines[number - 2] if number >= 2 else ""
         if LANG_OK_RE.search(line) or LANG_OK_RE.search(previous):
             continue
