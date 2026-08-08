@@ -43,7 +43,11 @@ TEXT_SUFFIXES = {
     ".gitignore", ".iss", ".spec",
 }
 SKIP_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv",
-             "dist", "build", ".pytest_cache", ".gradle", "bin", "obj"}
+             "dist", "build", ".pytest_cache", ".gradle", "bin", "obj",
+             # harness state, not product: a session's task list and report
+             # TALK ABOUT the rename, and rewriting them turns a sentence
+             # like "X -> Y" into the nonsense "Y -> Y"
+             ".claude"}
 
 
 def encode(path: str) -> str:
@@ -229,16 +233,38 @@ def main() -> int:
               "must be excluded by hand before running for real.")
         return 0
 
-    # 1. references first, while the paths in them still resolve
+    # 1. THE FOLDER FIRST. It is the step that can fail - Windows refuses to
+    #    rename a directory a running process holds - and a failure after the
+    #    references were rewritten leaves the repo claiming a folder that does
+    #    not exist. Learned the hard way: the owner's own clock app was
+    #    running out of the project, the rename failed, and 491 references had
+    #    already been rewritten with no clean way back.
+    new_dir.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        old_dir.rename(new_dir)
+    except OSError as error:
+        print(f"\nCANNOT RENAME THE FOLDER: {error}")
+        print("Nothing was written - every reference is untouched.")
+        print("Something is holding the directory. Find it with:")
+        print('  Get-CimInstance Win32_Process | Where-Object '
+              '{ $_.CommandLine -like "*<project>*" }')
+        print("An app running out of the project (or a shell sitting in it) "
+              "must be closed first.")
+        return 3
+    print(f"\nrenamed  {old_dir.name} -> {new_dir.name}")
+
+    # 2. now the references, which can be re-run safely if anything trips
     written = 0
     for path in hits:
-        written += rewrite(path, pairs)
-    print(f"\nrewrote {written} reference(s)")
-
-    # 2. the folder itself
-    new_dir.parent.mkdir(parents=True, exist_ok=True)
-    old_dir.rename(new_dir)
-    print(f"renamed  {old_dir.name} -> {new_dir.name}")
+        target = path
+        try:
+            relative = path.relative_to(old_dir)
+        except ValueError:
+            pass
+        else:
+            target = new_dir / relative       # it moved with the folder
+        written += rewrite(target, pairs)
+    print(f"rewrote  {written} reference(s)")
 
     # 3. the session history, copied (never moved: the orphan stays a backup)
     if transcripts:

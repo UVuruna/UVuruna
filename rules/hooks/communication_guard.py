@@ -165,8 +165,19 @@ def waiting_on_owner(cwd: Path) -> bool:
     return False
 
 
+def asking_sentences(text: str) -> list:
+    """Sentences that actually ASK something. The visual test must look
+    here, not at the whole message: a turn may mention how something
+    'izgleda' while asking about a completely different decision (live
+    false positive, 2026-08-08, on a question about closing a running
+    process)."""
+    parts = re.split(r"(?<=[.!?])\s+|\n", text)
+    return [p for p in parts if "?" in p]
+
+
 def check_visual_question(text: str, cwd: Path) -> None:
-    if "?" not in text or not VISUAL_WORDS_RE.search(text):
+    asks = asking_sentences(text)
+    if not asks or not any(VISUAL_WORDS_RE.search(a) for a in asks):
         return
     if MD_LINK_RE.search(text) or "http" in text \
             or IMAGE_MENTION_RE.search(text):
