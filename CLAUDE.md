@@ -134,7 +134,12 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
 ## Universal Conduct (every session, every job)
 
 - **Language:** Serbian (Latin) with the owner; English in all code, comments,
-  docs and commit messages.
+  docs and commit messages. Teeth since 2026-08-08 (a whole demo page once
+  shipped in Serbian through every gate): `rules/hooks/language_guard.py`
+  (PreToolUse, machine-wide) blocks foreign scripts (Cyrillic, Greek, CJK…)
+  and Serbian in product files; a legitimate quotation or a local
+  pronunciation beside the English name is contested on its line with
+  `lang-ok: <reason>`.
 - **Session start:** read the project's `UV/` folder — the owner's gitignored
   inbox of instructions (treat as product decisions; never edit or delete his
   files) — and the relevant `___folder.md` docs.

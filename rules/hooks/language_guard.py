@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""Language guard — owner decree 2026-08-08.
+
+Enforces the LANGUAGE LAW (root CLAUDE.md -> Universal Conduct: "English in
+all code, comments, docs and commit messages") across ALL sessions on this
+machine (wired in ~/.claude/settings.json):
+
+  PreToolUse (Write|Edit|NotebookEdit)
+      Blocks writing product text that is not English: Serbian in Latin
+      script (diacritics, or a density of common Serbian words), and any RUN
+      of a foreign script — Cyrillic (Serbian or Russian), Greek, CJK,
+      Arabic, Hebrew. Born from a real shipped violation: the Loading Cube
+      demo page reached its repository with its whole visible UI in Serbian,
+      straight through four guard tests, a visual proof and a commit — the
+      rule existed only as one sentence in the constitution, and the
+      constitution itself records that rules hold only when a check
+      enforces them.
+
+WHAT IS EXEMPT, by design (the owner's own carve-outs, 2026-08-08):
+
+  * Conversation-with-the-owner state: `.claude/` files (session tasks and
+    reports are written in Serbian by law), his `UV/` inboxes, PRIVATE.md,
+    scratchpad/temp paths. The law governs the PRODUCT, not the chat.
+  * Single foreign SYMBOLS (Ω, π, Δ, 中 as an isolated glyph) — a symbol is
+    not a language. Only a run of foreign-script letters counts as WRITING
+    in that script.
+  * A line the agent CONTESTS with its head on: `lang-ok: <reason>` on that
+    line (or the line directly above). This is for the owner's named
+    exceptions — a quotation, a local pronunciation in parentheses beside
+    the English name, an i18n string bundle. An exemption without a reason
+    does not count, and a false reason is a capacity lie (CLAUDE.md ->
+    Universal Conduct).
+
+Contract: exit 2 = BLOCK (stderr is fed back to the agent); exit 0 = pass.
+Fail-open on any parse error — a broken guard must never brick a session.
+"""
+
+import json
+import re
+import sys
+from pathlib import Path
+
+# ═══════════════════════════ SCOPE ═══════════════════════════
+
+CHECKED_EXTENSIONS = {
+    ".py", ".js", ".jsx", ".ts", ".tsx", ".cs", ".vb", ".java", ".cpp",
+    ".c", ".h", ".rs", ".go", ".html", ".htm", ".css", ".scss", ".qss",
+    ".xaml", ".axaml", ".qml", ".xml", ".md", ".json", ".yaml", ".yml",
+    ".toml", ".ini", ".txt", ".svg",
+}
+
+# path components that mark agent/owner conversation state, not product —
+# plus "rules"/"tests"/"docs", following layout_guard's precedent: the
+# rulebooks QUOTE the owner's Serbian decrees on purpose, and the guards
+# themselves name the patterns they hunt
+SKIP_COMPONENTS = {
+    ".claude", "uv", "scratchpad", "temp", "tmp", "node_modules",
+    ".git", "__pycache__", "vendor", "rules", "tests", "test", "docs", "doc",
+}
+SKIP_FILENAMES = {"private.md"}
+
+# ═══════════════════════════ DETECTION ═══════════════════════════
+
+# a run of letters from a foreign script is WRITING in it; a lone glyph is a
+# symbol and legal (Ω on a dial, π in a formula)
+FOREIGN_RUNS = (
+    (re.compile(r"[Ѐ-ԯ]{3,}"), "Cyrillic (Serbian or Russian)"),
+    (re.compile(r"[Ͱ-Ͽἀ-῿]{3,}"), "Greek"),
+    (re.compile(r"[一-鿿]{2,}"), "Chinese (CJK)"),
+    (re.compile(r"[぀-ヿ]{3,}"), "Japanese kana"),
+    (re.compile(r"[가-힯]{2,}"), "Korean hangul"),
+    (re.compile(r"[؀-ۿ]{3,}"), "Arabic"),
+    (re.compile(r"[֐-׿]{3,}"), "Hebrew"),
+)
+
+SERBIAN_DIACRITICS = re.compile(r"[čćšžđČĆŠŽĐ]")
+
+# conservative word list — each is a common Serbian word that is not an
+# English word; ≥ MIN_STOPWORD_HITS DISTINCT hits flag the text, so a lone
+# name or coincidence never trips it
+SERBIAN_WORDS = re.compile(
+    r"\b(nije|moze|treba|ovde|ovdje|zasto|dakle|umesto|umjesto|takodje"
+    r"|koji|koja|koje|gdje|nesto|svaki|svaka|jeste|imamo|nemamo|uvek"
+    r"|uvijek|posle|poslije|zatim|ovakav|ovoga|njega|njemu|veoma|vrlo"
+    r"|takvo|bilo\s+koje|prikaz|izbor|boje|slova|veličina|velicina)\b",
+    re.IGNORECASE,
+)
+MIN_STOPWORD_HITS = 3
+
+# the contest marker: lang-ok: <reason> on the flagged line or the line above
+LANG_OK_RE = re.compile(r"lang-ok\s*[:(\-—]\s*\S{3,}")
+
+BLOCK = (
+    "THE LANGUAGE LAW (root CLAUDE.md -> Universal Conduct, teeth of "
+    "2026-08-08): every program is written in ENGLISH — code, comments, "
+    "docs, UI strings, commit messages. Serbian belongs in the chat with "
+    "the owner, never in the product. This edit to {path} writes another "
+    "language:\n{findings}\n"
+    "This law grew teeth because a whole demo page shipped with its UI in "
+    "Serbian through every existing gate. Fix: TRANSLATE the flagged text "
+    "to English. If a line is a LEGITIMATE exception — a quotation, a "
+    "local pronunciation in parentheses beside the English name, an i18n "
+    "bundle entry — contest it ON THAT LINE (or the line above) with: "
+    "lang-ok: <the reason>. An exemption without a reason does not count, "
+    "and a false reason is a capacity lie."
+)
+
+
+def written_text(tool_input: dict) -> str:
+    """Everything this call would put INTO the file."""
+    parts = [
+        tool_input.get("content"),
+        tool_input.get("new_string"),
+        tool_input.get("new_source"),
+    ]
+    for edit in tool_input.get("edits") or []:
+        if isinstance(edit, dict):
+            parts.append(edit.get("new_string"))
+    return "\n".join(p for p in parts if isinstance(p, str))
+
+
+def in_scope(path: str) -> bool:
+    if not path:
+        return False
+    components = [c.lower() for c in re.split(r"[\\/]+", path) if c]
+    if any(c in SKIP_COMPONENTS for c in components):
+        return False
+    if components and components[-1] in SKIP_FILENAMES:
+        return False
+    return Path(path).suffix.lower() in CHECKED_EXTENSIONS
+
+
+def scan(text: str) -> list:
+    lines = text.splitlines()
+    findings = []
+    stopword_hits: dict = {}
+    for number, line in enumerate(lines, start=1):
+        previous = lines[number - 2] if number >= 2 else ""
+        if LANG_OK_RE.search(line) or LANG_OK_RE.search(previous):
+            continue
+        flagged = None
+        for pattern, script in FOREIGN_RUNS:
+            match = pattern.search(line)
+            if match:
+                flagged = f"{script} text: \"{match.group(0)[:40]}\""
+                break
+        if flagged is None and SERBIAN_DIACRITICS.search(line):
+            flagged = f"Serbian diacritics: \"{line.strip()[:60]}\""
+        if flagged:
+            findings.append(f"  line {number}: {flagged}")
+            continue
+        for word in SERBIAN_WORDS.findall(line):
+            stopword_hits.setdefault(word.lower(), number)
+    if len(stopword_hits) >= MIN_STOPWORD_HITS:
+        words = ", ".join(sorted(stopword_hits))
+        first = min(stopword_hits.values())
+        findings.append(
+            f"  from line {first}: Serbian written in Latin script "
+            f"(common words found: {words})")
+    return findings
+
+
+def check_pre_tool_use(payload: dict) -> None:
+    tool_input = payload.get("tool_input") or {}
+    path = tool_input.get("file_path") or tool_input.get("notebook_path") or ""
+    if not in_scope(path):
+        return
+    text = written_text(tool_input)
+    if not text:
+        return
+    findings = scan(text)
+    if not findings:
+        return
+    print(BLOCK.format(path=path, findings="\n".join(findings)),
+          file=sys.stderr)
+    sys.exit(2)
+
+
+def main() -> None:
+    try:
+        sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+    except AttributeError:
+        pass
+    try:
+        payload = json.load(sys.stdin)
+    except (json.JSONDecodeError, ValueError):
+        sys.exit(0)
+    try:
+        if payload.get("hook_event_name", "") == "PreToolUse" and \
+                payload.get("tool_name") in ("Write", "Edit", "NotebookEdit"):
+            check_pre_tool_use(payload)
+    except SystemExit:
+        raise
+    except Exception:  # a broken guard must never brick a session
+        sys.exit(0)
+    sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
