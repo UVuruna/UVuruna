@@ -10,6 +10,7 @@ A new or changed GUI element starts with a layout sketch shown to the owner —
 - [Law — Logic Before Looks](#logic-first)
 - [Law — Space & Legibility](#space)
 - [The Visual Proof](#visual-proof)
+- [Zubi v2 — Algorithmic Teeth & Grader v2](#zubi-v2)
 - [Modern UI — No Old-Fashioned Interfaces](#modern-ui)
 - [Law — Responsiveness](#responsiveness)
 - [Stack Choice for GUIs](#stack)
@@ -225,6 +226,83 @@ trains agents to silence gates, which is the opposite of what teeth are for.
 - Class: **GATE** — machine-enforced by `rules/hooks/visual_proof_guard.py`
   (Stop, machine-wide). An unreadable or incomplete proof file BLOCKS — it is
   never treated as an absent proof to fail open on.
+
+---
+
+<a id="zubi-v2"></a>
+
+## Zubi v2 — Algorithmic Teeth & Grader v2 (owner decrees 2026-08-08)
+
+Born from thirteen screenshots of DOMY Watch that shipped with 9/10 grades
+while any layman would have rejected them. Four mechanisms let them through,
+and each one now has a named answer here: the audit measured only DEFAULT
+state (extremes and the owner's real profile were never visited); an audit
+FAILING against the owner's live settings was written off in a proof file as
+"the environment, not this change"; hover popups were invisible to the
+widget-tree walk; and the grade was a free number given in a narrow frame.
+
+### The algorithmic teeth — no AI in the loop
+
+Measured by plain code. "Template v2 — pending" means the check lands in
+`rules/templates/test_layout_audit_qt.py` / `LayoutAuditTests.cs` and rolls
+out per project on the owner's go ([MIGRATE-LAYOUT](../MIGRATE-LAYOUT.md));
+until then it binds as a review rule and the grader below DEDUCTS for it.
+
+| # | Rule | Class | Teeth |
+|---|------|-------|-------|
+| ALG-1 | **EXTREME STATE MATRIX** — every numeric control the session touched is audited at min / default / max, every toggle and small enum through all options; after each change: nothing paints outside the window, concentric elements share a center, the scroll rules hold. "Tested" without extremes is not tested. | LAW | template v2 — pending |
+| ALG-2 | **CONTRAST** — text vs its REAL background ≥ 4.5:1 (3:1 for large text), sampled from screenshots; hover and tooltip states included. | LAW | template v2 — pending |
+| ALG-3 | **HOVER GEOMETRY** — the audit triggers every tooltip/hover it finds; hover text wraps at ≤ 72 chars per line, never renders wider than its window, never off-screen. | LAW | template v2 — pending |
+| ALG-4 | **SPACE CEILING** — measured in LOGICAL px (the units layouts actually use). The ladder: **~1000×1000 ideal** (1:1 is a STYLE recommendation for canvases and presentational wholes, not for forms) → **1600 working width** for desktop settings pages → **2560×1440 ABSOLUTE ceiling, no exception, no written excuse** (that is a fullscreen demand). Each step up is legal only when the previous one is exhausted by reflow AND a reason is written down. Phone-targeted UI is designed portrait-first at device logical width (~360–480) — and every target follows the COMMON hardware of real users, never the best available. Horizontal scroll on a settings page fails at every step. | LAW | template v2 — pending |
+| ALG-5 | **UNIFORM SIBLINGS** — same-kind elements in one container share dimensions (the widest content decides, tolerance ±2px); a control's size never depends on the length of its own text. | GATE | template v2 — pending |
+| ALG-6 | **RADIUS BY ASPECT RATIO** — AR = width/height. AR ≥ 2: radius up to 50% of height (a pill is legitimate on a wide element); 1.4 ≤ AR < 2: ≤ 30% of height; AR < 1.4 (squarish/portrait — where circles and eggs are born): ≤ 15% of the shorter side. ALWAYS: inner text/image inset ≥ 0.3·r from every edge — that is what a rounded corner geometrically eats. True-circle content (color swatch, avatar) is exempt. | LAW | template v2 — pending |
+| ALG-7 | **ROW OCCUPANCY** — at minimum width, a band whose right half stands empty while content stacks BELOW it fails: reflow into columns before stacking into height. The measurable form of "nothing starves beside empty space". | GATE | template v2 — pending |
+| ALG-8 | **LIVE PROFILE** — the audit ALSO runs against a read-only copy of the owner's real settings file, not only the pristine default (owner approval 2026-08-08). A failure there is a failure of this change's session to deal with. *"That is the environment, not this change"* is not a legal sentence in any proof file. | LAW | template v2 — pending |
+| ALG-9 | **SECTION TAXONOMY** — when a section named for a concept exists (Size, Colors, Opacity…), a control carrying that concept in its label outside that section fails, absent a written reason beside it. | GATE | template v2 — pending |
+
+### Grader v2 — the grade is computed, never felt
+
+The owner's verdict, verbatim in spirit: an algorithm must not judge the
+qualitative — but an agent must not judge WITHOUT A LEDGER.
+
+1. **GRD-1 — the checklist is the grade.** The grader fills a checklist
+   (every ALG rule above + this rulebook + DESIGN.md), each item PASS or
+   VIOLATION with pixel evidence (where in the shot). Then:
+   `grade = 10 − Σ deductions` (LAW violation −3, GATE −2, STYLE −1), and
+   **any LAW violation caps the grade at 5**. A bare number with no
+   checklist is not a grade. — **GATE**
+2. **GRD-2 — the anchor gallery.** Local, NEVER in git (the rules and hooks
+   are public; the owner's screenshots are not): `.claude/design-anchors/`
+   holds shots of patterns the owner has REJECTED, each with his verdict in
+   WORDS — an anchor is a violation pattern, not a number. A window
+   repeating an anchor's pattern cannot grade ≥ 8 until the pattern is
+   gone. An anchor RETIRES the day its failure becomes an ALG check — the
+   algorithm carries it from then on; and the agent warns the owner when
+   the gallery exceeds ~100 MB or an anchor outlives its rule. Nothing is
+   hoarded. — **GATE**
+3. **GRD-3 — blind first, whole frame always.** The grader writes what it
+   sees and would deduct BEFORE reading the implementer's claims. The whole
+   window is always graded; a narrow ruling is an additional item, never
+   the only one — that exact narrowing is how four honest 9s coexisted
+   with an unacceptable window. — **GATE**
+4. **GRD-4 — states in frame.** Full-window shots at min / default / max
+   control states plus hover states; crops and zooms stay banned (Visual
+   Proof above). — **GATE**
+5. **GRD-5 — the layman question.** Every checklist ends with, answered in
+   sentences, never a number: *"Would someone with no design background
+   accept this? What would they notice first?"* A grade ≥ 8 written above
+   VIOLATION items is a capacity lie (root CLAUDE.md → Universal
+   Conduct). — **GATE**
+
+### Screenshots live in TOPIC folders
+
+`.claude/shots/<topic>/` — the folder name says what was being worked on
+(`decision-dark-theme/`, `hover-contrast-fix/`), so the owner opens one
+folder and sees one story, never a dump of sixty cryptic names. Messages
+that show him images link the FOLDER and EACH IMAGE (clickable), per
+[PLAN → Communication](PLAN.md#communication). Loose images in the shots
+root block the session. — **GATE**, `rules/hooks/layout_guard.py` (Stop,
+machine-wide).
 
 ---
 

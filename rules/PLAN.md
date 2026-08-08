@@ -91,13 +91,27 @@ had to re-demand work he had already defined.
 - **`WAITING_ON_OWNER: yes` is legal only when the turn genuinely ends with
   questions or a presentation the owner must answer** — it goes back to `no`
   the moment work resumes. It is the ONLY way to end a turn with open tasks.
+  **And it carries its head (owner decree 2026-08-08):** the line names WHAT
+  is being waited for (`WAITING_ON_OWNER: yes — <the awaited decision>`),
+  and the turn's chat text actually ASKS it — a full question block, not two
+  words. Born from his screenshot: *"vidim da si stao opet — zašto?"* — an
+  agent that "waited" on him without a question he could answer.
+- **A message the owner sends mid-session joins the list in the same turn
+  (owner decree 2026-08-08).** The list is updated after EVERY owner
+  message — new `- [ ]` tasks, changed statuses, or a restamped WAITING
+  line. A list that froze at its opening state is how his instructions get
+  lost in the scroll.
 - The file is per project and per session: refreshed when the owner opens with
   a new list, removed (or fully checked) when the list is done. `.claude/` is
   excluded from the doc guards — this is harness state, not product docs.
 - Class: **GATE** — machine-enforced by `rules/hooks/session_tasks_guard.py`
   (Stop hook, wired machine-wide in `~/.claude/settings.json`): ending a
   session with unchecked tasks and no `WAITING_ON_OWNER: yes` is blocked, with
-  the open tasks fed back.
+  the open tasks fed back. Since 2026-08-08 the same hook also blocks: a
+  `yes` with no reason on its line; a `yes` whose turn asked nothing (no
+  question mark, or under the 700-char full-block minimum — fail-open when
+  the harness has not flushed the turn's text yet); and a task list saved
+  BEFORE the owner's last message (his words were not folded in).
 
 ### THE REPEAT LAW's teeth (owner decree 2026-08-07)
 
@@ -199,7 +213,15 @@ gates the second.
    given** — appended to `.claude/session-tasks.md` as `- [ ]` in the same
    turn, so the report at the end covers them exactly like the opening tasks.
    The session tracks the LIST; the owner's scratch files (`UV/`) are his own
-   and are never the report's source of truth.
+   and are never the report's source of truth. Since 2026-08-08 this has
+   teeth: the session-tasks guard blocks a turn whose list is older than the
+   owner's last message.
+4. **The owner may demand the report AT ANY MOMENT mid-session (owner decree
+   2026-08-08)** — "gde smo?", "šta je urađeno?" — and the answer is the
+   SAME per-task shape (status + evidence per task, NOT DONE first),
+   rendered in chat, without ending the session. A hook cannot recognize
+   the demand in his words, so this half stays a LAW of conduct; the
+   end-of-session half is machine-enforced above.
 
 ---
 
@@ -320,7 +342,16 @@ on apologies instead of progress. Both patterns are now banned and enforced.
    consequences, (e) the agent's recommendation. FORBIDDEN: enumerated
    one-liners — "(1) ok? (2) ok? (3) ok? — give me a YES". A question the owner
    cannot understand without asking back is a defect, not a question.
-3. **Teeth:** `rules/hooks/communication_guard.py`, wired MACHINE-WIDE in
+3. **Pictures arrive as LINKS, grouped by topic — LAW (owner decree
+   2026-08-08).** When the owner is shown images — above all for a visual
+   decision — every image name is a CLICKABLE link and the message also
+   links the FOLDER that groups them; he clicks, he does not hunt a file
+   tree by hand. The folder is a TOPIC folder whose name says what was
+   being worked on (`shots/decision-dark-theme/` — see
+   [GUI → Zubi v2](GUI.md#zubi-v2)). A visual question with no picture, no
+   page and no link is not a question he can answer, and does not end a
+   turn.
+4. **Teeth:** `rules/hooks/communication_guard.py`, wired MACHINE-WIDE in
    `~/.claude/settings.json` (applies in every project, no per-project
    migration). The Stop hook blocks ending any turn whose chat text contains
    diagram source or a terse enumerated ask; the PreToolUse hook on
@@ -331,7 +362,10 @@ on apologies instead of progress. Both patterns are now banned and enforced.
    artifact styling guidance over this rulebook) blocks publishing any page
    whose stylesheet contains adaptive theme tokens (`prefers-color-scheme`,
    `data-theme`) or that never sets its own background — the page must carry
-   ONE fixed explicit scheme.
+   ONE fixed explicit scheme. Since 2026-08-08 the Stop hook also blocks a
+   turn that names image files as bare text instead of links, and a
+   `WAITING_ON_OWNER` turn that asks a visual question with no image, page
+   or link in it.
    Honesty note: the hook measures substance by length — whether an
    explanation actually EXPLAINS stays on session discipline and the owner's
    review.
