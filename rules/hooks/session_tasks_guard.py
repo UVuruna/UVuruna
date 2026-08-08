@@ -45,11 +45,25 @@ import json
 import os
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 TASKS_FILENAME = "session-tasks.md"
 OPEN_TASK_RE = re.compile(r"^- \[ \] (.+)$", re.M)
 WAITING_RE = re.compile(r"^WAITING_ON_OWNER:\s*yes\b", re.M)
+# WAITING with its head on: "yes" must be followed by WHAT is being waited
+# for, on the same line (owner decree 2026-08-08 — Rad sa agentima, A/B)
+WAITING_REASON_RE = re.compile(
+    r"^WAITING_ON_OWNER:\s*yes\b[^\S\n]*[—\-–:,]?[^\S\n]*(\S.{9,})", re.M)
+
+# The full-block question minimum (rules/PLAN.md -> Communication): a turn
+# that claims to wait on the owner must actually have ASKED him something he
+# can answer — context, options, recommendation take at least this much text.
+MIN_QUESTION_TURN_CHARS = 700
+
+# freshness slack: a file save and a message land within seconds of each
+# other legitimately
+FRESHNESS_SLACK_S = 5.0
 
 # A task and everything indented under it, up to the next task or heading.
 TASK_BLOCK_RE = re.compile(r"^- \[([ x~])\] (.+(?:\n(?!- \[|#).*)*)", re.M)
@@ -94,6 +108,37 @@ BLOCK_TASKS = (
     "set it back to 'no' the moment work resumes."
 )
 
+BLOCK_WAITING_NO_REASON = (
+    "RAD SA AGENTIMA (rules/PLAN.md -> The Session Task List, GATE of "
+    "2026-08-08): {path} says WAITING_ON_OWNER: yes but does not say WHAT is "
+    "being waited for. The owner has been left with sessions that 'waited' "
+    "on him without a question he could answer ('vidim da si stao opet - "
+    "zasto?'). Write the reason on the same line:\n"
+    "    WAITING_ON_OWNER: yes — <exactly which decision/answer is awaited>\n"
+    "and make sure the turn's last message carries the fully-explained "
+    "question block."
+)
+
+BLOCK_WAITING_NO_QUESTION = (
+    "RAD SA AGENTIMA (rules/PLAN.md -> Communication, GATE of 2026-08-08): "
+    "this turn claims WAITING_ON_OWNER: yes, but its chat text asked the "
+    "owner nothing he can act on ({why}). A turn may end waiting ONLY on a "
+    "fully-explained question block: (a) context, (b) the question in "
+    "complete sentences, (c) why it matters, (d) options with consequences, "
+    "(e) your recommendation — and for visual decisions, clickable links to "
+    "the images/folder. Ask properly, then end the turn."
+)
+
+BLOCK_STALE_LIST = (
+    "RAD SA AGENTIMA (rules/PLAN.md -> The Session Task List, GATE of "
+    "2026-08-08): the owner sent a message AFTER the task list was last "
+    "updated ({path}: list saved {file_time}, his last message {msg_time}). "
+    "Tasks he adds mid-session join the list the moment they are given - a "
+    "list that froze at its opening state is how his instructions get lost "
+    "in the scroll. Fold his message in: append new `- [ ]` tasks, update "
+    "statuses, or restamp WAITING_ON_OWNER - then end the turn."
+)
+
 
 def find_tasks_file(start: Path) -> Path | None:
     """`.claude/session-tasks.md` in the session's directory or any parent —
@@ -103,6 +148,126 @@ def find_tasks_file(start: Path) -> Path | None:
         if candidate.is_file():
             return candidate
     return None
+
+
+def _entry_text(message: dict) -> str:
+    """Concatenated text blocks of a transcript message; '' if none."""
+    content = message.get("content")
+    if isinstance(content, str):
+        return content
+    parts = []
+    if isinstance(content, list):
+        for item in content:
+            if isinstance(item, dict) and item.get("type") == "text":
+                parts.append(item.get("text", ""))
+    return "\n".join(parts)
+
+
+def _is_real_user_prompt(entry: dict) -> bool:
+    """An actual owner message — not a tool_result carrier, not the echo of
+    a local slash command."""
+    if entry.get("type") != "user":
+        return False
+    content = (entry.get("message") or {}).get("content")
+    if isinstance(content, list) and any(
+            isinstance(item, dict) and item.get("type") == "tool_result"
+            for item in content):
+        return False
+    text = _entry_text(entry.get("message") or {})
+    if "<command-name>" in text or "<local-command-stdout>" in text:
+        return False
+    return bool(text.strip())
+
+
+def _parse_ts(value) -> datetime | None:
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        stamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+    if stamp.tzinfo is None:
+        stamp = stamp.replace(tzinfo=timezone.utc)
+    return stamp
+
+
+def scan_transcript(transcript_path: str) -> tuple:
+    """(assistant text of the current turn | None, last real owner-message
+    time | None). Fail-open on anything unreadable. NOTE: some harnesses
+    flush the current turn's assistant text only after the turn ends
+    (verified live 2026-08-05 in communication_guard) — an empty turn text
+    therefore means UNKNOWN, never 'said nothing'."""
+    if not transcript_path or not os.path.isfile(transcript_path):
+        return None, None
+    texts: list = []
+    last_user: datetime | None = None
+    try:
+        with open(transcript_path, encoding="utf-8", errors="replace") as fh:
+            for line in fh:
+                line = line.strip()
+                if not line:
+                    continue
+                try:
+                    entry = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if not isinstance(entry, dict):
+                    continue
+                if _is_real_user_prompt(entry):
+                    texts = []
+                    stamp = _parse_ts(entry.get("timestamp"))
+                    if stamp is not None:
+                        last_user = stamp
+                elif entry.get("type") == "assistant":
+                    text = _entry_text(entry.get("message") or {})
+                    if text:
+                        texts.append(text)
+    except OSError:
+        return None, None
+    return ("\n".join(texts) if texts else None), last_user
+
+
+def check_freshness(tasks_file: Path, last_user: datetime | None) -> None:
+    """RAD SA AGENTIMA (owner 2026-08-08): a task list older than the
+    owner's last message has not absorbed that message."""
+    if last_user is None:
+        return
+    try:
+        mtime = tasks_file.stat().st_mtime
+    except OSError:
+        return
+    file_dt = datetime.fromtimestamp(mtime, tz=timezone.utc)
+    if (last_user - file_dt).total_seconds() <= FRESHNESS_SLACK_S:
+        return
+    print(
+        BLOCK_STALE_LIST.format(
+            path=tasks_file,
+            file_time=file_dt.strftime("%H:%M:%S"),
+            msg_time=last_user.strftime("%H:%M:%S")),
+        file=sys.stderr,
+    )
+    sys.exit(2)
+
+
+def check_waiting_is_real(tasks_file: Path, text: str,
+                          turn_text: str | None) -> None:
+    """WAITING_ON_OWNER: yes may end a turn ONLY when it names what it
+    waits for and the turn actually asked a full question block."""
+    if not WAITING_REASON_RE.search(text):
+        print(BLOCK_WAITING_NO_REASON.format(path=tasks_file),
+              file=sys.stderr)
+        sys.exit(2)
+    if turn_text is None or not turn_text.strip():
+        return  # turn text not flushed yet — unknown is never a violation
+    why = None
+    if "?" not in turn_text:
+        why = "no question mark anywhere in the turn"
+    elif len(turn_text) < MIN_QUESTION_TURN_CHARS:
+        why = (f"only {len(turn_text)} chars of chat text - below the "
+               f"{MIN_QUESTION_TURN_CHARS}-char full-block minimum")
+    if why:
+        print(BLOCK_WAITING_NO_QUESTION.format(why=why), file=sys.stderr)
+        sys.exit(2)
 
 
 def check_stop(payload: dict) -> None:
@@ -117,8 +282,14 @@ def check_stop(payload: dict) -> None:
     except OSError:
         return
     check_repeat_law(tasks_file, text)
+    turn_text, last_user = scan_transcript(
+        payload.get("transcript_path") or "")
+    check_freshness(tasks_file, last_user)
+    if WAITING_RE.search(text):
+        check_waiting_is_real(tasks_file, text, turn_text)
+        return
     open_tasks = OPEN_TASK_RE.findall(text)
-    if not open_tasks or WAITING_RE.search(text):
+    if not open_tasks:
         return
     listing = "".join(f"  - [ ] {t}\n" for t in open_tasks)
     print(
@@ -166,8 +337,13 @@ def main() -> None:
         payload = json.load(sys.stdin)
     except (json.JSONDecodeError, ValueError):
         sys.exit(0)
-    if payload.get("hook_event_name", "") == "Stop":
-        check_stop(payload)
+    try:
+        if payload.get("hook_event_name", "") == "Stop":
+            check_stop(payload)
+    except SystemExit:
+        raise
+    except Exception:  # a broken guard must never brick a session
+        sys.exit(0)
     sys.exit(0)
 
 

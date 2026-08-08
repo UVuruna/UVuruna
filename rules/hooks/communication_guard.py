@@ -89,6 +89,87 @@ BLOCK_TERSE = (
     "consequences, (e) your recommendation. Write it in Serbian, then end the turn."
 )
 
+# ── RAD SA AGENTIMA (owner decree 2026-08-08) ──────────────────────────────
+# When images are presented to the owner, their names are CLICKABLE LINKS —
+# to each image AND to the folder that groups them — never bare filenames he
+# has to hunt for by hand.
+
+IMAGE_MENTION_RE = re.compile(r"\S+\.(?:png|jpe?g|svg|gif|bmp)\b", re.I)
+MD_LINK_RE = re.compile(r"\]\(")
+FENCE_RE = re.compile(r"^\s*```")
+
+VISUAL_WORDS_RE = re.compile(
+    r"\b(dizajn\w*|izgled\w*|layout|GUI|font\w*|ikon\w*|palet\w*"
+    r"|boj(?:a|e|u|om|ama)|slik\w*|screenshot\w*|wireframe|mockup"
+    r"|tem(?:a|u|e))\b", re.I)
+
+BLOCK_IMAGE_LINKS = (
+    "RAD SA AGENTIMA (rules/PLAN.md -> Communication, GATE of 2026-08-08): "
+    "this message names image files as bare text:\n{lines}\n"
+    "When the owner is shown images - especially for a decision - every "
+    "image name is a CLICKABLE markdown link ([name](relative/path.png)) "
+    "and the message also links the FOLDER that groups them "
+    "([folder](path/)). He clicks; he does not hunt through a file tree by "
+    "hand. Rewrite the references as links, then end the turn."
+)
+
+BLOCK_VISUAL_NO_IMAGE = (
+    "RAD SA AGENTIMA (rules/PLAN.md -> Communication, GATE of 2026-08-08): "
+    "this turn ends waiting on the owner with a VISUAL question (design/"
+    "look/color/layout vocabulary) but shows him NOTHING - no image link, "
+    "no rendered page, no folder of screenshots. A visual decision without "
+    "pictures is not a question he can answer. Attach the evidence: links "
+    "to the screenshots (and their topic folder), or a rendered "
+    "Artifact/HTML page - then ask again."
+)
+
+
+def visible_lines(text: str):
+    """Chat lines the owner actually reads - code fences and indented
+    blocks are quoted material (report lines, file contents), not prose."""
+    fenced = False
+    for line in text.splitlines():
+        if FENCE_RE.match(line):
+            fenced = not fenced
+            continue
+        if fenced or line.startswith("    "):
+            continue
+        yield line
+
+
+def check_image_links(text: str) -> None:
+    offenders = []
+    for line in visible_lines(text):
+        if IMAGE_MENTION_RE.search(line) and not MD_LINK_RE.search(line):
+            offenders.append(f"  {line.strip()[:100]}")
+    if offenders:
+        block(BLOCK_IMAGE_LINKS.format(lines="\n".join(offenders[:8])))
+
+
+def waiting_on_owner(cwd: Path) -> bool:
+    for directory in (cwd, *cwd.parents):
+        tasks = directory / ".claude" / "session-tasks.md"
+        try:
+            if tasks.is_file():
+                return bool(re.search(
+                    r"^WAITING_ON_OWNER:\s*yes\b",
+                    tasks.read_text(encoding="utf-8", errors="replace"),
+                    re.M))
+        except OSError:
+            return False
+    return False
+
+
+def check_visual_question(text: str, cwd: Path) -> None:
+    if "?" not in text or not VISUAL_WORDS_RE.search(text):
+        return
+    if MD_LINK_RE.search(text) or "http" in text \
+            or IMAGE_MENTION_RE.search(text):
+        return
+    if not waiting_on_owner(cwd):
+        return
+    block(BLOCK_VISUAL_NO_IMAGE)
+
 ADAPTIVE_THEME_RE = re.compile(
     r"prefers-color-scheme|\[\s*data-theme|data-theme\s*=", re.I
 )
@@ -203,6 +284,8 @@ def check_stop(payload: dict) -> None:
         and len(ENUM_MARKER_RE.findall(text)) >= 2
     ):
         block(BLOCK_TERSE)
+    check_image_links(text)
+    check_visual_question(text, Path(payload.get("cwd") or os.getcwd()))
 
 
 def check_artifact(payload: dict) -> None:

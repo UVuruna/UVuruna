@@ -437,9 +437,64 @@ def proof_problems(proof: Path, text: str, session: str, touched: list,
     return problems
 
 
+# --- shots hygiene (owner decree 2026-08-08 - Rad sa agentima) --------------
+# Screenshots live in TOPIC subfolders whose names say what was being worked
+# on - never dumped loose into .claude/shots/. Born from a real pile: 60+
+# files named Controls_and_wheel__dark__colored__... that nobody could
+# navigate. Only THIS session's files are judged (a gate judges only what
+# the session did); legacy piles are cleaned by their own projects.
+
+SHOT_SUFFIXES = {".png", ".jpg", ".jpeg", ".bmp", ".gif"}
+
+BLOCK_LOOSE_SHOTS = (
+    "RAD SA AGENTIMA (rules/GUI.md -> Zubi v2, GATE of 2026-08-08): this "
+    "session dropped screenshots straight into the ROOT of {shots}:\n"
+    "{files}\n"
+    "Every screenshot lives in a TOPIC subfolder whose name says what was "
+    "being worked on there - shots/decision-dark-theme/, "
+    "shots/hover-contrast-fix/ - so the owner opens one folder and sees one "
+    "story, not a dump of 60 cryptic names. Move this session's images into "
+    "a named subfolder, update any proof lines that point at them, and link "
+    "folder + images in your message."
+)
+
+
+def check_shots_hygiene(payload: dict) -> None:
+    transcript = payload.get("transcript_path") or ""
+    if not transcript or not os.path.isfile(transcript):
+        return
+    try:
+        session_start = os.path.getctime(transcript)
+    except OSError:
+        return
+    cwd = Path(payload.get("cwd") or os.getcwd())
+    shots_dir = None
+    for directory in (cwd, *cwd.parents):
+        candidate = directory / ".claude" / "shots"
+        if candidate.is_dir():
+            shots_dir = candidate
+            break
+    if shots_dir is None:
+        return
+    loose = []
+    try:
+        for item in shots_dir.iterdir():
+            if (item.is_file() and item.suffix.lower() in SHOT_SUFFIXES
+                    and item.stat().st_mtime >= session_start - 60):
+                loose.append(item.name)
+    except OSError:
+        return
+    if loose:
+        listing = "".join(f"  - {name}\n" for name in sorted(loose)).rstrip()
+        print(BLOCK_LOOSE_SHOTS.format(shots=shots_dir, files=listing),
+              file=sys.stderr)
+        sys.exit(2)
+
+
 def check_stop(payload: dict) -> None:
     if payload.get("stop_hook_active"):
         return  # already continuing because of a Stop hook - never loop
+    check_shots_hygiene(payload)
     transcript = payload.get("transcript_path") or ""
     touched = gui_files_of_session(transcript)
     if not touched:
