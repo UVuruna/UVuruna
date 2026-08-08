@@ -28,9 +28,9 @@ import json
 import os
 import re
 import shutil
-import subprocess
 import sys
 import time
+from fnmatch import fnmatch
 from pathlib import Path
 
 PROJECTS_DIR = Path.home() / ".claude" / "projects"
@@ -143,6 +143,12 @@ def main() -> int:
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--force", action="store_true",
                         help="rename even with a live session (do not)")
+    parser.add_argument("--exclude", action="append", default=[],
+                        help="repo-relative glob to leave alone; repeatable. "
+                             "Use it for DATED RECORDS - a past report or a "
+                             "'born from' narrative describes what the "
+                             "project was CALLED then, and rewriting it "
+                             "falsifies the record.")
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
@@ -173,10 +179,15 @@ def main() -> int:
               f"touched in the last {LIVE_WINDOW_S // 60} minutes.")
         print("Renaming the folder under a running session breaks it: the "
               "session keeps writing to a path that no longer exists.")
-        if not args.force:
+        # A dry run writes nothing, so a live session is no reason to refuse
+        # it — reviewing the hit list is exactly what one does WHILE waiting.
+        if args.dry_run:
+            print("(--dry-run writes nothing, so this listing is safe.)")
+        elif not args.force:
             print("Refusing. Close the session (or wait) and run again.")
             return 2
-        print("--force given: proceeding anyway.")
+        else:
+            print("--force given: proceeding anyway.")
 
     pairs = variants(old_name, new_name)
     print("\nreplacements:")
@@ -184,6 +195,23 @@ def main() -> int:
         print(f"  {old!r} -> {new!r}")
 
     hits = scan(root, pairs)
+    if args.exclude:
+        kept = {}
+        skipped = []
+        for path, lines in hits.items():
+            try:
+                relative = path.relative_to(root).as_posix()
+            except ValueError:
+                relative = path.as_posix()
+            if any(fnmatch(relative, pattern) for pattern in args.exclude):
+                skipped.append(relative)
+            else:
+                kept[path] = lines
+        hits = kept
+        if skipped:
+            print("\nexcluded (left exactly as they are):")
+            for relative in sorted(skipped):
+                print(f"  {relative}")
     total = sum(len(v) for v in hits.values())
     print(f"\n{total} reference(s) in {len(hits)} file(s):")
     for path, lines in sorted(hits.items()):
