@@ -66,6 +66,11 @@ CHECKED_EXTENSIONS = {
     ".c", ".h", ".rs", ".go", ".html", ".htm", ".css", ".scss", ".qss",
     ".xaml", ".axaml", ".qml", ".xml", ".md", ".json", ".yaml", ".yml",
     ".toml", ".ini", ".txt", ".svg",
+    # The stacks this monorepo actually ships, added 2026-08-08 after a live
+    # check found .php missing — the language of three of the websites, so
+    # the guard had been passing them in silence.
+    ".php", ".phtml", ".kt", ".kts", ".vue", ".svelte",
+    ".ps1", ".psm1", ".sh", ".bat", ".sql",
 }
 
 # path components that mark agent/owner conversation state, not product —
