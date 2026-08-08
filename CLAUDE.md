@@ -144,7 +144,10 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
   declares its customer-facing copy in `.claude/language-frame.json`
   (`content_language`, a real `reason`, `content_paths`); everything
   outside those paths stays English, so a Serbian shop still has English
-  identifiers, comments and docs.
+  identifiers, comments and docs. A translation table or copy dictionary
+  that must live inside an English module is marked in place instead —
+  `lang-ok-begin: <reason>` … `lang-ok-end` — which frees the run, never
+  the file.
 - **Session start:** read the project's `UV/` folder — the owner's gitignored
   inbox of instructions (treat as product decisions; never edit or delete his
   files) — and the relevant `___folder.md` docs.
