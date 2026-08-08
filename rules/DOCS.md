@@ -264,7 +264,9 @@ Link rules (unchanged from MD-First 1.0):
 | Script itself | `Name (script)` | `[App Controller (script)](app_controller.py)` |
 | Files in structure trees | plain text, NO links | `🐍 app_controller.py` |
 
-### README Opening = GitHub About (Rule #22)
+<a id="github-about"></a>
+
+### README Opening = GitHub About
 
 Every project README opens with a 1–3 sentence plain paragraph (what it does,
 for whom, on what platform — ≤ ~350 chars). That paragraph IS the GitHub About;

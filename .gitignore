@@ -20,6 +20,11 @@
 !rules/
 !rules/**
 
+# ...but never Python's build droppings: the guards and templates under
+# rules/ are imported and run, and their caches were reaching GitHub.
+rules/**/__pycache__/
+rules/**/*.pyc
+
 # PRIVATE.md is intentionally NOT whitelisted — hidden projects index stays local
 
 # Project logos (SVG files used in README and PROJECTS)

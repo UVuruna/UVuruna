@@ -166,7 +166,7 @@ project-specific laws. It must NOT restate root rules.
 3. **Root README.md** — compact-list line (the Featured section is curated by
    the owner).
 4. **logos/** — copy `assets/logo.svg` as `logos/{ProjectName}.svg`.
-5. **GitHub About sync (Rule #22):** the README's opening paragraph (1–3 plain
+5. **GitHub About sync** ([Docs Rules](DOCS.md#github-about)): the README's opening paragraph (1–3 plain
    sentences, ≤ ~350 chars: what it does, for whom, on what platform) IS the
    GitHub About. Whenever a session writes or changes it and a repo exists:
 
