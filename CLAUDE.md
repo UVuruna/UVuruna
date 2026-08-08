@@ -139,7 +139,12 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
   (PreToolUse, machine-wide) blocks foreign scripts (Cyrillic, Greek, CJK…)
   and Serbian in product files; a legitimate quotation or a local
   pronunciation beside the English name is contested on its line with
-  `lang-ok: <reason>`.
+  `lang-ok: <reason>`. **The law governs the PROGRAM, never the words a
+  product says to its own audience** — a site selling to Serbian customers
+  declares its customer-facing copy in `.claude/language-frame.json`
+  (`content_language`, a real `reason`, `content_paths`); everything
+  outside those paths stays English, so a Serbian shop still has English
+  identifiers, comments and docs.
 - **Session start:** read the project's `UV/` folder — the owner's gitignored
   inbox of instructions (treat as product decisions; never edit or delete his
   files) — and the relevant `___folder.md` docs.

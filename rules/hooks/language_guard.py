@@ -30,15 +30,34 @@ WHAT IS EXEMPT, by design (the owner's own carve-outs, 2026-08-08):
     the English name, an i18n string bundle. An exemption without a reason
     does not count, and a false reason is a capacity lie (CLAUDE.md ->
     Universal Conduct).
+  * PRODUCT CONTENT IN ANOTHER LANGUAGE, declared per project in
+    `.claude/language-frame.json` (owner ruling 2026-08-08). Three of the
+    monorepo's websites sell to Serbian customers, so their customer-facing
+    COPY is legitimately Serbian — the law was always about the PROGRAM
+    (code, comments, identifiers, docs, developer-facing UI), never about
+    the words a product says to its own audience. The declaration:
+
+        {"content_language": "sr",
+         "reason": "<why this product's copy is not English>",
+         "content_paths": ["public/**", "*.php", "content/**"]}
+
+    Only the listed paths are freed, `reason` is mandatory (< 20 chars does
+    not count, exactly like the layout floor override), and code files
+    outside those paths are still English-only — a Serbian shop still has
+    English variable names.
 
 Contract: exit 2 = BLOCK (stderr is fed back to the agent); exit 0 = pass.
 Fail-open on any parse error — a broken guard must never brick a session.
 """
 
+import fnmatch
 import json
 import re
 import sys
 from pathlib import Path
+
+FRAME_FILENAME = "language-frame.json"
+MIN_REASON_CHARS = 20
 
 # ═══════════════════════════ SCOPE ═══════════════════════════
 
@@ -119,6 +138,45 @@ def written_text(tool_input: dict) -> str:
     return "\n".join(p for p in parts if isinstance(p, str))
 
 
+def declared_content_path(path: str) -> bool:
+    """True when the project declares THIS file as product copy written in
+    another language (`.claude/language-frame.json`). A declaration without
+    a real reason does not count — same rule as the layout floor override.
+    Fail-CLOSED on an unreadable frame: a broken declaration frees nothing,
+    because 'the file was malformed' must never become a way to smuggle
+    Serbian into a program."""
+    try:
+        target = Path(path).resolve()
+    except OSError:
+        return False
+    for directory in target.parents:
+        frame = directory / ".claude" / FRAME_FILENAME
+        if not frame.is_file():
+            continue
+        try:
+            data = json.loads(frame.read_text(encoding="utf-8",
+                                              errors="replace"))
+        except (json.JSONDecodeError, ValueError, OSError):
+            return False
+        if len(str(data.get("reason") or "").strip()) < MIN_REASON_CHARS:
+            return False
+        patterns = data.get("content_paths") or []
+        if not isinstance(patterns, list):
+            return False
+        try:
+            relative = target.relative_to(directory).as_posix()
+        except ValueError:
+            return False
+        for pattern in patterns:
+            if not isinstance(pattern, str):
+                continue
+            if fnmatch.fnmatch(relative, pattern) or fnmatch.fnmatch(
+                    target.name, pattern):
+                return True
+        return False
+    return False
+
+
 def in_scope(path: str) -> bool:
     if not path:
         return False
@@ -127,7 +185,9 @@ def in_scope(path: str) -> bool:
         return False
     if components and components[-1] in SKIP_FILENAMES:
         return False
-    return Path(path).suffix.lower() in CHECKED_EXTENSIONS
+    if Path(path).suffix.lower() not in CHECKED_EXTENSIONS:
+        return False
+    return not declared_content_path(path)
 
 
 def scan(text: str) -> list:
