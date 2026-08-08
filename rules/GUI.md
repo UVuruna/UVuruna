@@ -243,22 +243,32 @@ widget-tree walk; and the grade was a free number given in a narrow frame.
 
 ### The algorithmic teeth — no AI in the loop
 
-Measured by plain code. "Template v2 — pending" means the check lands in
-`rules/templates/test_layout_audit_qt.py` / `LayoutAuditTests.cs` and rolls
-out per project on the owner's go ([MIGRATE-LAYOUT](../MIGRATE-LAYOUT.md));
-until then it binds as a review rule and the grader below DEDUCTS for it.
+Measured by plain code. STATUS 2026-08-08: the Qt library
+`rules/templates/layout_checks_qt.py` (+ thin entry `test_layout_audit_qt.py`
+— split so adopting projects do not trip THE STRUCTURE LAW) implements
+ALG-1..9 and is fixture-verified: 13/13 planted violations caught, each by
+its own check, clean window passing. The WPF `LayoutAuditTests.cs` mirrors
+it with identical rule-name messages but is **UNCOMPILED** (no dotnet on the
+dev machine) — the first WPF rollout MUST compile-verify it and see it fail
+on a deliberately broken window before trusting a green run. First Qt
+rollout: DOMY Watch — the first audit run found **1667 violations across 7
+windows** (recorded in its `.claude/zubi-v2-findings.md`, deliberately
+unfixed per the owner's install-only boundary). Remaining projects adopt on
+the owner's go ([MIGRATE-LAYOUT](../MIGRATE-LAYOUT.md)). Gaps that STAY on
+the grader's checklist, documented in-file: ALG-6's content-inset ≥ 0.3·r
+and ALG-2's hover/pressed contrast states.
 
 | # | Rule | Class | Teeth |
 |---|------|-------|-------|
-| ALG-1 | **EXTREME STATE MATRIX** — every numeric control the session touched is audited at min / default / max, every toggle and small enum through all options; after each change: nothing paints outside the window, concentric elements share a center, the scroll rules hold. "Tested" without extremes is not tested. | LAW | template v2 — pending |
-| ALG-2 | **CONTRAST** — text vs its REAL background ≥ 4.5:1 (3:1 for large text), sampled from screenshots; hover and tooltip states included. | LAW | template v2 — pending |
-| ALG-3 | **HOVER GEOMETRY** — the audit triggers every tooltip/hover it finds; hover text wraps at ≤ 72 chars per line, never renders wider than its window, never off-screen. | LAW | template v2 — pending |
-| ALG-4 | **SPACE CEILING** — measured in LOGICAL px (the units layouts actually use). The ladder: **~1000×1000 ideal** (1:1 is a STYLE recommendation for canvases and presentational wholes, not for forms) → **1600 working width** for desktop settings pages → **2560×1440 ABSOLUTE ceiling, no exception, no written excuse** (that is a fullscreen demand). Each step up is legal only when the previous one is exhausted by reflow AND a reason is written down. Phone-targeted UI is designed portrait-first at device logical width (~360–480) — and every target follows the COMMON hardware of real users, never the best available. Horizontal scroll on a settings page fails at every step. | LAW | template v2 — pending |
-| ALG-5 | **UNIFORM SIBLINGS** — same-kind elements in one container share dimensions (the widest content decides, tolerance ±2px); a control's size never depends on the length of its own text. | GATE | template v2 — pending |
-| ALG-6 | **RADIUS BY ASPECT RATIO** — AR = width/height. AR ≥ 2: radius up to 50% of height (a pill is legitimate on a wide element); 1.4 ≤ AR < 2: ≤ 30% of height; AR < 1.4 (squarish/portrait — where circles and eggs are born): ≤ 15% of the shorter side. ALWAYS: inner text/image inset ≥ 0.3·r from every edge — that is what a rounded corner geometrically eats. True-circle content (color swatch, avatar) is exempt. | LAW | template v2 — pending |
-| ALG-7 | **ROW OCCUPANCY** — at minimum width, a band whose right half stands empty while content stacks BELOW it fails: reflow into columns before stacking into height. The measurable form of "nothing starves beside empty space". | GATE | template v2 — pending |
-| ALG-8 | **LIVE PROFILE** — the audit ALSO runs against a read-only copy of the owner's real settings file, not only the pristine default (owner approval 2026-08-08). A failure there is a failure of this change's session to deal with. *"That is the environment, not this change"* is not a legal sentence in any proof file. | LAW | template v2 — pending |
-| ALG-9 | **SECTION TAXONOMY** — when a section named for a concept exists (Size, Colors, Opacity…), a control carrying that concept in its label outside that section fails, absent a written reason beside it. | GATE | template v2 — pending |
+| ALG-1 | **EXTREME STATE MATRIX** — every numeric control the session touched is audited at min / default / max, every toggle and small enum through all options; after each change: nothing paints outside the window, concentric elements share a center, the scroll rules hold. "Tested" without extremes is not tested. | LAW | template v2 — live |
+| ALG-2 | **CONTRAST** — text vs its REAL background ≥ 4.5:1 (3:1 for large text), sampled from screenshots; hover and tooltip states included. | LAW | template v2 — live |
+| ALG-3 | **HOVER GEOMETRY** — the audit triggers every tooltip/hover it finds; hover text wraps at ≤ 72 chars per line, never renders wider than its window, never off-screen. | LAW | template v2 — live |
+| ALG-4 | **SPACE CEILING** — measured in LOGICAL px (the units layouts actually use). The ladder: **~1000×1000 ideal** (1:1 is a STYLE recommendation for canvases and presentational wholes, not for forms) → **1600 working width** for desktop settings pages → **2560×1440 ABSOLUTE ceiling, no exception, no written excuse** (that is a fullscreen demand). Each step up is legal only when the previous one is exhausted by reflow AND a reason is written down. Phone-targeted UI is designed portrait-first at device logical width (~360–480) — and every target follows the COMMON hardware of real users, never the best available. Horizontal scroll on a settings page fails at every step. | LAW | template v2 — live |
+| ALG-5 | **UNIFORM SIBLINGS** — same-kind elements in one container share dimensions (the widest content decides, tolerance ±2px); a control's size never depends on the length of its own text. | GATE | template v2 — live |
+| ALG-6 | **RADIUS BY ASPECT RATIO** — AR = width/height. AR ≥ 2: radius up to 50% of height (a pill is legitimate on a wide element); 1.4 ≤ AR < 2: ≤ 30% of height; AR < 1.4 (squarish/portrait — where circles and eggs are born): ≤ 15% of the shorter side. ALWAYS: inner text/image inset ≥ 0.3·r from every edge — that is what a rounded corner geometrically eats. True-circle content (color swatch, avatar) is exempt. | LAW | template v2 — live |
+| ALG-7 | **ROW OCCUPANCY** — at minimum width, a band whose right half stands empty while content stacks BELOW it fails: reflow into columns before stacking into height. The measurable form of "nothing starves beside empty space". | GATE | template v2 — live |
+| ALG-8 | **LIVE PROFILE** — the audit ALSO runs against a read-only copy of the owner's real settings file, not only the pristine default (owner approval 2026-08-08). A failure there is a failure of this change's session to deal with. *"That is the environment, not this change"* is not a legal sentence in any proof file. | LAW | template v2 — live |
+| ALG-9 | **SECTION TAXONOMY** — when a section named for a concept exists (Size, Colors, Opacity…), a control carrying that concept in its label outside that section fails, absent a written reason beside it. | GATE | template v2 — live |
 
 ### Grader v2 — the grade is computed, never felt
 
