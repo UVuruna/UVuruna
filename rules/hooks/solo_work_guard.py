@@ -57,6 +57,13 @@ WRITE_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
 EXEMPT_PARTS = (
     "/.claude/",
     "\\.claude\\",
+    # The RULEBOOKS and the hooks themselves. This one is a judgement, so it
+    # is stated rather than assumed: `rules/` is the coordination layer — the
+    # constitution, the gates, this guard. Handing the writing of the rule
+    # that governs delegation to a delegate is not delegation. It stays narrow
+    # on purpose: no project's product code lives under `rules/`.
+    "/uvuruna/rules/",
+    "\\uvuruna\\rules\\",
     "/scratchpad/",
     "\\scratchpad\\",
     "session-tasks.md",
