@@ -137,9 +137,15 @@ project creates:
     🐍 test_docs_coverage.py
     🐍 test_doc_links.py
     🐍 run_guards.py            ← fast wrapper the hooks call
-  📁 .claude/
+  📁 .claude/           ← NEVER tracked (see .gitignore below)
     ⚙️ settings.json    ← PostToolUse + Stop hooks wired to run_guards.py
-  📄 .gitignore         ← MUST contain: UV/  (plus stack-appropriate entries)
+  📄 .gitignore         ← MUST contain: UV/ and .claude/  (plus stack-appropriate
+                           entries). `.claude/` is the agent tooling's own
+                           working folder — hook settings, session task lists,
+                           audit screenshots, generated proof artifacts — and
+                           NONE of it belongs to the product's history (owner
+                           decree 2026-08-09, after 26 MB of audit PNGs reached
+                           one repo purely because no rule existed anywhere)
 ```
 
 Plus for installable desktop apps: the `setup/` folder per [SHIP](SHIP.md)
