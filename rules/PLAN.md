@@ -454,3 +454,31 @@ clearly, before work starts. Warning is not disobedience; silence is.
 
 The owner adds new guardrails as he identifies them; sessions may PROPOSE
 candidates (at the end of work, never mid-task).
+
+### THE SOLO-WORK GUARD (GATE, owner decree 2026-08-09)
+
+A ten-hour session opened with one instruction — *lead the work, engage other
+agents, verify them* — and ran to its end without launching a single one. It
+was reported to him as an observation, ten hours late, after the application
+had been degraded to the point of being unusable. His ruling:
+
+> *"ako sam ti rekao da angažuješ agente, ni slučajno ne smiješ da radiš sam i
+> 1 zadatak koji uradiš sam"*
+
+**Two guards already looked like this one and neither owned the question.**
+`agents_guard.py` blocks a session from ENDING while agents it launched are
+still running — it guards agents that EXIST. `delegation_guard.py` blocks a
+turn that asks the owner WHEN to start approved work — it guards one question.
+A session that quietly does everything itself, launches nothing and asks
+nothing, passes both. That gap is the whole reason this gate exists, and it is
+worth remembering as a shape: *a rule can have two guards and still have none.*
+
+`rules/hooks/solo_work_guard.py` (Stop, machine-wide) blocks a turn that WROTE
+product files and launched NO agent, in any project carrying
+`.claude/delegation-required`. Reading, measuring, running gates, the task
+list, the proofs and the reports are always free — those are the coordinator's
+own job and delegating them would delegate the thing he asked for personally.
+
+Self-tested against eight cases, including the two that must NOT block (an
+agent was launched; only bookkeeping was written) — a gate that cannot pass is
+as useless as one that cannot fail.
