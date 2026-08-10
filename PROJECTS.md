@@ -155,7 +155,7 @@ Travel); build/release pipeline remaining before v1 ships
 - Six ring compositions, shown for whichever face is on top: a laurel wreath, water at three wavelengths, fire that leans both ways, an electric arc chasing itself, the solar corona, and the twelve lunar phases
 - A real sun and a real moon riding a circle around the cube at their actual position for the time of day, lighting the faces they face — and a full moon really lights it, from below, at a strength that follows the phase
 - Nine computed finishes, from flat enamel to watercolour-with-a-gold-frame and crackled leather; three palettes (Royal Gems, Midnight Velvet, Obsidian and Gold)
-- Six emblem families, two of them (planets, virtues) copied from the DOMY Watch canon rather than invented, since both projects walk the same six-colour wheel
+- Six emblem families, two of them (planets, virtues) copied from the Watch Academy canon rather than invented, since both projects walk the same six-colour wheel
 - Everything except the turning cube is opt-in, chosen at mount like any other constructor argument
 - Playground app (`python main.py`) where every combination can be tried and the exact call copied
 - Measured cost: ten cubes at once use 0.11–0.13 ms of a 16.7 ms frame, under 1 %
