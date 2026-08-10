@@ -119,6 +119,7 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
 | Your job this session | Read |
 |-----------------------|------|
 | Start a new project | [Start Rules](rules/START.md) + [Docs Rules](rules/DOCS.md) |
+| Name or rename a project | [Start Rules](rules/START.md#name) → Step 2 |
 | Brainstorm / plan with the owner | [Plan Rules](rules/PLAN.md) |
 | Implement features / fix bugs | [Code Rules](rules/CODE.md) + the folder's `___folder.md` |
 | Any GUI work | [GUI Rules](rules/GUI.md) + [DESIGN.md](DESIGN.md) |

@@ -14,7 +14,7 @@ WRITTEN artifact — nothing is "understood silently".
 - [Step 3 — Technology Selection](#tech)
 - [Step 4 — Scaffold](#scaffold)
 - [Step 5 — Registration](#registration)
-- [Appendix — UV Name Inspiration Tables](#uv-tables)
+- [Appendix — Name Inspiration](#name-tables)
 
 ---
 
@@ -42,21 +42,75 @@ Only after the owner accepts both answers does the project exist.
 
 ## Step 2 — Project Name
 
-**Priority order (owner decree 2026-08-01):**
+**Owner decree 2026-08-10, class GATE — supersedes the 2026-08-01 order.**
+The monorepo over-insisted on the `UV` initials for years and paid for it in
+names that served the letters instead of the product. Initials are no longer a
+target of any kind. This section governs **new projects AND renames** of
+existing ones (rename mechanics: [Renaming](#rename)).
 
-1. **Associative and memorable FIRST.** The name must evoke what the project
-   does, be easy to remember, and sound good — "interesting to the ears".
-   A plain descriptive name always beats a forced clever one.
-2. **Initials are a BONUS, never a requirement.** If the name *naturally* lands
-   on one of the house initial patterns, take the bonus:
-   `UV`, `MUV`, `SUV`, `UVS`, `USV`, `VU`, `VUS`, `VSU`.
-   If it doesn't — that is completely fine. Never bend a good name to fit
-   initials.
+**Priority order:**
 
-Procedure: propose 3–5 candidates with one line each on the association it
-carries; mark any that happen to hit an initials pattern; the owner picks.
+1. **A term the market already speaks, aimed at what the app does.** The best
+   name sounds like it shipped this year: it borrows a word or phrase that is
+   live in the industry's vocabulary right now — *vibe, copilot, forge, mesh,
+   stream, pulse, canvas, agent, twin* — and lands so that the borrowed term
+   ALSO describes the product's actual job. The reference case is
+   `Remote User → Vibe Coder`: "remote user" described the plumbing, "vibe
+   coder" names the thing the owner is buying, in the words the market is
+   already using for it this year.
+2. **Associative and memorable, pleasant to say.** Two short words at most,
+   readable at a glance in a window title and on a desktop icon. A plain
+   descriptive name always beats a forced clever one — cleverness that needs
+   explaining is a worse name than a boring one that doesn't.
+3. **Letter bonus, never a requirement — `V`, `U`, `M`, `B`.** A candidate that
+   happens to carry one of these letters, best of all as an initial, gets a
+   small plus in the comparison. That is the whole weight it carries. It never
+   breaks a tie against a name that reads better, and **no name is ever bent to
+   produce one**.
+4. **Symbolism is free, and it is decoration.** `V` may be read as *Vuruna*,
+   *Vibe*, *Velocity*, *Victory* — anything at all; `B` as *Build*, *Brain*,
+   *Beat*. Invent the reading AFTER a name has already won on points 1–3.
+   Symbolism is never an argument for picking a name, only a nice line to put
+   in the story below.
 
-The [appendix below](#uv-tables) holds UV word-pair tables — **inspiration only**.
+**Procedure:** propose 3–5 candidates. Each candidate is one line: the name,
+then the [name story](#name-story) it would carry in the README. Mark the
+letter bonus where it happens to land. The owner picks — an agent never renames
+or names a project on its own judgment.
+
+The [appendix below](#name-tables) is inspiration only, never a checklist.
+
+<a id="name-story"></a>
+
+### The Name Story (owner decree 2026-08-10, class GATE)
+
+**Every project's README explains its own name, in the README, in one or two
+sentences.** A name that has to be decoded by the reader is a name that failed;
+a name whose story is written down turns into the project's pitch.
+
+The story says what the name promises and how the product delivers it — it is
+about the USER'S experience, not the implementation:
+
+> **Why "Vibe Coder"** — because it turns your phone into the machine: you
+> write code from the beach, from the bath, thumbing a controller like you are
+> playing a game, and what comes out the other end is a running program.
+
+Placement: immediately after the README's opening paragraph (the paragraph that
+is also the GitHub About — [DOCS](DOCS.md#github-about)), as a short
+`## Why "<Name>"` section or a single italic line under the title. Renaming a
+project rewrites this section in the same commit as the rename.
+
+<a id="rename"></a>
+
+### Renaming an existing project
+
+Same priority order, same story requirement, plus the mechanics: the folder
+follows the official name, `rules/tools/rename_project.py` does the sweep (it
+carries session transcripts across and takes `--exclude` for dated records —
+`REPORT-*.md` and "born from" narratives describe what a project was CALLED
+then and are never rewritten). Re-check afterwards: the GitHub repo name, the
+About text, `logos/{Name}.svg`, [PROJECTS.md](../PROJECTS.md), the root README
+line, and any machine-wide hook path that contains the old name.
 
 ---
 
@@ -185,79 +239,45 @@ project-specific laws. It must NOT restate root rules.
 
 ---
 
-<a id="uv-tables"></a>
+<a id="name-tables"></a>
 
-## Appendix — UV Name Inspiration Tables
+## Appendix — Name Inspiration
 
-Optional flavor for Step 2 — never an obligation.
+Inspiration only. Nothing here is a checklist, and a name that appears in no
+table is not worse for it — Step 2 decides, the owner picks.
 
-### Tech / Science
+### Patterns that produce names people repeat
 
-| Name | Use For |
-|------|---------|
-| **Ultra Violet** | Brand identity, visual tools, anything light/color-related |
-| **Under Voltage** | Power monitoring, low-resource mode, energy-efficient systems |
-| **Unit Vector** | Math/ML modules, normalization, direction-based algorithms |
-| **Universal Variable** | Config systems, dynamic settings, shared state containers |
-| **Unknown Variable** | Placeholder names, mystery inputs, unsolved parameters |
-| **Unified View** | Dashboard components, aggregated data displays |
-| **Upstream Validation** | Input sanitization layers, pre-processing checks |
-| **Unit Verification** | Test runners, assertion modules, QA tools |
-| **Uncompressed Video** | Raw media pipelines, lossless capture modules |
-| **Unreal Visuals** | Rendering engines, visual effects, graphics pipelines |
-| **Ultrasonic Vibration** | Hardware interfaces, sensor modules, signal processing |
-| **Universal Version** | Cross-platform builds, version management systems |
+| Pattern | Words it draws on | Why it works |
+|---------|-------------------|--------------|
+| **The act, named** | the user's own activity, said out loud | *Vibe Coder*, *Prompt Painter* — the user reads it and thinks "that is what I am doing" |
+| **The workshop** | Forge, Foundry, Studio, Workbench, Kiln, Press | says a thing gets MADE here — generators, converters, builders |
+| **The instrument** | Lens, Compass, Dial, Gauge, Beacon, Pulse, Vitals | says a thing gets MEASURED or SHOWN — monitors, viewers, dashboards |
+| **The companion** | Copilot, Sidekick, Scout, Sentry, Butler, Twin | says a thing acts FOR you — agents, automation, watchdogs |
+| **The material** | DNA, Grain, Fabric, Mesh, Thread, Signal, Trace | names the stuff the app works with — capture, data, ML |
+| **The moment** | Dawn, Drift, Echo, Afterglow, Halo | fits time-based, ambient and visual products |
 
-### Vehicles / Industry
+Two words at most, and the second word carries the job: `<flavour> <job>`.
+A term borrowed from what the industry is talking about **this year** ages
+faster than a plain one but sells far better today — worth it for anything with
+an audience, wrong for infrastructure that must still make sense in five years.
 
-| Name | Use For |
-|------|---------|
-| **Utility Vehicle** | General-purpose tools, multi-function desktop utilities |
-| **Urban Vehicle** | City-scale automation, location-aware applications |
-| **Unmanned Vehicle** | Autonomous agents, bots, headless automation scripts |
-| **Underground Vessel** | Background services, hidden system processes |
-| **Underwater Vessel** | Deep data mining, subterranean data pipelines |
+### Letter-bonus word bank — `V` · `U` · `M` · `B`
 
-### Psychology / Concepts
+Only for breaking a tie between names that already won on their own merit.
 
-| Name | Use For |
-|------|---------|
-| **Uncanny Valley** | AI behavior replication, humanlike simulations (InputDNA platform) |
-| **Unconscious Voice** | Passive input capture, background listeners |
-| **Unfiltered Vision** | Raw data views, unprocessed output displays |
-| **Underlying Values** | Core config, base settings, foundational constants |
-| **Unspoken Vulnerability** | Security audit tools, silent failure detectors |
-| **Untamed Vitality** | High-performance modes, uncapped processing |
-| **Unbroken Vigilance** | Watchdog processes, uptime monitors, always-on services |
-| **Unleashed Velocity** | Performance optimization modules, fast-path pipelines |
+| Letter | Words |
+|--------|-------|
+| **V** | Vibe, Vivid, Vector, Velocity, Vantage, Vault, Verge, Vista, Vital, Voyager, Vertex, Vessel |
+| **U** | Uplink, Unison, Uptake, Umbra, Uplift, Utility, Uniform, Upstream |
+| **M** | Mesh, Muse, Mosaic, Momentum, Mirror, Marker, Mainline, Motive |
+| **B** | Beacon, Bloom, Bridge, Bench, Blueprint, Beat, Bolt, Bounty |
 
-### Creative / Branding
+### House history — the retired UV tables
 
-| Name | Use For |
-|------|---------|
-| **Unveiled Vision** | Launch features, reveal systems, first-run experiences |
-| **Unbound Velocity** | Speed benchmarks, unlimited execution modes |
-| **Untold Version** | Hidden builds, internal-only releases, secret branches |
-| **Uncharted Venture** | Experimental projects, proof-of-concept prototypes |
-| **Unique Voice** | Personalization engines, user profiling (InputDNA) |
-| **Unique Vibe** | Signature detection, behavioral fingerprinting |
-| **Unique Value** | Differentiator features, competitive advantages |
-| **Urban Vibrance** | UI themes, city-aesthetic visual styles |
-| **Urban Vision** | Location-aware apps, map-based interfaces |
-| **Unstoppable Vision** | Long-running processes, persistent background tasks |
-| **Unreal Velocity** | Extreme performance targets, benchmark goals |
-| **Unlimited Views** | Analytics dashboards, view counters, open-access systems |
-| **Unyielding Vision** | Resilient systems, fault-tolerant architectures |
-
-### Wordplay / Descriptive
-
-| Name | Use For |
-|------|---------|
-| **Ultra Vague** | Fuzzy matching, approximate search, ambiguous inputs |
-| **Ultra Vivid** | High-contrast UIs, enhanced display modes |
-| **Unusually Verbose** | Debug/logging modes, verbose output flags |
-| **Universally Valid** | Cross-format validators, schema-agnostic checks |
-| **Undeniably Valuable** | Premium features, high-impact modules |
-| **Unexpectedly Viral** | Sharing mechanisms, distribution systems |
-| **Underrated Virtuoso** | Hidden gems, underused but powerful utilities |
-| **Unnamed Visionary** | Anonymous/pseudonym systems, identity-masked profiles |
+Until 2026-08-10 this appendix held sixty `U*/V*` word pairs and Step 2 pushed
+every new project toward an initials pattern. Two live names came out of that
+era honestly (*Ultra Vivid*, *Input DNA*); the practice as a whole produced
+names that explained the letters instead of the product, which is why the owner
+retired it. The full tables remain in this file's git history for anyone
+curious — they are not to be reinstated.

@@ -274,6 +274,22 @@ whenever a session changes it and a repo exists:
 `gh repo edit <owner>/<repo> --description "<paragraph>"`. Longer intro → first
 sentence is the About.
 
+<a id="name-story"></a>
+
+### The Name Story (owner decree 2026-08-10, class GATE)
+
+Directly under that opening paragraph, every README explains **why the project
+carries its name** — one or two sentences, as a `## Why "<Name>"` section or a
+single italic line under the title. The story sells what the name promises in
+terms of the user's experience, never the implementation:
+
+> **Why "Vibe Coder"** — because it turns your phone into the machine: you
+> write code from the beach, from the bath, thumbing a controller like you are
+> playing a game, and what comes out the other end is a running program.
+
+A rename rewrites this section in the same commit as the rename. Naming rules
+themselves: [START](START.md#name) → Step 2.
+
 ---
 
 <a id="markdown"></a>
