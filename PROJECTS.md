@@ -49,17 +49,19 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 ---
 
-<a id="unreal-voice-sampler"></a>
+<a id="voice-print"></a>
 
-### <img src="logos/UnrealVoiceSampler.svg" width="22" height="22"> Unreal Voice Sampler 🔒
+### <img src="logos/VoicePrint.svg" width="22" height="22"> Voice Print 🔒
 
-**Local path:** `Machine Learning/Unreal Voice Sampler/`
+**Local path:** `Machine Learning/Voice Print/`
 **GitHub:** — (no public repository)
 **Type:** Desktop Application (Windows)
 **Status:** ⚪ Planned
 **Visibility:** Private
 
-**Description:** Voice counterpart of Input DNA — the second module of the UVirtual platform. Where Input DNA captures how a person moves the mouse and types, Unreal Voice Sampler captures how they sound: records voice samples through the microphone and trains a personal voice model toward the same virtual-replica goal.
+**Description:** Voice counterpart of Input DNA — the second module of the UVirtual platform. Where Input DNA captures how a person moves the mouse and types, Voice Print captures how they sound: records voice samples through the microphone and trains a personal voice model toward the same virtual-replica goal.
+
+**Why "Voice Print":** your voice identifies you as precisely as your thumb does — this is the machine that takes the impression. Renamed from *Unreal Voice Sampler* on 2026-08-10; the old name was built around an initial and called a model a piece of studio gear.
 
 ---
 

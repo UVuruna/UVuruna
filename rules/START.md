@@ -104,13 +104,37 @@ project rewrites this section in the same commit as the rename.
 
 ### Renaming an existing project
 
-Same priority order, same story requirement, plus the mechanics: the folder
-follows the official name, `rules/tools/rename_project.py` does the sweep (it
-carries session transcripts across and takes `--exclude` for dated records —
-`REPORT-*.md` and "born from" narratives describe what a project was CALLED
-then and are never rewritten). Re-check afterwards: the GitHub repo name, the
-About text, `logos/{Name}.svg`, [PROJECTS.md](../PROJECTS.md), the root README
-line, and any machine-wide hook path that contains the old name.
+Same priority order, same story requirement. **A rename is complete or it does
+not happen** (owner decree 2026-08-10) — a half-done one was reverted once
+already, 69 lines across 49 files. Complete means all six:
+
+1. **Every reference to the title, everywhere** — including the other projects
+   that cite this one. `rules/tools/rename_project.py` does the sweep and shows
+   every hit before touching anything; it takes `--exclude` for **dated
+   records** (`REPORT-*.md`, "born from" narratives — they describe what the
+   project was CALLED then), for quotations of things the owner actually said,
+   and for any text that documents the rename itself.
+2. **The folder** follows the official name. The tool moves it and refuses to
+   run while a session is live in it — never `--force`.
+3. **The session history** is carried across: transcripts are keyed off the
+   project PATH, so a manual move orphans them. The tool moves them;
+   `merge_session_history.py` reunites any that were already lost.
+4. **The README** states the new name story, in the same commit.
+5. **The registration** — [PROJECTS.md](../PROJECTS.md) entry and anchor, the
+   root README line, `git mv logos/{Old}.svg logos/{New}.svg`, the Icon Forge
+   manifest, the GitHub repo name and its About text.
+6. **Anything outside a repository that carries the old name** — a machine-wide
+   hook path, an installed app's `%LOCALAPPDATA%` data folder, a Task Scheduler
+   task, a desktop `.lnk`. These break silently and none of them are in git.
+
+**When the rename cannot run** — a session is live in that folder, the app is
+running, the editor holds the directory — **do not start it and do not leave it
+half-done. Write `RENAME.md` at that project's root instead**, saying what the
+new name is, its story, the exact command with its exclusions, and every trap
+found while looking (owner decree 2026-08-10). The next session then executes
+from the file instead of rediscovering the work, and deletes it in the commit
+that finishes the job. Reference example:
+`Applications/Remote User/RENAME.md`.
 
 ---
 
