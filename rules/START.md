@@ -265,37 +265,33 @@ project-specific laws. It must NOT restate root rules.
 
 <a id="name-tables"></a>
 
-## Appendix — Name Inspiration
+## Appendix — How the house's own names were arrived at
 
-Inspiration only. Nothing here is a checklist, and a name that appears in no
-table is not worse for it — Step 2 decides, the owner picks.
+**No word lists live in this rulebook** (owner decree 2026-08-10). A vocabulary
+handed to an agent BEFORE it understands the product is exactly how the retired
+practice worked — his words: *we were proposing application names before we
+even had the application and knew what it does.* Any offered list pulls the
+name toward the list. The words come from the product, and only after Step 1
+and Step 3 have said what the product is.
 
-### Patterns that produce names people repeat
+What is worth carrying between projects is not vocabulary but **shape** — the
+handful of ways a name can point at a product. Each one below is shown by a
+name this monorepo actually ships, so the appendix stays a record rather than a
+menu:
 
-| Pattern | Words it draws on | Why it works |
-|---------|-------------------|--------------|
-| **The act, named** | the user's own activity, said out loud | *Vibe Coder*, *Prompt Painter* — the user reads it and thinks "that is what I am doing" |
-| **The workshop** | Forge, Foundry, Studio, Workbench, Kiln, Press | says a thing gets MADE here — generators, converters, builders |
-| **The instrument** | Lens, Compass, Dial, Gauge, Beacon, Pulse, Vitals | says a thing gets MEASURED or SHOWN — monitors, viewers, dashboards |
-| **The companion** | Copilot, Sidekick, Scout, Sentry, Butler, Twin | says a thing acts FOR you — agents, automation, watchdogs |
-| **The material** | DNA, Grain, Fabric, Mesh, Thread, Signal, Trace | names the stuff the app works with — capture, data, ML |
-| **The moment** | Dawn, Drift, Echo, Afterglow, Halo | fits time-based, ambient and visual products |
+| Shape | House example | What the shape does |
+|-------|---------------|---------------------|
+| **The act, named** | Vibe Coder, PromptPainter | the user reads it and thinks "that is what I am doing" |
+| **The workshop** | Icon Forge | says a thing gets MADE here — generators, converters, builders |
+| **The instrument** | Vitals | says a thing gets MEASURED or SHOWN — monitors, viewers, dashboards |
+| **The material** | Input DNA | names the stuff the app works with — capture, data, ML |
+| **The impression** | Voice Print | names the trace the subject leaves behind |
+| **The institution** | Watch Academy | says the product teaches, not only performs |
 
-Two words at most, and the second word carries the job: `<flavour> <job>`.
-A term borrowed from what the industry is talking about **this year** ages
-faster than a plain one but sells far better today — worth it for anything with
-an audience, wrong for infrastructure that must still make sense in five years.
-
-### Letter-bonus word bank — `V` · `U` · `M` · `B`
-
-Only for breaking a tie between names that already won on their own merit.
-
-| Letter | Words |
-|--------|-------|
-| **V** | Vibe, Vivid, Vector, Velocity, Vantage, Vault, Verge, Vista, Vital, Voyager, Vertex, Vessel |
-| **U** | Uplink, Unison, Uptake, Umbra, Uplift, Utility, Uniform, Upstream |
-| **M** | Mesh, Muse, Mosaic, Momentum, Mirror, Marker, Mainline, Motive |
-| **B** | Beacon, Bloom, Bridge, Bench, Blueprint, Beat, Bolt, Bounty |
+Two words at most, and the second word carries the job. A term borrowed from
+what the industry is talking about **this year** ages faster than a plain one
+but sells far better today — worth it for anything with an audience, wrong for
+infrastructure that must still make sense in five years.
 
 ### House history — the retired UV tables
 
@@ -303,5 +299,6 @@ Until 2026-08-10 this appendix held sixty `U*/V*` word pairs and Step 2 pushed
 every new project toward an initials pattern. Two live names came out of that
 era honestly (*Ultra Vivid*, *Input DNA*); the practice as a whole produced
 names that explained the letters instead of the product, which is why the owner
-retired it. The full tables remain in this file's git history for anyone
-curious — they are not to be reinstated.
+retired it. The first replacement still carried a `V·U·M·B` word bank, and he
+struck that the same day for the same reason — a shorter list is still a list.
+Both remain in this file's git history; neither is to be reinstated.
