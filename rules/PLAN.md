@@ -351,7 +351,35 @@ on apologies instead of progress. Both patterns are now banned and enforced.
    [GUI → Zubi v2](GUI.md#zubi-v2)). A visual question with no picture, no
    page and no link is not a question he can answer, and does not end a
    turn.
-4. **Teeth:** `rules/hooks/communication_guard.py`, wired MACHINE-WIDE in
+4. **A page that PROPOSES carries a BALLOT — LAW (owner decree 2026-08-10).**
+   Born from a real habit: the owner was opening proposal pages in a screenshot
+   gallery, drawing green circles and red crosses over them by hand, and typing
+   his comments beside the picture — because the page gave him no way to
+   answer inside itself. From now on, ANY rendered page whose purpose is to let
+   the owner choose (naming options, GUI variants, algorithm alternatives,
+   design directions) is not a poster, it is a BALLOT:
+   - **Every proposal is selectable.** One tick box per option, and the card
+     shows visibly that it is picked. Alternatives that exclude each other sit
+     in a group where the tick moves; options that can be combined are freely
+     multi-selected — the owner routinely wants *two* of the four variants.
+   - **Every proposal has its own comment field** directly under it. His
+     corrections are almost always attached to ONE option ("this halo, but the
+     glow inside instead of outside"), and a single comment box at the end
+     loses which one he meant.
+   - **The page ends with a ballot block**: a large free-text field for
+     instructions that no option covers, a **Copy verdict** button, and a
+     plain-text verdict box. The button assembles CHOSEN / NOT CHOSEN BUT
+     COMMENTED / INSTRUCTIONS as plain text and puts it on the clipboard — the
+     owner pastes ONE message into the chat and the round continues. Selections
+     survive a page reload (`localStorage`), because he reads long pages in
+     more than one sitting.
+   - **The reference implementation is `rules/templates/decision_page.html`** —
+     copy it, keep the `data-option` / `data-group` / `#ballot` contract, and
+     replace only the content. The fixed dark scheme of point 1 still applies.
+   - A proposal page shipped without the ballot is an unfinished deliverable:
+     it forces the owner into the screenshot-and-marker workflow this rule
+     exists to end.
+5. **Teeth:** `rules/hooks/communication_guard.py`, wired MACHINE-WIDE in
    `~/.claude/settings.json` (applies in every project, no per-project
    migration). The Stop hook blocks ending any turn whose chat text contains
    diagram source or a terse enumerated ask; the PreToolUse hook on

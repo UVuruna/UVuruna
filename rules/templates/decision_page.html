@@ -1,0 +1,201 @@
+<!--
+  THE BALLOT — reference template for an owner-facing decision page.
+
+  Rule: rules/PLAN.md -> Communication with the Owner, point 5.
+  Every rendered page that PROPOSES options carries this machinery, so the
+  owner votes inside the page instead of drawing on screenshots.
+
+  Contract the agent must keep when copying this file:
+    * one <article class="option" data-option="<stable-id>"> per proposal
+    * data-group on the section groups mutually exclusive proposals
+      (group -> radio behaviour, no group -> free multi-select)
+    * every option carries its own comment field
+    * the page ends with the ballot block: free-text instructions,
+      "Copy verdict", and the plain-text verdict box
+  Colour scheme is FIXED DARK on purpose - never adaptive (PLAN.md point 1).
+-->
+<style>
+  body {
+    margin: 0;
+    padding: 32px 24px 96px;
+    background: #0f1117;
+    color: #e6e8ef;
+    font: 15px/1.65 "Segoe UI", system-ui, sans-serif;
+  }
+  h1 { color: #ffffff; font-size: 26px; margin: 0 0 6px; }
+  .lede { color: #9aa3b8; margin: 0 0 28px; max-width: 70ch; }
+  section { margin: 0 0 36px; }
+  h2 {
+    color: #cbd2e3; font-size: 13px; letter-spacing: .14em;
+    text-transform: uppercase; border-bottom: 1px solid #232838;
+    padding-bottom: 8px; margin: 0 0 16px;
+  }
+  .option {
+    background: #171b26; border: 1px solid #232838; border-left: 4px solid #232838;
+    border-radius: 8px; padding: 14px 18px; margin: 0 0 12px; transition: .15s;
+  }
+  .option.picked { border-color: #3d8f5f; border-left-color: #46c07d; background: #16211b; }
+  .option-head { display: flex; align-items: baseline; gap: 12px; }
+  .option-head input { width: 17px; height: 17px; accent-color: #46c07d; cursor: pointer; flex: none; }
+  .option-head label { color: #ffffff; font-size: 17px; font-weight: 600; cursor: pointer; }
+  .tag {
+    font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+    color: #8fd3ff; border: 1px solid #2f4a63; border-radius: 4px; padding: 2px 7px;
+  }
+  .option p { color: #b9c0d2; margin: 8px 0 12px; max-width: 78ch; }
+  .option textarea, #ballot-note {
+    width: 100%; box-sizing: border-box; background: #0f1117; color: #e6e8ef;
+    border: 1px solid #2c3348; border-radius: 6px; padding: 9px 11px;
+    font: 14px/1.5 "Segoe UI", system-ui, sans-serif; resize: vertical;
+  }
+  .option textarea { min-height: 44px; }
+  .option textarea::placeholder, #ballot-note::placeholder { color: #5d6480; }
+  #ballot {
+    background: #171b26; border: 1px solid #2c3348; border-radius: 10px;
+    padding: 20px 22px; margin-top: 40px;
+  }
+  #ballot h2 { border-color: #2c3348; }
+  #ballot-note { min-height: 120px; }
+  button {
+    background: #46c07d; color: #0b1a12; border: 0; border-radius: 6px;
+    padding: 11px 20px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 14px;
+  }
+  button:hover { background: #5ad391; }
+  #verdict {
+    width: 100%; box-sizing: border-box; min-height: 220px; margin-top: 14px;
+    background: #0b0d13; color: #cfe8da; border: 1px solid #2c3348; border-radius: 6px;
+    padding: 12px; font: 13px/1.55 Consolas, "Courier New", monospace; white-space: pre;
+  }
+  .hint { color: #8f98ad; }</style>
+
+<h1>Decision page title</h1>
+<p class="lede">
+  Tick what you want, write a comment under anything that needs one, add your
+  instructions at the bottom, press <strong>Copy verdict</strong> and paste the
+  text back into the chat.
+</p>
+
+<section data-group="naming">
+  <h2>Section — one choice only (data-group)</h2>
+
+  <article class="option" data-option="opt-a">
+    <div class="option-head">
+      <input type="checkbox" id="opt-a">
+      <label for="opt-a">Option A</label>
+      <span class="tag">recommended</span>
+    </div>
+    <p>What this option is, and what it costs — one honest paragraph.</p>
+    <textarea placeholder="Comment on Option A (optional)"></textarea>
+  </article>
+
+  <article class="option" data-option="opt-b">
+    <div class="option-head">
+      <input type="checkbox" id="opt-b">
+      <label for="opt-b">Option B</label>
+    </div>
+    <p>The alternative and its consequence.</p>
+    <textarea placeholder="Comment on Option B (optional)"></textarea>
+  </article>
+</section>
+
+<div id="ballot">
+  <h2>Your verdict</h2>
+  <textarea id="ballot-note" placeholder="Free instructions: corrections, mixes ('A but with B's halo'), anything not covered by an option."></textarea>
+  <button type="button" id="ballot-copy">Copy verdict</button>
+  <textarea id="verdict" readonly placeholder="The text to paste into the chat appears here."></textarea>
+</div>
+
+<script>
+(function () {
+  var options = Array.prototype.slice.call(document.querySelectorAll(".option"));
+  var STORE = "ballot:" + location.pathname;
+
+  function fields(card) {
+    return {
+      box: card.querySelector("input[type=checkbox]"),
+      note: card.querySelector("textarea"),
+      title: card.querySelector("label").textContent.trim(),
+      group: card.closest("[data-group]") ? card.closest("[data-group]").dataset.group : null
+    };
+  }
+
+  function save() {
+    var state = {};
+    options.forEach(function (card) {
+      var f = fields(card);
+      state[card.dataset.option] = { picked: f.box.checked, note: f.note.value };
+    });
+    state.__note = document.getElementById("ballot-note").value;
+    try { localStorage.setItem(STORE, JSON.stringify(state)); } catch (e) {}
+  }
+
+  function restore() {
+    var state;
+    try { state = JSON.parse(localStorage.getItem(STORE) || "{}"); } catch (e) { return; }
+    options.forEach(function (card) {
+      var saved = state[card.dataset.option];
+      if (!saved) return;
+      var f = fields(card);
+      f.box.checked = !!saved.picked;
+      f.note.value = saved.note || "";
+      card.classList.toggle("picked", f.box.checked);
+    });
+    if (state.__note) document.getElementById("ballot-note").value = state.__note;
+  }
+
+  options.forEach(function (card) {
+    var f = fields(card);
+    f.box.addEventListener("change", function () {
+      if (f.box.checked && f.group) {
+        // grouped options are mutually exclusive - last tick wins
+        options.forEach(function (other) {
+          if (other === card) return;
+          var o = fields(other);
+          if (o.group === f.group && o.box.checked) {
+            o.box.checked = false;
+            other.classList.remove("picked");
+          }
+        });
+      }
+      card.classList.toggle("picked", f.box.checked);
+      save();
+    });
+    f.note.addEventListener("input", save);
+  });
+  document.getElementById("ballot-note").addEventListener("input", save);
+
+  function buildVerdict() {
+    var lines = ["=== VERDICT: " + document.title + " ===", ""];
+    var chosen = [], rejected = [];
+    options.forEach(function (card) {
+      var f = fields(card);
+      var line = "  - " + f.title + (f.group ? "  [" + f.group + "]" : "");
+      if (f.note.value.trim()) line += "\n      comment: " + f.note.value.trim();
+      (f.box.checked ? chosen : rejected).push(line);
+    });
+    lines.push("CHOSEN (" + chosen.length + "):");
+    lines.push(chosen.length ? chosen.join("\n") : "  (nothing ticked)");
+    var commented = rejected.filter(function (l) { return l.indexOf("comment:") !== -1; });
+    if (commented.length) {
+      lines.push("", "NOT CHOSEN, but commented:");
+      lines.push(commented.join("\n"));
+    }
+    var note = document.getElementById("ballot-note").value.trim();
+    lines.push("", "INSTRUCTIONS:", note ? note : "  (none)");
+    return lines.join("\n");
+  }
+
+  document.getElementById("ballot-copy").addEventListener("click", function () {
+    var out = document.getElementById("verdict");
+    out.value = buildVerdict();
+    out.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(out.value);
+    else document.execCommand("copy");
+    var btn = document.getElementById("ballot-copy");
+    btn.textContent = "Copied — paste it into the chat";
+    setTimeout(function () { btn.textContent = "Copy verdict"; }, 2500);
+  });
+
+  restore();
+})();
+</script>

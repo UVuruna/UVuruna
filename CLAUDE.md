@@ -160,7 +160,10 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
   recommendation) — never enumerated one-liners. Every algorithm / GUI /
   config-structure presentation carries an OBLIGATORY visual: box-drawing
   sketch in chat for simple, rendered page (Artifact/HTML) for complex —
-  Mermaid source never in chat. Enforced by a machine-wide hook
+  Mermaid source never in chat. **A rendered page that PROPOSES options is a
+  BALLOT** (owner decree 2026-08-10): tick box + comment field per option, and
+  a closing "Copy verdict" block the owner pastes back into the chat — template
+  `rules/templates/decision_page.html`. Enforced by a machine-wide hook
   ([Plan Rules](rules/PLAN.md) → Communication).
 - **Present before building:** implementation starts only after the envisioned
   algorithm / GUI sketch (or echo-brief for Wide tasks) has been shown —

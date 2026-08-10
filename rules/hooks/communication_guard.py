@@ -79,6 +79,32 @@ BLOCK_DELIVERABLE = (
     "line, then continue."
 )
 
+# THE BALLOT (owner decree 2026-08-10): a rendered page that PROPOSES options
+# must let the owner answer inside it. A page is a proposal page when it labels
+# picks/recommendations or already carries option markup; it is a ballot when it
+# has selectable options AND the copy-verdict block.
+PROPOSAL_RE = re.compile(r"data-option|our pick|recommend(ed|ation)|\boption\s*[ab1-9]\b",
+                         re.I)
+BALLOT_RE = re.compile(r"ballot-copy|id=[\"']ballot[\"']", re.I)
+SELECTABLE_RE = re.compile(r"type=[\"']checkbox[\"']|type=[\"']radio[\"']", re.I)
+
+BLOCK_ARTIFACT_BALLOT = (
+    "THE BALLOT (rules/PLAN.md -> Communication with the Owner, point 4, owner "
+    "decree 2026-08-10): this page proposes options to the owner but gives him "
+    "no way to answer inside it - so he is forced back into screenshotting the "
+    "page and drawing crosses on it by hand. Before publishing, add:\n"
+    "  * a tick box per option (data-option on the card; data-group on the "
+    "section when the alternatives exclude each other), the card marking "
+    "itself as picked;\n"
+    "  * a comment field under EVERY option - his corrections attach to one "
+    "option, not to the page;\n"
+    "  * the closing ballot block: a free-instructions textarea, a 'Copy "
+    "verdict' button (id=\"ballot-copy\") and a plain-text verdict box, with "
+    "selections kept in localStorage.\n"
+    "Copy rules/templates/decision_page.html and replace only the content - it "
+    "is the reference implementation and it already keeps the fixed dark scheme."
+)
+
 BLOCK_TERSE = (
     "COMMUNICATION LAW (rules/PLAN.md -> Communication with the Owner): your chat "
     "message asks the owner enumerated one-line questions with no explanation. This "
@@ -326,6 +352,11 @@ def check_artifact(payload: dict) -> None:
         block(BLOCK_ARTIFACT_THEME)
     if "<style" in page.lower() and not BACKGROUND_RE.search(page):
         block(BLOCK_ARTIFACT_NO_BG)
+    # a proposal page must be answerable inside itself
+    if PROPOSAL_RE.search(page) and not (
+        BALLOT_RE.search(page) and SELECTABLE_RE.search(page)
+    ):
+        block(BLOCK_ARTIFACT_BALLOT)
 
 
 def collect_session_text(transcript_path: str) -> str:
