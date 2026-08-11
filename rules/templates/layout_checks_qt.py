@@ -764,8 +764,11 @@ def check_radius(window: QWidget) -> list[str]:
         elif aspect >= 1.4:
             allowed, rule = 0.30 * height, "1.4 <= AR < 2 allows 30% of the height"
         else:
-            allowed, rule = (0.15 * min(width, height),
-                             "AR < 1.4 allows 15% of the shorter side")
+            # 30% since 2026-08-11 (was 15%): the owner judged both renderings
+            # at real size and kept his 27.6% squircle — the circle/egg the
+            # law hunts begins past ~30%, and 50% IS the circle.
+            allowed, rule = (0.30 * min(width, height),
+                             "AR < 1.4 allows 30% of the shorter side")
         if radius[0] > allowed + 0.5:
             problems.append(
                 f"ALG-6 RADIUS BY ASPECT RATIO (rules/GUI.md -> Zubi v2) "
