@@ -14,7 +14,7 @@ path maps to. It never deletes and never overwrites, so running it twice is
 harmless and the orphan stays behind as a backup.
 
     python rules/tools/merge_session_history.py --list
-    python rules/tools/merge_session_history.py "u:/Coding/UVuruna/Gadgets/DOMY Watch"
+    python rules/tools/merge_session_history.py "u:/Coding/UVuruna/Applications/WatchAcademy"
     python rules/tools/merge_session_history.py --from <orphan-dir-name> --into <project-path>
 
 Without --from, the orphan is guessed by matching the LAST path components

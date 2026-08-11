@@ -113,7 +113,7 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 ### <img src="logos/WatchAcademy.svg" width="22" height="22"> Watch Academy
 
-**Local path:** `Gadgets/DOMY Watch/`
+**Local path:** `Applications/WatchAcademy/`
 **GitHub:** [UVuruna/Watch-Academy](https://github.com/UVuruna/Watch-Academy)
 **Type:** Desktop Application (Windows)
 **Status:** 🟡 In Development — core feature-complete (dial, computation
@@ -266,10 +266,10 @@ Travel); build/release pipeline remaining before v1 ships
 
 <a id="remote-user"></a>
 
-### <img src="logos/RemoteUser.svg" width="22" height="22"> Remote User
+### <img src="logos/VibeCoder.svg" width="22" height="22"> Vibe Coder
 
-**Local path:** `Applications/Remote User/`
-**GitHub:** [UVuruna/Remote-User](https://github.com/UVuruna/Remote-User)
+**Local path:** `Applications/VibeCoder/`
+**GitHub:** [UVuruna/Vibe-Coder](https://github.com/UVuruna/Vibe-Coder)
 **Type:** Desktop Application (Windows) + Android Hybrid App (APK)
 **Status:** 🟡 In Development — v1 loop shipped (H.264 streaming, touch controls, desktop app + installer, Android APK); on-device polish ongoing
 **Visibility:** Public

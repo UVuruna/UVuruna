@@ -174,7 +174,7 @@ gh release create v{version} "dist/{ProjectName}_Setup.exe" \
 **Every installable app checks the LATEST GitHub release at startup and, if
 behind, offers an in-app UPDATE.** The last published release is the single
 source of truth for "current version". Reference implementations:
-`Applications/Remote User/server/updates.py`,
+`Applications/VibeCoder/server/updates.py`,
 `Gadgets/Ultra Vivid/core/updates.py` — reuse, don't reinvent.
 
 - An `updates` module exposes `check(repo, enabled) -> Update | None` reading
@@ -191,6 +191,6 @@ source of truth for "current version". Reference implementations:
 - Running version comes from the single version source, bundled into the build.
 - **Ecosystem apps update downhill:** only the desktop/hub touches the
   internet; companions learn the version from the hub and update from it (see
-  Remote User). One internet check per ecosystem.
+  Vibe Coder). One internet check per ecosystem.
 - Exempt: pure libraries and CI-deployed websites — this rule is about
   installed apps a user runs a stale copy of.
