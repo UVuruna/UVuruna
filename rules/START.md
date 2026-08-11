@@ -133,8 +133,31 @@ half-done. Write `RENAME.md` at that project's root instead**, saying what the
 new name is, its story, the exact command with its exclusions, and every trap
 found while looking (owner decree 2026-08-10). The next session then executes
 from the file instead of rediscovering the work, and deletes it in the commit
-that finishes the job. Reference example:
-`Applications/Remote User/RENAME.md`.
+that finishes the job. It worked exactly once, as designed: the handover left
+at `Applications/Remote User/RENAME.md` on 2026-08-10 was executed on
+2026-08-11 and deleted with the rename it carried (Vibe Coder, commit
+`6270a33`) — so the file is gone, which is the proof it did its job.
+
+**Two things that handover did NOT catch, learned the hard way the same
+night** (owner met the old name in a shipped installer's title bar):
+
+1. **`rename_project.py` only knows the file types in its `TEXT_SUFFIXES`.**
+   `.nsi` is not one of them, so `installer.nsi` was skipped whole — the
+   installer's display name, its executable name, its mutex and two data
+   paths. Check every file type outside that list BY HAND, and add the type
+   to the tool while you are there.
+2. **It is CASE-SENSITIVE, and so was the hand that checked it.** The manual
+   fix searched one spelling, the verification grep repeated the same
+   pattern, and it therefore confirmed its own blind spot. Every lowercase
+   form survived — an Android package id, an executable name in a fixture, a
+   deep-link scheme that pointed the whole install funnel at an application
+   that no longer existed.
+
+So a rename ends with a **case-insensitive sweep for every spelling**
+(spaced, hyphenated, underscored, joined) and, where the project ships a
+binary, a scan of the ARTEFACT rather than the source. Both projects renamed
+that night now carry a fail-closed guard that does exactly this —
+`tests/test_old_name.py` in each — which is the shape to copy.
 
 ---
 
