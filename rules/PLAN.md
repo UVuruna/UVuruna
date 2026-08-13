@@ -351,6 +351,25 @@ on apologies instead of progress. Both patterns are now banned and enforced.
    [GUI → Zubi v2](GUI.md#zubi-v2)). A visual question with no picture, no
    page and no link is not a question he can answer, and does not end a
    turn.
+   **A link that opens nothing is not a link — LAW (owner decree
+   2026-08-13).** Born from a real failure: an agent wrote
+   `[plain_vs_upscaler.png](plain_vs_upscaler.png)`, the guard saw brackets
+   and passed it, and the owner's click did nothing — the file lived four
+   folders deeper. "Clickable" is a fact about the OWNER'S CLICK, not about
+   markdown syntax. So every image and folder target is:
+   - a path **relative to the monorepo root** (`u:/Coding/UVuruna`, the
+     folder his editor has open) — `Applications/Foo/.claude/shots/topic/
+     plain_vs_upscaler.png` — or a full absolute path; **never** a bare file
+     name and never a path relative to the subfolder the agent happened to
+     be standing in;
+   - written with **forward slashes**, outside backticks (a path in
+     backticks is text, not a link);
+   - **verified to exist on disk** before the message is sent — the agent
+     that wrote the file knows its real path and has no excuse for guessing.
+   The folder link ends in `/` and points at the topic folder itself.
+   — **GATE**, `rules/hooks/communication_guard.py` (Stop): every image or
+   folder target in the turn is resolved from the monorepo root, and a
+   target that does not exist blocks the turn.
 4. **A page that PROPOSES carries a BALLOT — LAW (owner decree 2026-08-10).**
    Born from a real habit: the owner was opening proposal pages in a screenshot
    gallery, drawing green circles and red crosses over them by hand, and typing

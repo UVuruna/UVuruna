@@ -309,7 +309,8 @@ qualitative — but an agent must not judge WITHOUT A LEDGER.
 `.claude/shots/<topic>/` — the folder name says what was being worked on
 (`decision-dark-theme/`, `hover-contrast-fix/`), so the owner opens one
 folder and sees one story, never a dump of sixty cryptic names. Messages
-that show him images link the FOLDER and EACH IMAGE (clickable), per
+that show him images link the FOLDER and EACH IMAGE — as paths relative to
+the monorepo root, verified to exist, so his click actually opens them, per
 [PLAN → Communication](PLAN.md#communication). Loose images in the shots
 root block the session. — **GATE**, `rules/hooks/layout_guard.py` (Stop,
 machine-wide).

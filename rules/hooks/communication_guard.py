@@ -143,6 +143,20 @@ BLOCK_IMAGE_LINKS = (
     "hand. Rewrite the references as links, then end the turn."
 )
 
+BLOCK_DEAD_IMAGE_LINK = (
+    "RAD SA AGENTIMA (rules/PLAN.md -> Communication, GATE of 2026-08-13): "
+    "this message links images or folders whose targets DO NOT RESOLVE from "
+    "the monorepo root - the owner clicks and nothing opens:\n{lines}\n"
+    "A link that does not open is a bare filename wearing brackets, which is "
+    "exactly what the rule of 2026-08-08 forbids. Write every target as a "
+    "path relative to the monorepo root (u:/Coding/UVuruna) with forward "
+    "slashes - e.g. [plain_vs_upscaler.png](Applications/Foo/.claude/shots/"
+    "upscaler/plain_vs_upscaler.png) and [the folder](Applications/Foo/"
+    ".claude/shots/upscaler/) - or as a full absolute path. Never a bare "
+    "file name, never a path relative to some subfolder you happened to be "
+    "standing in. Check that each file exists on disk, then end the turn."
+)
+
 BLOCK_VISUAL_NO_IMAGE = (
     "RAD SA AGENTIMA (rules/PLAN.md -> Communication, GATE of 2026-08-08): "
     "this turn ends waiting on the owner with a VISUAL question (design/"
@@ -175,6 +189,54 @@ def check_image_links(text: str) -> None:
             offenders.append(f"  {line.strip()[:100]}")
     if offenders:
         block(BLOCK_IMAGE_LINKS.format(lines="\n".join(offenders[:8])))
+
+
+MD_LINK_TARGET_RE = re.compile(r"\[[^\]]*\]\(([^()\s]+)\)")
+IMAGE_SUFFIX_RE = re.compile(r"\.(?:png|jpe?g|svg|gif|bmp)$", re.I)
+
+
+def monorepo_root(cwd: Path) -> Path:
+    """The directory that holds the constitution — every link the owner
+    clicks is resolved from there, because that is the folder his editor
+    has open."""
+    for directory in (cwd, *cwd.parents):
+        if (directory / "CLAUDE.md").is_file() and (directory / "rules").is_dir():
+            return directory
+    return cwd
+
+
+def link_resolves(target: str, roots) -> bool:
+    """A link is alive when the path it names exists on disk."""
+    raw = target.split("#", 1)[0].strip()
+    if not raw:
+        return True                       # pure anchor — not a file link
+    if raw.startswith("file:///"):
+        raw = raw[len("file:///"):]
+    raw = raw.replace("%20", " ")
+    candidate = Path(raw)
+    if candidate.is_absolute() or re.match(r"^[A-Za-z]:", raw):
+        return candidate.exists()
+    return any((root / raw).exists() for root in roots)
+
+
+def check_image_link_targets(text: str, cwd: Path) -> None:
+    """The 2026-08-08 rule asked for links; a link that opens nothing is
+    still a bare filename to the owner. Every image/folder link must
+    resolve from the monorepo root (owner report 2026-08-13)."""
+    roots = [monorepo_root(cwd), cwd]
+    dead = []
+    for line in visible_lines(text):
+        for target in MD_LINK_TARGET_RE.findall(line):
+            if re.match(r"^(?:https?|mailto):", target, re.I):
+                continue
+            is_image = bool(IMAGE_SUFFIX_RE.search(target.split("#", 1)[0]))
+            is_folder = target.endswith("/")
+            if not (is_image or is_folder):
+                continue
+            if not link_resolves(target, roots):
+                dead.append(f"  {target}")
+    if dead:
+        block(BLOCK_DEAD_IMAGE_LINK.format(lines="\n".join(dead[:8])))
 
 
 def waiting_on_owner(cwd: Path) -> bool:
@@ -326,8 +388,10 @@ def check_stop(payload: dict) -> None:
         and len(ENUM_MARKER_RE.findall(text)) >= 2
     ):
         block(BLOCK_TERSE)
+    cwd = Path(payload.get("cwd") or os.getcwd())
     check_image_links(text)
-    check_visual_question(text, Path(payload.get("cwd") or os.getcwd()))
+    check_image_link_targets(text, cwd)
+    check_visual_question(text, cwd)
 
 
 def check_artifact(payload: dict) -> None:
