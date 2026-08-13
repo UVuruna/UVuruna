@@ -226,7 +226,12 @@ def check_image_link_targets(text: str, cwd: Path) -> None:
     roots = [monorepo_root(cwd), cwd]
     dead = []
     for line in visible_lines(text):
-        for target in MD_LINK_TARGET_RE.findall(line):
+        # inline code is QUOTED material — a counter-example shown to the
+        # owner ("the agent wrote `[x.png](x.png)`") is not a link he clicks
+        # (first live false positive, 2026-08-13, on the message announcing
+        # this very rule)
+        prose = re.sub(r"`[^`]*`", "", line)
+        for target in MD_LINK_TARGET_RE.findall(prose):
             if re.match(r"^(?:https?|mailto):", target, re.I):
                 continue
             is_image = bool(IMAGE_SUFFIX_RE.search(target.split("#", 1)[0]))
