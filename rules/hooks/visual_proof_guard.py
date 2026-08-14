@@ -105,9 +105,19 @@ Produce it before ending:
        "implementer": "<who wrote the code>",
        "grader": "<who graded it — MUST differ from implementer>",
        "items": [
-         {{"ruling": "<the text being checked>", "image": "<path>", "grade": 9}}
+         {{"ruling": "<the text being checked>", "image": "<path>",
+           "grade": 9, "files": ["<every file that decides how this looks>"]}}
        ]
      }}
+
+  `files` is worth writing carefully. A proof is NOT invalidated merely
+  because HEAD moved — only because something that can change what a window
+  LOOKS like moved with it (anything listed here, anything with a styling
+  suffix, anything whose path carries a GUI word). List the modules that
+  really decide this surface, including any that compute a colour or a size
+  from an unobvious place, and a later backend-only commit will carry your
+  pictures forward instead of demanding a pointless re-shoot. An item with no
+  `files` is treated as covering everything, so it goes stale on any change.
 
   Every image must exist on disk, be a real screenshot (>= 200 KB or
   >= 700px on its shorter side), and be newer than the commit it claims to
@@ -260,6 +270,50 @@ def current_commit(project_root: Path) -> str | None:
     return result.stdout.strip()
 
 
+# ── Files whose change can move a pixel ──────────────────────────────────
+VISUAL_SUFFIXES = (".css", ".qss", ".html", ".svg", ".ui", ".qml")
+# NO LEADING SLASH. `git diff --name-only` returns REPO-RELATIVE paths, so
+# "/client/" matched nothing for `client/render.js` — the whole web client
+# would have been classified as non-visual. Caught by driving the classifier
+# over a table of real paths from this repo rather than by reading it.
+VISUAL_PATH_HINTS = ("gui/", "client/", "theme", "style", "design", "layout",
+                     "widget", "window", "panel", "icon", "font")
+
+
+def changed_files(project_root: Path, base: str, head: str) -> list | None:
+    """Paths changed between two commits, or None if git could not answer.
+    None must be treated as "assume everything changed" — an unanswerable
+    question may never quietly clear a gate."""
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(project_root), "diff", "--name-only",
+             f"{base}..{head}"],
+            capture_output=True, text=True, timeout=15, check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    return [line.strip().replace("\\", "/")
+            for line in result.stdout.splitlines() if line.strip()]
+
+
+def could_change_a_pixel(path: str, claimed_files: set) -> bool:
+    """Whether one changed file can plausibly alter what a window LOOKS like.
+
+    Deliberately generous: anything an item itself names, anything with a
+    styling suffix, and anything whose path carries a GUI word. A file that
+    only a human would know is visual (a Python module computing a colour in
+    an oddly-named package) is caught by the item's own `files` list, which is
+    why an item that omits `files` is treated as covering everything."""
+    p = path.lower()
+    if path in claimed_files:
+        return True
+    if p.endswith(VISUAL_SUFFIXES):
+        return True
+    return any(hint in p for hint in VISUAL_PATH_HINTS)
+
+
 def commit_timestamp(project_root: Path, commit: str) -> float | None:
     try:
         result = subprocess.run(
@@ -324,10 +378,48 @@ def validate_proof(proof_path: Path, project_root: Path) -> list:
     head = current_commit(project_root)
     if head is None:
         problems.append(f"could not run git in {project_root} to verify 'commit'")
-    elif not commit or commit != head:
-        problems.append(
-            f"'commit' is {commit!r} but the project HEAD is {head!r} — the "
-            "proof is stale, re-shoot against the current commit")
+    elif not commit:
+        problems.append("'commit' is missing — a proof must name the commit "
+                        "its pictures were shot at")
+    elif commit != head:
+        # A PROOF GOES STALE WHEN THE PICTURE COULD HAVE CHANGED — not merely
+        # when HEAD moved (owner ruling 2026-08-14, and he was right to shout:
+        # "onda je HOOK treba da testira samo to a ne UVEK celu APLIKACIJU").
+        # The old rule compared commits and nothing else, so a commit touching
+        # one encoder module invalidated a photograph of a window it cannot
+        # reach, and the only way out was to re-shoot and re-grade the whole
+        # app. That is not rigour: a re-shoot nobody believes is necessary is
+        # how a gate teaches people to satisfy it mechanically.
+        #
+        # It stays FAIL-CLOSED in every direction that matters. Git failing to
+        # answer, a commit git does not know, or a single changed file that
+        # could plausibly move a pixel — anything an item names, anything with
+        # a styling suffix, anything whose path carries a GUI word — all send
+        # it straight back to the old demand. Only a diff that is provably
+        # free of all of those carries the proof forward.
+        claimed = set()
+        for item in (data.get("items") or []):
+            if isinstance(item, dict):
+                for f in (item.get("files") or []):
+                    claimed.add(str(f).replace("\\", "/"))
+        changed = changed_files(project_root, commit, head)
+        if changed is None:
+            problems.append(
+                f"'commit' is {commit!r} but the project HEAD is {head!r}, and "
+                f"git could not list what changed between them — the proof "
+                "cannot be carried forward on an unanswered question; "
+                "re-shoot against the current commit")
+        else:
+            visual = [f for f in changed if could_change_a_pixel(f, claimed)]
+            if visual:
+                shown = ", ".join(visual[:6]) + ("…" if len(visual) > 6 else "")
+                problems.append(
+                    f"'commit' is {commit!r} but the project HEAD is {head!r}, "
+                    f"and {len(visual)} file(s) that can change what a window "
+                    f"looks like moved since: {shown} — re-shoot against the "
+                    "current commit")
+            # else: carried forward. The pictures still show this HEAD,
+            # because nothing between the two commits could have altered them.
 
     grader = str(data.get("grader") or "").strip()
     implementer = str(data.get("implementer") or "").strip()
