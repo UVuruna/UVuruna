@@ -42,14 +42,19 @@ CODE_EXTENSIONS = {".py", ".cs", ".vb", ".ts", ".tsx", ".js", ".jsx"}
 PATH_HINTS = (
     "gui", "view", "widget", "window", "dialog", "screen",
     "panel", "form", "component", "layout", "frontend",
-    # RENDERING is GUI too (owner ruling 2026-08-07). A module that paints
-    # the product's own canvas changes what the user sees exactly as a
-    # dialog does — and `render/layers/ring.py` used to pass both this
-    # gate and the visual one because "layers" is not "layout" and a
-    # QPainter is not a QWidget.
-    "render", "paint", "draw", "canvas",
 )
-EXACT_HINTS = ("ui",)
+# RENDERING is GUI too (owner ruling 2026-08-07). A module that paints the
+# product's own canvas changes what the user sees exactly as a dialog does —
+# and `render/layers/ring.py` used to pass both this gate and the visual one
+# because "layers" is not "layout" and a QPainter is not a QWidget.
+#
+# These are EXACT components, never substrings (owner decree 2026-08-14):
+# "paint" as a substring made every file of the PromptPainter package a GUI
+# file — `painter/config/paths.py` matched because the PACKAGE IS CALLED
+# painter — so a pure path-logic fix demanded screenshots of twelve windows
+# it never touched. A hint that matches a project's own name is not a hint.
+EXACT_HINTS = ("ui", "render", "rendering", "paint", "painting",
+               "draw", "drawing", "canvas")
 
 # a code file with no GUI-ish path still counts when it builds widgets
 CODE_MARKERS = re.compile(
@@ -192,6 +197,8 @@ def is_gui_file(path: str, content: str) -> bool:
         return True
     stem = components[-1] if components else ""
     if any(h in stem for h in PATH_HINTS):
+        return True
+    if Path(stem).stem in EXACT_HINTS:
         return True
     return bool(content and CODE_MARKERS.search(content))
 
