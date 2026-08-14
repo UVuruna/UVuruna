@@ -122,7 +122,11 @@ Produce it before ending:
   Every image must exist on disk, be a real screenshot (>= 200 KB or
   >= 700px on its shorter side), and be newer than the commit it claims to
   prove. Every grade must be >= {min_grade} — a lower grade means FIX and
-  re-shoot, never round up.
+  re-shoot, never round up. ONE exception: when the OWNER himself looked at
+  the picture and approved it, the item may carry
+  `"owner_approved": "<his words, dated>"` and the low grade stands as a
+  recorded dissent — his eye outranks a grader's number (ruling 2026-08-14);
+  inventing his approval is a capacity lie under FIXED = VERIFIED.
 
 If this session genuinely touched no rendering/GUI code, the coordinator may
 instead write a line `{exempt}` into {tasks} — but a false exemption is a lie
@@ -472,7 +476,21 @@ def validate_proof(proof_path: Path, project_root: Path) -> list:
         if not isinstance(grade, (int, float)):
             failing.append(f"{label}: 'grade' is missing or not a number")
         elif grade < MIN_GRADE:
-            failing.append(f"{label}: grade {grade} < {MIN_GRADE}")
+            # THE OWNER'S EYE OUTRANKS THE GRADE (owner ruling 2026-08-14).
+            # Born the day an independent grader gave a wide-window layout
+            # 6/10 while the owner looked at the same screenshot and ruled
+            # "ovo je ok" — and the gate kept demanding a fix he did not
+            # want. A grade is a subagent's opinion; his verdict on his own
+            # machine is the closing authority everywhere else in these
+            # rules (THE REPEAT LAW), so it is here too. The override is
+            # PER ITEM and must QUOTE him: `owner_approved` carries his
+            # actual words and the date, so a later reader can find the
+            # ruling. An empty or missing field changes nothing — and
+            # inventing his approval is a capacity lie under FIXED =
+            # VERIFIED, same as any other fabricated evidence.
+            approval = str(item.get("owner_approved") or "").strip()
+            if not approval:
+                failing.append(f"{label}: grade {grade} < {MIN_GRADE}")
 
     problems.extend(failing)
     return problems
