@@ -57,6 +57,13 @@ BLOCK = (
 )
 
 
+# How many transcript records may stand on top of an agent's `tool_use` before
+# a missing `tool_result` is read as an ABANDONED call rather than one that is
+# still starting. A launch and its result are written adjacently, so this is
+# generous: it only has to survive the harness interleaving a record or two.
+STALE_AFTER_RECORDS = 2
+
+
 def transcript_lines(path: str):
     if not path or not os.path.isfile(path):
         return
@@ -71,7 +78,11 @@ def check_stop(payload: dict) -> None:
 
     spawns = {}          # tool_use_id -> description
     results = {}         # tool_use_id -> raw result text
-    for raw in transcript_lines(path):
+    spawn_at = {}        # tool_use_id -> the record index it was written at
+    result_at = {}       # tool_use_id -> the record index its result landed at
+    last_index = -1      # the last record index in the whole transcript
+    for index, raw in enumerate(transcript_lines(path)):
+        last_index = index
         try:
             entry = json.loads(raw)
         except (json.JSONDecodeError, ValueError):
@@ -90,11 +101,13 @@ def check_stop(payload: dict) -> None:
                          or str(tool_input.get("prompt") or "")[:60]
                          or "<agent>")
                 spawns[block.get("id")] = str(label).strip()
+                spawn_at[block.get("id")] = index
             if block.get("type") == "tool_result":
                 content = block.get("content")
                 if not isinstance(content, str):
                     content = json.dumps(content, ensure_ascii=False)
                 results[block.get("tool_use_id")] = content
+                result_at[block.get("tool_use_id")] = index
 
     if not spawns:
         return
@@ -107,6 +120,32 @@ def check_stop(payload: dict) -> None:
     for use_id, label in spawns.items():
         result = results.get(use_id)
         if result is None:
+            # A TRUNCATED TURN IS NOT AN UNFINISHED AGENT (owner report,
+            # fixed 2026-08-14). When a turn is cut off mid-flight — he
+            # interrupts, the window closes, the process dies — the assistant
+            # record carrying the `tool_use` block is already on disk while
+            # the `tool_result` never gets written. Reading that as "an agent
+            # is still starting" blocked the end of sessions in which nothing
+            # was running at all.
+            #
+            # The two cases are told apart by what came AFTER, which is the
+            # only evidence that exists: the harness writes a tool_result
+            # before the conversation can move on, so a spawn with later
+            # records standing on top of it was ABANDONED, while a spawn
+            # sitting at the very end of the transcript may genuinely still
+            # be starting. `STALE_AFTER_RECORDS` is the margin — a launch
+            # record and its result are adjacent, so anything beyond a couple
+            # of records means the transcript moved on without it.
+            #
+            # FAILING OPEN HERE IS THE RIGHT DIRECTION, and it is a deliberate
+            # trade rather than an oversight: the cost of a missed unfinished
+            # agent is that a session ends with work still running, which the
+            # task list and the final report both catch. The cost of the false
+            # positive is that he cannot end a session at all — and a gate
+            # that blocks on ordinary, correct behaviour is one everybody
+            # learns to work around, which costs more than the case it guards.
+            if last_index - spawn_at.get(use_id, last_index) > STALE_AFTER_RECORDS:
+                continue  # abandoned by a truncated turn, not running
             open_agents.append((label, "no tool_result - still starting"))
             continue
         if not ASYNC_LAUNCH_RE.search(result):
@@ -117,22 +156,36 @@ def check_stop(payload: dict) -> None:
                                        "parseable agentId - unknown is "
                                        "not finished"))
             continue
-        launch_texts[match.group(1)] = (label, result)
+        launch_texts[match.group(1)] = (label, result, result_at.get(use_id, -1))
 
     if launch_texts:
         seen = {agent_id: 0 for agent_id in launch_texts}
-        for raw in transcript_lines(path):
+        for index, raw in enumerate(transcript_lines(path)):
             for agent_id in launch_texts:
-                if agent_id in raw:
-                    launch_label, launch_result = launch_texts[agent_id]
-                    # the launch metadata mentions the id once itself -
-                    # only OTHER records count as life signs
-                    if launch_result[:80] in raw:
-                        continue
-                    seen[agent_id] += 1
+                if agent_id not in raw:
+                    continue
+                # THE LAUNCH RECORD IS SKIPPED BY ITS INDEX, NEVER BY MATCHING
+                # ITS OWN TEXT AGAINST THE RAW LINE (fixed 2026-08-14, found by
+                # driving this guard over synthetic transcripts rather than by
+                # reading it). The old test was `launch_result[:80] in raw`,
+                # and it could not fire: `launch_result` is the DECODED result
+                # string, carrying real newlines, while `raw` is the JSON line
+                # where those same newlines are an escape sequence. Every
+                # launch result contains a newline — "Async agent launched
+                # successfully." and the `agentId:` line are always on separate
+                # lines — so the comparison always failed, the launch record
+                # always counted as its own life sign, and a background agent
+                # that never finished has NEVER been reported by this guard.
+                # It has been open the whole time this branch has existed, and
+                # nothing noticed because the guard only ever spoke up about
+                # the missing-tool_result case above, which is precisely the
+                # case that was firing wrongly.
+                if index == launch_texts[agent_id][2]:
+                    continue
+                seen[agent_id] += 1
         for agent_id, count in seen.items():
             if count == 0:
-                label, _ = launch_texts[agent_id]
+                label = launch_texts[agent_id][0]
                 open_agents.append(
                     (label, "background agent with NO completion record"))
 
