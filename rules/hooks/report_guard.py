@@ -46,6 +46,7 @@ Fail-open on any parse error — a broken guard must never brick a session.
 import json
 import os
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -139,10 +140,32 @@ def report_problem(report_path: Path, session_id: str,
     return None
 
 
+def _session_changed_files(cwd: Path) -> bool:
+    """True when the working tree carries staged/unstaged changes.
+
+    Owner decree 2026-08-14: a session that answered a question and
+    touched nothing has NOTHING to report - demanding a final report
+    from it turns every conversation into paperwork. Cannot tell (no
+    git, error) -> guard, never skip silently.
+    """
+    try:
+        out = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=no"],
+            cwd=cwd, capture_output=True, text=True, timeout=15,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return True
+    if out.returncode != 0:
+        return True
+    return bool(out.stdout.strip())
+
+
 def check_stop(payload: dict) -> None:
     if payload.get("stop_hook_active"):
         return  # already continuing because of a Stop hook - never loop
     cwd = Path(payload.get("cwd") or os.getcwd())
+    if not _session_changed_files(cwd):
+        return  # nothing delivered, nothing to report
     tasks_file = find_project_file(cwd, TASKS_FILENAME)
     if tasks_file is None:
         return

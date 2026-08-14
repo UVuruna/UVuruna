@@ -110,7 +110,17 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
    space; the fix order is free space → reflow → raised minimum → scroll. Every
    window's minimum fits 1280×720, and every window an agent touches is
    screenshotted, OPENED and graded ≥ 8/10 — below that nothing ships
-   → [GUI Rules](rules/GUI.md)
+   → [GUI Rules](rules/GUI.md).
+   **GUI PROVERE SAMO AKO SU MENJANI GUI FAJLOVI** (owner decree
+   2026-08-14): the layout guards, the runtime window audit and Zubi
+   run when — and only when — the session actually touched a GUI file.
+   A session that changed nothing runs no full guard pass at all, and
+   no session is asked for a final report for work it did not do. A
+   gate that fires on conversation is not enforcement, it is a tax on
+   talking to the agent. The one authority on "what did this session
+   change" is `rules/hooks/changed_files.py` (working tree + unpushed
+   commits; "cannot tell" always means RUN THE GUARD — a broken helper
+   never silently disables a law).
 
 <a id="router"></a>
 
