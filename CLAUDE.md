@@ -200,6 +200,15 @@ carries two more — spec: [Code Rules](rules/CODE.md) → Enforcement).
   claim of completed work. No error masking — see [Code Rules](rules/CODE.md).
 - **Scope:** only what was asked. Unrequested fixes/features noticed along the
   way are PROPOSED at the end, never implemented uninvited.
+- **We build for OTHERS, never for the owner's machine (owner decree
+  2026-08-16, shouted).** Every product feature must work on a stranger's PC
+  with a fresh install: it may never lean on this monorepo's `rules/`, hooks,
+  `CLAUDE.md` files, the owner's `.claude/` conventions, his paths or his
+  habits. Whatever the app needs from the environment (Claude Code hooks,
+  instructions, file formats, dependencies) the app SHIPS and INSTALLS itself.
+  Before designing, ask once: "does this work on Djoka's computer?" — if the
+  answer needs anything of the owner's, the design is wrong. Owner-only
+  conveniences are dev exceptions, named as such, never the design.
 - **Files:** no version-suffix files (`_v2`, `_new`, `_backup`) — Git is the
   history. Ask before deleting anything you are not certain is obsolete.
 - **After the work:** update the docs of everything you changed (Living Docs
