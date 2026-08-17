@@ -95,7 +95,7 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 <a id="promptpainter"></a>
 
-### <img src="logos/PromptPainter.svg" width="22" height="22"> PromptPainter
+### <img src="logos/PromptPainter.svg" width="22" height="22"> PromptPainter ⭐
 
 **Local path:** `Gadgets/PromptPainter/`
 **GitHub:** [UVuruna/Prompt-Painter](https://github.com/UVuruna/Prompt-Painter)
@@ -111,7 +111,7 @@ Visibility levels (Public / Private / Hidden) are defined in [CLAUDE.md](CLAUDE.
 
 <a id="watch-academy"></a>
 
-### <img src="logos/WatchAcademy.svg" width="22" height="22"> Watch Academy
+### <img src="logos/WatchAcademy.svg" width="22" height="22"> Watch Academy ⭐
 
 **Local path:** `Applications/WatchAcademy/`
 **GitHub:** [UVuruna/Watch-Academy](https://github.com/UVuruna/Watch-Academy)
@@ -266,10 +266,10 @@ Travel); build/release pipeline remaining before v1 ships
 
 <a id="remote-user"></a>
 
-### <img src="logos/VibeCoder.svg" width="22" height="22"> Vibe Coder
+### <img src="logos/VibeCoder.svg" width="22" height="22"> Vibe Coder ⭐
 
 **Local path:** `Applications/VibeCoder/`
-**GitHub:** [UVuruna/Vibe-Coder](https://github.com/UVuruna/Vibe-Coder)
+**GitHub:** [UVuruna/VibeCoder](https://github.com/UVuruna/VibeCoder)
 **Type:** Desktop Application (Windows) + Android Hybrid App (APK)
 **Status:** 🟡 In Development — v1 loop shipped (H.264 streaming, touch controls, desktop app + installer, Android APK); on-device polish ongoing
 **Visibility:** Public
@@ -442,3 +442,4 @@ Early Python projects — local under `Games/`, each with its own GitHub reposit
 | 🎓 Legacy | Learning-era project — kept as a record of progress, not representative of current work |
 | ⚪ Planned | Registered, not yet started |
 | 🔒 | Private — description public, source code not |
+| ⭐ | Main project — active, intensive development; the current focus |

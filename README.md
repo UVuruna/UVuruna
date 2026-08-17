@@ -44,12 +44,12 @@
 
 | | Project | Status | Description |
 |---|---------|--------|-------------|
-| <img src="logos/WatchAcademy.svg" width="22" height="22"> | [Watch Academy](https://github.com/UVuruna/Watch-Academy) | 🟡 In Development | Transparent 24h analog desktop clock with astronomical data — sunrise/sunset arcs, moon phases, solar noon, seasons |
-| <img src="logos/PromptPainter.svg" width="22" height="22"> | [PromptPainter](https://github.com/UVuruna/Prompt-Painter) | 🟡 In Development | Supervised image-generation runner — parses prompt-sheet markdown and drives Gemini/ChatGPT tabs over CDP |
+| <img src="logos/WatchAcademy.svg" width="22" height="22"> | [Watch Academy](https://github.com/UVuruna/Watch-Academy) ⭐ | 🟡 In Development | Transparent 24h analog desktop clock with astronomical data — sunrise/sunset arcs, moon phases, solar noon, seasons |
+| <img src="logos/PromptPainter.svg" width="22" height="22"> | [PromptPainter](https://github.com/UVuruna/Prompt-Painter) ⭐ | 🟡 In Development | Supervised image-generation runner — parses prompt-sheet markdown and drives Gemini/ChatGPT tabs over CDP |
 | <img src="logos/IconForge.svg" width="22" height="22"> | [Icon Forge](https://github.com/UVuruna/Icon-Forge) | 🟢 Active | SVG/PNG → ICO converter that stamps distinct icons onto the desktop VSCode quick-open shortcuts for every project and category folder |
 | <img src="logos/3DPreview.svg" width="22" height="22"> | [3D Preview](https://github.com/UVuruna/3D-Preview) | 🟢 Active | Embeddable 3D previewer with two interchangeable renderers — a Three.js core for websites and rich models, and a QPainter one for Qt apps that cannot carry a browser engine; both play self-animating scenes written as JSON keyframes |
 | <img src="logos/LoadingCube.svg" width="22" height="22"> | Loading Cube | 🟢 Active | Loading animation as a package — a jewelled cube tumbling through six colours, with optional emblems, an element ring, and a real sun and moon at their position for the time of day |
-| <img src="logos/VibeCoder.svg" width="22" height="22"> | Vibe Coder | 🟡 In Development | Remote control of the computer from an Android tablet/phone — PC streams its screen to a browser PWA over LAN, tap moves the mouse and clicks, native keyboard types |
+| <img src="logos/VibeCoder.svg" width="22" height="22"> | Vibe Coder ⭐ | 🟡 In Development | Remote control of the computer from an Android tablet/phone — PC streams its screen to a browser PWA over LAN, tap moves the mouse and clicks, native keyboard types |
 | <img src="logos/VoicePrint.svg" width="22" height="22"> | Voice Print 🔒 | ⚪ Planned | Voice counterpart of Input DNA — samples how a person sounds via microphone and trains a personal voice model |
 | <img src="logos/TexasHoldemPoker.svg" width="22" height="22"> | [Texas Hold'em Poker](https://github.com/UVuruna/TexasHoldemPoker) | 🔴 Archived | Poker game with real-time win-probability calculation |
 | <img src="logos/Chess.svg" width="22" height="22"> | [Chess](https://github.com/UVuruna/Chess) | 🎓 Legacy | Chess game implementation in Python — learning-era project |
@@ -57,5 +57,6 @@
 
 ---
 
+> ⭐ Main project — active, intensive development; the current focus
 > 🔒 Private — description public, source code not accessible
 > 🎓 Legacy — learning-era project, kept as a record of progress

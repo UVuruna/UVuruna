@@ -53,6 +53,12 @@ monorepo, organized by category:
 **Hidden projects must never appear in any tracked file** — no name, no path,
 no logo. `PRIVATE.md` stays untracked.
 
+**Main projects (owner decree 2026-08-17):** the projects under ACTIVE,
+INTENSIVE development — the current focus — carry a ⭐ beside their name in
+`README.md` / `PROJECTS.md` (a hidden main project is starred only in
+`PRIVATE.md`). When the owner says "glavni projekti" he means exactly the
+starred set; it changes only by his word.
+
 ---
 
 ## Priorities
