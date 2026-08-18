@@ -16,8 +16,7 @@ every project has its own git repo, and the root repo tracks only root docs,
 **Private** — private repo or none, description only, still listed ·
 **Hidden** — never on GitHub, never described, only in `PRIVATE.md`.
 
-**Hidden projects must never appear in any tracked file** — no name, no path,
-no logo; `PRIVATE.md` stays untracked.
+**Hidden projects never appear in any tracked file**; `PRIVATE.md` stays untracked.
 
 **Main projects (owner decree 2026-08-17):** the ACTIVE, INTENSIVE ones carry
 a ⭐ in `README.md` / `PROJECTS.md` (a hidden one only in `PRIVATE.md`);
@@ -49,7 +48,8 @@ duplication** · **D. Logging**, scaled.
    else `[~]`, carried forward.
 7. **SPACE & LEGIBILITY** (`GUI.md`) — nothing readable cut off, nothing
    starving beside empty space; free space → reflow → raised minimum → scroll;
-   every minimum fits 1280×720; checks run only on touched GUI files.
+   judged on the device profiles, never a fixed magic size (owner decree
+   2026-08-18); checks run only on touched GUI files.
 8. **ONE KIND, ONE CLASS** (`CODE.md`) — things sharing behaviour are instances of
    ONE class or entries of ONE registry; a new one is an entry or subclass,
    never a copied block.
@@ -58,19 +58,18 @@ duplication** · **D. Logging**, scaled.
 
 ## Router — by category
 
-The first ledger line names the category, which picks the rulebook and the
-tooth; several may combine, each bringing its own.
+The ledger's first line names the category → rulebook + tooth; several may
+combine, each bringing its own.
 
-- GUI → `rules/CODE.md` + `rules/GUI.md` + `DESIGN.md`
-- FEATURE / BUGFIX / REFACTOR → `rules/CODE.md` + `rules/<CATEGORY>.md`
-- DOCS / PLAN / BUILD → `rules/<CATEGORY>.md`
-- New project → `rules/START.md` + `rules/DOCS.md`
+- GUI → `CODE.md` + `GUI.md` + `DESIGN.md` · FEATURE / BUGFIX / REFACTOR →
+  `CODE.md` + `<CATEGORY>.md` · DOCS / PLAN / BUILD → `<CATEGORY>.md` · new
+  project → `START.md` + `DOCS.md` (all under `rules/`)
 
 ## Session flow
 
 1. **START** — ledger line `kategorija: GUI + FEATURE · klasa: Standard ·
-   agenti: 1 sonnet`; no product edit without it (`gate.py pre`). Grammar:
-   `rules/howto/ledger.md`.
+   agenti: 1 sonnet`; no product edit without it (`gate.py pre`);
+   grammar `rules/howto/ledger.md`.
 2. **SKICA** — Trivial: nothing · Standard: sketch + scenario MATRIX · Wide:
    echo-brief; wait for his yes.
 3. **RAD** — code; `run_guards --fast` on every edit.
@@ -85,23 +84,22 @@ tooth; several may combine, each bringing its own.
   commits (`gate.py pre`; escapes `lang-ok:`, `lang-ok-begin/end`,
   `.claude/language-frame.json` for customer-facing copy).
 - **The LAST text block of a turn is the whole message** — he sees only that
-  block: every question he asked answered there, never a one-liner after tool
-  calls, never a working turn ending with no message.
-- **Sub-agents carry their own tooth** — one that edited product files runs
-  something after its last edit and reports `! ` evidence lines.
-- **Session start:** read the project's `UV/` inbox (never edit or delete his
-  files) and the relevant `___folder.md`. **Ask before assuming**;
-  disagreeing constructively is a duty (`PLAN.md`).
+  block: a FULL report of what was done from start to end, every finding
+  explained there, every question to him with its whole context — never
+  "A or B?" that points to text above, never a one-liner after tool calls,
+  never a working turn ending with no message (owner decree 2026-08-18).
+- **Sub-agents carry their own tooth** — they run something after their last
+  edit and report `! ` evidence lines.
+- **Session start:** read the project's `UV/` inbox (never edit his files) and
+  the relevant `___folder.md`. **Ask before assuming**; disagree constructively.
 - **Token economy:** triage in one line — **Trivial** (inline, no agents) /
   **Standard** (+ a few agents) / **Wide** (agents, sized to the ask); weakest
-  capable tier per task; a workflow only on his explicit request; reuse
-  research, never rerun it.
-- **Honesty:** no capacity lies, no error masking, evidence for every claim of
-  finished work. **Scope:** only what was asked; propose the rest at the end.
+  capable tier per task; a workflow only on his explicit request.
+- **Honesty:** no capacity lies, no error masking, evidence for every claim.
+  **Scope:** only what was asked; propose the rest at the end.
 - **We build for OTHERS, never for his machine** (owner decree 2026-08-16): a
-  product never leans on this monorepo's `rules/`, hooks, `CLAUDE.md`, his
-  `.claude/`, paths or habits — it ships what it needs, proven on the profiles
-  in `rules/devices.json`.
+  product never leans on this monorepo's `rules/`, hooks, his `.claude/`, paths
+  or habits — it ships what it needs, proven on `rules/devices.json` profiles.
 - **Files:** no `_v2`/`_new`/`_backup` — git is the history; ask before
   deleting. **Scratch stays in the scratchpad** (`gate.py pre`): never write
   outside the project — in Git Bash `/x` is the DRIVE ROOT — and delete your

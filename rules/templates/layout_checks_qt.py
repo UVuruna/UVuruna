@@ -96,11 +96,9 @@ def check_declared_minimum(window: QWidget) -> list[str]:
     if minimum.width() <= 0 or minimum.height() <= 0:
         return ["no declared minimum size - the law requires one, COMPUTED "
                 "from the longest real content (setMinimumSize)"]
-    if minimum.width() > FLOOR_WIDTH or minimum.height() > FLOOR_HEIGHT:
-        return [f"ABSURD MINIMUM {minimum.width()}x{minimum.height()} - it does "
-                f"not fit the screen floor {FLOOR_WIDTH}x{FLOOR_HEIGHT}, so "
-                "the window demands a screen the user does not have. REFLOW "
-                "it (ladder step 2); widening your way out is the bug itself"]
+    # No fixed screen floor (owner decree 2026-08-18): a window taller or
+    # wider than a given screen scrolls; the audit judges clipping and
+    # starvation at the profile screen it is shot on, never a magic size.
     return []
 def check_clipping(window: QWidget) -> list[str]:
     problems = []

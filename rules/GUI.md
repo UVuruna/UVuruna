@@ -26,15 +26,16 @@ fixed height/width on a text-bearing widget · a neighbour holding slack beside 
 starving element · a scrollbar with unused space in the window.
 
 **Every window declares a minimum** derived from measured content (longest real
-string, tallest real row), and **it fits inside 1280×720**; the answer to one
-that does not is REFLOW, never widen (bigger floor: a written reason in
-`.claude/layout-frame.json`).
+string, tallest real row). **There is no fixed screen floor** (owner decree
+2026-08-18) — a window is judged on the device profiles it is shot on: nothing
+clipped or starving there; what is genuinely taller than the screen scrolls
+(ladder step 4); the runner reports the minimum as information, not a verdict.
 
 · `gate.py pre` (banned clipping/eliding/hard-size APIs, escape
 `layout-ok: <reason>`), `run_guards` (`test_layout_law.py`,
 `test_layout_audit.py`), the tooth below · history →
 `history/space-legibility-law.md`. Device floor: the project's `profiles:`
-(`rules/devices.json`), one of them never `pc-owner`.
+(`rules/devices.json`), one never `pc-owner`.
 
 ## The GUI tooth (`gate.py stop`)
 
@@ -67,23 +68,21 @@ images links the folder AND each image, as monorepo-root paths that exist.
 
 ## Silent audits
 
-No window an audit, guard or agent builds ever reaches his screen or takes
-focus: Qt `WA_DontShowOnScreen` before every `show()` (or offscreen platform) ·
-Tk `withdraw()` + `alpha 0` before the first `update()` · WPF
-`RenderTargetBitmap`, never `Show()`. · `gate.py pre` refuses an audit file with
-no silencing mechanism · history → `history/silent-audits.md`.
+No window an audit or agent builds ever reaches his screen or takes focus: Qt
+`WA_DontShowOnScreen` before `show()` (or offscreen platform) · Tk `withdraw()`
++ `alpha 0` before the first `update()` · WPF `RenderTargetBitmap`, never
+`Show()` · history → `history/silent-audits.md`.
 
 ## Modern UI and responsiveness
 
-- A gray, blocky, default-widget interface is a bug at the visual pass: palette,
-  rounded corners, breathing room, depth, SVG icons, styled data. Read
-  `DESIGN.md` first, extend it, never re-research. · reviewer.
+- A gray, default-widget interface is a bug at the visual pass: palette,
+  radius, breathing room, depth, SVG icons. Read `DESIGN.md` first. · reviewer.
 - The UI thread renders and takes input, nothing else — workers are separate
   PROCESSES (Python: never threads for CPU work); updates arrive BATCHED
   10–30×/s, never per event; long lists virtualize. · `uv run` timing.
 - Effects are GPU-composited or they do not ship — banned: Qt
-  `QGraphicsDropShadowEffect`, `WA_TranslucentBackground`/frameless hacks,
-  per-tick layout mutation where a compositor animation exists. · guard test.
+  `QGraphicsDropShadowEffect`, `WA_TranslucentBackground` hacks, per-tick
+  layout mutation. · guard test.
 - New GUI stack: `START.md` → Technology Selection (C# + WPF front by default,
   Python only as IPC workers) · history → `history/gui-tech-policy.md` · briefs:
   `briefs/MIGRATE-GUI.md`, `briefs/MIGRATE-LAYOUT.md`.

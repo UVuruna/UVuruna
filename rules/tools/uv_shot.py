@@ -97,13 +97,14 @@ def _shot_one(ctx: Context, toolkit: str, window: str, profile_name: str) -> int
         return 3
     checks = result["checks"]
     faults = result.get("faults") or []
-    rc = 0 if (checks["clipped"] == 0 and checks["starved"] == 0
-               and checks["min_fits"]) else 1
+    # A fixed screen floor is NOT a law (owner decree 2026-08-18): the
+    # window is judged where it is shot - clipped/starved fail, the minimum
+    # size is reported beside the profile screen as information only.
+    rc = 0 if (checks["clipped"] == 0 and checks["starved"] == 0) else 1
     summary = (f"ALG {'ok' if rc == 0 else 'FAIL'} - {checks['clipped']} clipped,"
                f" {checks['starved']} starved, min {result['min'][0]}x"
-               f"{result['min'][1]} "
-               f"{'fits' if checks['min_fits'] else 'DOES NOT FIT'} "
-               f"{FLOOR_WIDTH}x{FLOOR_HEIGHT}")
+               f"{result['min'][1]} on {result['size'][0]}x{result['size'][1]}"
+               f"{'' if checks['min_fits'] else ' (taller/wider than the screen: scrolls)'}")
     if faults:
         summary += " | " + faults[0][:140]
     if profile.get("reference_only"):
@@ -143,13 +144,16 @@ def _shot_qt(registry, window_name: str, profile: dict, out: Path) -> dict:
     window.show()
     pump()
 
+    scale = float(profile.get("dpi_scale") or 1)
+    screen_w = int(profile["width"] / scale)
+    screen_h = int(profile["height"] / scale)
     minimum = window.minimumSize()
     if minimum.width() > 0 and minimum.height() > 0:
         min_w, min_h = minimum.width(), minimum.height()
     else:
         hint = window.minimumSizeHint()
         min_w, min_h = max(hint.width(), 1), max(hint.height(), 1)
-    min_fits = min_w <= FLOOR_WIDTH and min_h <= FLOOR_HEIGHT
+    min_fits = min_w <= screen_w and min_h <= screen_h   # informational
 
     def audit(label: str) -> tuple[list[str], list[str]]:
         pump()
@@ -164,9 +168,6 @@ def _shot_qt(registry, window_name: str, profile: dict, out: Path) -> dict:
 
     # Pass B - the profile's own screen (logical pixels), which is what the
     # PNG shows: a window never bigger than the screen it must live on.
-    scale = float(profile.get("dpi_scale") or 1)
-    screen_w = int(profile["width"] / scale)
-    screen_h = int(profile["height"] / scale)
     hint = window.sizeHint()
     target_w = max(min_w, min(screen_w, max(hint.width(), min_w)))
     target_h = max(min_h, min(screen_h, max(hint.height(), min_h)))
@@ -184,10 +185,7 @@ def _shot_qt(registry, window_name: str, profile: dict, out: Path) -> dict:
         "size": [target_w, target_h],
         "checks": {"clipped": len(clipped), "starved": len(starved),
                    "min_fits": bool(min_fits)},
-        "faults": clipped + starved
-                  + ([] if min_fits else
-                     [f"ABSURD MINIMUM {min_w}x{min_h} does not fit "
-                      f"{FLOOR_WIDTH}x{FLOOR_HEIGHT} - REFLOW, never widen"]),
+        "faults": clipped + starved,
     }
 
 
@@ -217,7 +215,7 @@ def _shot_tk(registry, window_name: str, profile: dict, out: Path) -> dict:
             min_w, min_h = int(declared[0]), int(declared[1])
     except Exception:
         pass
-    min_fits = min_w <= FLOOR_WIDTH and min_h <= FLOOR_HEIGHT
+    min_fits = min_w <= screen_w and min_h <= screen_h   # informational
 
     faults: list[str] = []
     for label, (w, h) in (("min", (min_w, min_h)),
