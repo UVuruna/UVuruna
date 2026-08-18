@@ -1,19 +1,15 @@
 # Migrate Layout — Task Brief
 
 A **copy-paste task brief**: give an EXISTING GUI project the teeth of THE SPACE
-& LEGIBILITY LAW ([GUI Rules](rules/GUI.md) → Law — Space & Legibility) — the
-static guard, the runtime layout audit, and the fixes their first run demands.
+& LEGIBILITY LAW (`rules/GUI.md`) — the static guard, the runtime layout audit,
+and the fixes their first run demands.
 
-Born from the owner decree 2026-08-05, after the same two screenshots arrived
-from project after project: **a list scrolling while 300+ px of the same dialog
-stood empty, and shortcut fields rendering "ift+tab" while the column beside
-them had slack to give up.** The law says what is forbidden; this brief is how
-an old project starts obeying it.
-
-The machine-wide Stop/PreToolUse hook (`rules/hooks/layout_guard.py`) already
-bites in EVERY project — including the ones that never run this brief. What this
-brief adds is the part a hook cannot do: **opening the windows and measuring
-them.**
+**The runner is central now.** `rules/tools/uv.py` owns the screenshots, the
+profiles and the ALG checks (`rules/templates/layout_checks_qt.py` / `_tk.py`);
+a project only registers its windows in `.claude/uv_windows.py` (`TOOLKIT` +
+`WINDOWS = {name: factory}`) and declares its mandatory `profiles:` in its
+`CLAUDE.md`. So the steps below shrink to: static guard, window registry,
+computed minimums, first-run fix list, wire `run_guards`.
 
 ## Table of Contents
 
@@ -52,7 +48,7 @@ Run it. Every hit is a CAUSE of one of the two bugs — an elide call, a forced
 scrollbar, a hard size on something that carries text. Fix what is fixable in
 the session; what genuinely cannot be fixed now goes into `RATCHET` with the
 file, the reason, and who owes the fix — the same discipline as the STRUCTURE
-LAW ratchet ([Code Rules](rules/CODE.md) → Enforcement), and the list may only
+LAW ratchet ([Code Rules](../CODE.md) → Enforcement), and the list may only
 shrink.
 
 ---
@@ -110,7 +106,7 @@ ladder's order — a later step is legal only when the earlier ones are exhauste
 
 Then the DESIGN REVIEW, on every window, in the same session: the audit writes
 `.claude/shots/<Window>.png` at the minimum size — **open it with the Read tool,
-look at it, and grade it 1–10 against [DESIGN.md](DESIGN.md).** Below 8/10 the
+look at it, and grade it 1–10 against [DESIGN.md](../../DESIGN.md).** Below 8/10 the
 work is not done: fix what the picture shows, re-shoot, re-grade. The owner
 pointing at a screenshot and saying "this is a 2 out of 5" is what this step
 exists to prevent, and the Stop hook verifies the image was really opened.
@@ -118,7 +114,7 @@ exists to prevent, and the Stop hook verifies the image was really opened.
 **Suppressing a failure is not fixing it.** Widening a tolerance, dropping a
 window from the registry, or ratcheting a runtime failure are all ways of
 reporting a bug as solved — forbidden by FIXED = VERIFIED
-([CLAUDE.md](CLAUDE.md) → The Laws). `RATCHET` exists for the STATIC guard's
+([CLAUDE.md](../../CLAUDE.md) → The Laws). `RATCHET` exists for the STATIC guard's
 legacy hits only; the runtime audit has no ratchet by design.
 
 ---
@@ -130,7 +126,7 @@ legacy hits only; the runtime audit has no ratchet by design.
 1. Add both tests to `tests/run_guards.py` — the static one to `--fast`
    (it is a grep, it costs nothing), the audit to the full Stop run.
 2. Confirm the project's `.claude/settings.json` hooks run the wrapper
-   ([Code Rules](rules/CODE.md) → Enforcement).
+   ([Code Rules](../CODE.md) → Enforcement).
 3. **Guard self-test** (mandatory, same rule as every other guard): plant a real
    violation — an elide call, or a scroll area next to a live spacer — SHOW the
    guard failing on it, remove the plant, show it passing. A guard that was
@@ -145,7 +141,7 @@ legacy hits only; the runtime audit has no ratchet by design.
 - **The owner's explicit go, per project.** This brief never starts on its own.
 - **No suppression** — see Step 4. Tolerances stay at the template's values
   unless the owner approves a change, in writing, with the reason.
-- **The modern visual bar stays** ([DESIGN.md](DESIGN.md)). A window made ugly
+- **The modern visual bar stays** ([DESIGN.md](../../DESIGN.md)). A window made ugly
   or empty to satisfy the audit has failed the task: the ladder's steps 1–3 are
   layout work, not design surrender.
 - **Minimum sizes live in the docs**, with the content they were computed from.
@@ -157,7 +153,7 @@ legacy hits only; the runtime audit has no ratchet by design.
 ## Definition of Done
 
 A session under this brief ends in one honest state per FIXED = VERIFIED
-([CLAUDE.md](CLAUDE.md) → The Laws): both guards installed and SHOWN failing on
+([CLAUDE.md](../../CLAUDE.md) → The Laws): both guards installed and SHOWN failing on
 a planted violation then passing, every window registered (or the unregistered
 ones named with the reason), every audit failure fixed by the ladder, minimums
 computed, fitting 1280×720 and documented, every window's screenshot opened and

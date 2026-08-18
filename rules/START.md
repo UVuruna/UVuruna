@@ -249,7 +249,7 @@ project creates:
                            one repo purely because no rule existed anywhere)
 ```
 
-Plus for installable desktop apps: the `setup/` folder per [SHIP](SHIP.md)
+Plus for installable desktop apps: the `setup/` folder per [BUILD](BUILD.md)
 (build orchestrator, cert, NSIS, `app_info.json`).
 
 Docs start with the [DOCS](DOCS.md) skeleton from the first module onward:

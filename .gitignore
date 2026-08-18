@@ -9,14 +9,10 @@
 !README.md
 !PROJECTS.md
 !DESIGN.md
-!MIGRATE-DOCS.md
-!REFACTOR-GODFILES.md
-!MIGRATE-GUI.md
-!MIGRATE-LAYOUT.md
 !company.json
 !.gitignore
 
-# Rulebooks per job type
+# Rulebooks per category, plus history/ howto/ briefs/ templates/ hooks/ tools/
 !rules/
 !rules/**
 

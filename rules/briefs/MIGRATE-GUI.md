@@ -3,7 +3,7 @@
 A **copy-paste task brief**: take an EXISTING GUI project through the
 **responsiveness verification** and — only where measurements prove it necessary
 — migrate its front to the current default stack
-([Start Rules](rules/START.md) → Technology Selection), while the Python backend
+([Start Rules](../START.md) → Technology Selection), while the Python backend
 survives untouched as worker processes. Born from the owner decree 2026-08-04:
 **the modern look stays; the lag goes.**
 
@@ -56,7 +56,7 @@ Before touching anything, measure and report:
 1. **Symptom list** — what exactly lags: window resize? window move? in-window
    element changes (expand/collapse, tab/state switches)? startup time?
 2. **Cause checklist** — walk the code for the known killers
-   ([GUI Rules](rules/GUI.md) → Responsiveness): frameless window with custom
+   ([GUI Rules](../GUI.md) → Responsiveness): frameless window with custom
    title bar? `WA_TranslucentBackground`? `QGraphicsDropShadowEffect`? heavy
    QSS restyled on relayout? workers as THREADS doing CPU-bound work (GIL)?
    per-event GUI updates instead of batching? unvirtualized tables?
@@ -80,7 +80,7 @@ Apply the fixes that transfer to ANY future stack — this work is never wasted:
    touches a GUI element directly.
 3. **GPU-safe styling.** Remove the banned effects (software shadows,
    translucency hacks) or restore the system window frame; replace per the
-   [DESIGN.md](DESIGN.md) recipes so the MODERN LOOK IS KEPT, not stripped.
+   [DESIGN.md](../../DESIGN.md) recipes so the MODERN LOOK IS KEPT, not stripped.
 4. **Model/view + virtualization** for every large table or list.
 5. **Re-measure** the Phase-0 numbers, same method, and record before/after.
 
@@ -92,7 +92,7 @@ Apply the fixes that transfer to ANY future stack — this work is never wasted:
 
 Judge the Phase-1 result against these criteria — and present the verdict to
 the owner as a full block (context, numbers, options with consequences,
-recommendation — [Plan Rules](rules/PLAN.md) → Communication):
+recommendation — [Plan Rules](../PLAN.md) → Communication):
 
 1. **Measured result** — do resize / move / in-window changes now hold the
    responsiveness bar?
@@ -114,14 +114,14 @@ explicit confirmation for THAT project.
 ## Phase 3 — Front Migration (proven cases only)
 
 1. The front is rewritten in **C# + WPF** (or the tree's fitting branch —
-   [Start Rules](rules/START.md) → Technology Selection), styled per
-   [DESIGN.md](DESIGN.md).
+   [Start Rules](../START.md) → Technology Selection), styled per
+   [DESIGN.md](../../DESIGN.md).
 2. **The Python backend is NOT rewritten** — it is demoted to sidecar worker
    processes behind the Phase-1 aggregator protocol, now formalized as the IPC
    contract (JSON messages).
 3. **The first migrated project is the pilot**: it establishes the C# scaffold,
    guard tests, hooks, build and release templates
-   ([Ship Rules](rules/SHIP.md)) that every later migration copies.
+   ([Ship Rules](../BUILD.md)) that every later migration copies.
 4. The old GUI is deleted only after **verified parity** — every screen and
    interaction demonstrated working in the new front.
 
@@ -135,7 +135,7 @@ explicit confirmation for THAT project.
   rewrite justified by feeling instead of measurement violates this brief.
 - **Owner's explicit go** — per project, before Phase 0 and again before
   Phase 3.
-- **The modern visual bar ([DESIGN.md](DESIGN.md)) is non-negotiable in every
+- **The modern visual bar ([DESIGN.md](../../DESIGN.md)) is non-negotiable in every
   outcome** — remediation that makes a GUI ugly to make it fast has failed the
   task.
 - **Measurements live in the project docs** — before/after, method stated, so
@@ -148,7 +148,7 @@ explicit confirmation for THAT project.
 ## Definition of Done
 
 A session under this brief ends in one honest state per THE FIXED = VERIFIED
-law ([CLAUDE.md](CLAUDE.md) → The Laws): the phase's artifact exists (symptom
+law ([CLAUDE.md](../../CLAUDE.md) → The Laws): the phase's artifact exists (symptom
 report with numbers / before-after measurements / confirmed decision / paritied
 front), docs of everything touched are updated, and commits follow the version
 system.

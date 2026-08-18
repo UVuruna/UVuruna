@@ -1,531 +1,88 @@
-# PLAN — Brainstorming & Planning Rules
-
-**Who reads this:** sessions that think WITH the owner — brainstorming, idea
-shaping, direction choices, implementation planning. (Init/context-gathering
-sessions too — see Read-Only on Init.)
-
-## Table of Contents
-
-- [Plans Are Discussions](#plans)
-- [The Deliverable Line](#deliverable)
-- [The Session Task List](#session-tasks)
-- [Present Before Building](#present)
-- [Delegation Is Not a Question](#delegation)
-- [Communication with the Owner](#communication)
-- [Constructive Disagreement](#disagreement)
-- [Read-Only on Init](#init)
-- [Rule Classes — Law / Gate / Style](#rule-classes)
-- [Owner Guardrails](#guardrails)
-
----
-
-<a id="plans"></a>
-
-## Plans Are Discussions
-
-- A plan explains WHAT will be done and WHICH files change — it is
-  brainstorming, not a code preview
-- Do NOT write full code blocks in plans that will later be copied into files
-- Before starting any work: read the task carefully, identify ambiguities, read
-  the relevant docs (`___folder.md`, `__about/`), ASK about everything unclear
-  ("Should I modify X or create new?", "You said Y — did you mean Z?"), propose
-  the approach, and START ONLY AFTER CONFIRMATION
-
----
-
-<a id="deliverable"></a>
-
-## The Deliverable Line (owner decree 2026-08-05)
-
-**The FIRST line of every session names what the session ships.** It stands
-beside the triage class, before any tool runs:
-
-    ISPORUKA: kod = <what lands in the repository> · dokument = <what is written>
-
-Either half may be `—`, and saying so is the point: a session that ships only a
-document has declared that, and a session that ships code cannot quietly
-substitute a document for it at the end.
-
-**Why this rule exists.** A session was asked to design a registry — its shape
-agreed in the same conversation, down to the package split and Python over JSON
-— and to *describe it* on a rendered page once the design was settled. The agent
-built the page, presented it as the deliverable, reported the work finished, and
-when challenged called the gap a mutual misunderstanding. It was not: the agent
-had taken the LAST artifact named in the request as the goal instead of the
-FIRST, and the description of a thing is never the thing.
-
-- **The line is written before the first tool call**, so it cannot be shaped
-  after the fact by whatever was easiest to finish.
-- **A document that describes the code is `dokument`, never `kod`.** A brief, a
-  page, a diagram, a prompt sheet — none of them discharge a code deliverable.
-- **Finishing means the declared line is true, both halves.** If one half turns
-  out to be blocked, FIXED = VERIFIED applies to it by name: say which half, and
-  why.
-- Class: **GATE** — machine-enforced by `rules/hooks/communication_guard.py`,
-  which blocks the first file-mutating tool call of a session until the line has
-  been written.
-
----
-
-<a id="session-tasks"></a>
-
-## The Session Task List (owner decree 2026-08-05)
-
-**When the owner opens a session with a defined task list, that list is pinned
-in a file at the START and the session cannot end until it is finished.** The
-agent writes the list to the project's `.claude/session-tasks.md` before any
-other work:
-
-    WAITING_ON_OWNER: yes|no
-    - [ ] task as the owner defined it …
-    - [x] finished task …
-
-**Why this rule exists.** Sessions repeatedly drifted into pure conversation —
-the owner opened with concrete tasks, the discussion ran long, and the agent
-came to treat chatting as the job, losing the original list entirely. The owner
-had to re-demand work he had already defined.
-
-- **A task is checked ONLY when FIXED = VERIFIED** (root CLAUDE.md → The Laws):
-  root cause named, fix landed, evidence shown. Never for a symptom patch or a
-  promise.
-- **`WAITING_ON_OWNER: yes` is legal only when the turn genuinely ends with
-  questions or a presentation the owner must answer** — it goes back to `no`
-  the moment work resumes. It is the ONLY way to end a turn with open tasks.
-  **And it carries its head (owner decree 2026-08-08):** the line names WHAT
-  is being waited for (`WAITING_ON_OWNER: yes — <the awaited decision>`),
-  and the turn's chat text actually ASKS it — a full question block, not two
-  words. Born from his screenshot: *"vidim da si stao opet — zašto?"* — an
-  agent that "waited" on him without a question he could answer.
-- **A message the owner sends mid-session joins the list in the same turn
-  (owner decree 2026-08-08).** The list is updated after EVERY owner
-  message — new `- [ ]` tasks, changed statuses, or a restamped WAITING
-  line. A list that froze at its opening state is how his instructions get
-  lost in the scroll.
-- The file is per project and per session: refreshed when the owner opens with
-  a new list, removed (or fully checked) when the list is done. `.claude/` is
-  excluded from the doc guards — this is harness state, not product docs.
-- Class: **GATE** — machine-enforced by `rules/hooks/session_tasks_guard.py`
-  (Stop hook, wired machine-wide in `~/.claude/settings.json`): ending a
-  session with unchecked tasks and no `WAITING_ON_OWNER: yes` is blocked, with
-  the open tasks fed back. Since 2026-08-08 the same hook also blocks: a
-  `yes` with no reason on its line; a `yes` whose turn asked nothing (no
-  question mark, or under the 700-char full-block minimum — fail-open when
-  the harness has not flushed the turn's text yet); and a task list saved
-  BEFORE the owner's last message (his words were not folded in).
-
-### THE REPEAT LAW's teeth (owner decree 2026-08-07)
-
-**A third checkbox exists, and it is the honest one:**
-
-    - [ ] not done
-    - [~] SHIPPED — gated, released, and HE has not seen it work yet
-    - [x] done, on his confirmation or on evidence from HIS machine
-
-**Why.** The owner spent a week being told ten tasks were done and finding
-half of them unchanged. Nobody lied: "done" had drifted to mean *my own test
-is green*, and a test written by the same reasoning that produced the bug
-cannot falsify that reasoning. The record shows it plainly — one bug carried
-four task numbers and four `[x]` across four rounds, and the guard that
-"proved" the last one had **pinned the defect as the intended behaviour**.
-One whole class of repeat was not a code bug at all: he was running a build
-published before the fix, because the app asked GitHub once per start. Ten
-green gates cannot beat an app he never installed.
-
-- **A repeat is a PROCESS failure first.** When the owner reports something a
-  previous round closed, the round's first deliverable is `PROCESS CAUSE:` —
-  what was claimed, what the claim rested on, and why that evidence could be
-  green while the app was broken. Then the code. — **LAW**
-- **A REPEAT task may be `[x]` only with `OWNER CONFIRMED` or
-  `HIS EVIDENCE:`** (his log, his installed binary, his screenshot, his word).
-  Otherwise `[~]`, carried into the next round's report until he closes it.
-  — **GATE**, enforced by the same hook, which blocks on a `REPEAT` block with
-  no `PROCESS CAUSE:` and on a `[x]` REPEAT with no evidence of his.
-- **`[~]` is not a demand that he test everything.** It applies to what he
-  REPORTED and we claim to have fixed — nothing else. A round still ships,
-  still closes, still releases; it simply stops calling a thing proven when
-  the only witness is its own author.
-- **Before believing a report is stale, check what he is RUNNING.** The
-  installed binary's version against the latest release answers "is this a bug
-  or an undelivered fix" in one command, and it is the cheapest question in
-  this monorepo. — **LAW**
-
-### Loud Incompleteness (owner decree 2026-08-05)
-
-**Anything not fully done is announced LOUDLY, never slipped past in
-mid-text.** Born from a real breakdown: a session reported a large rework as
-finished and mentioned only in passing, deep inside the report, that two items
-were "recorded as debt" — and both debt claims were WRONG (the agent had not
-looked at the assets folder, and had misnamed an element that exists). The
-owner reads reports diagonally; a quietly buried "nisam" is functionally a
-lie.
-
-1. **The final message of any working session OPENS with a section titled
-   "NISAM URADIO" (or "NOT DONE")** listing every item that is unfinished,
-   partial, deferred or reinterpreted — BEFORE any successes are described.
-   No such items → the section says so in one line. — **LAW**
-2. **Every debt, the moment it is recorded, is ALSO appended to
-   `.claude/session-tasks.md` as an open `- [ ]` task** in the same commit
-   that records it. The session-tasks guard then physically refuses to end
-   the session silently — the owner sees the debt as an open task, not as a
-   footnote. — **GATE** (rides the existing session-tasks teeth)
-3. **A debt claim must name the EVIDENCE looked at** ("checked assets/x/, no
-   art exists"; "grepped render/, no such element") — a debt without evidence
-   is a guess, and a wrong guess about "impossible" is the costliest lie of
-   all: it cancels planned work. Misunderstandings are asked about LOUDLY at
-   the moment of doubt, never resolved silently into a debt.
-
-### The Final Report (owner decree 2026-08-06)
-
-**A session that delivered may not end until it has WALKED ITS OWN TASK LIST
-in a report the owner can read diagonally** — per task: status + evidence,
-then the release. Born the same day the session-tasks teeth already existed
-and still failed him: the work was done, the tasks were checked, and the
-closing message was so shapeless the owner could not tell WHAT had been done
-at all ("nemam pojma ni dal si uradio ni šta si uradio"). Finishing the work
-and saying what happened to each task are two different obligations; this one
-gates the second.
-
-1. **The final message of a delivering session IS the report**: the NOT DONE
-   section first (Loud Incompleteness), then every task from
-   `.claude/session-tasks.md` with its status — `DONE | PARTIAL | BLOCKED |
-   NOT DONE` — and its evidence (commits, tests run and their results, files,
-   measurements), then the release link when one shipped. Rendered readably
-   (tables/sections), not as a raw file dump. — **LAW**
-2. **The same report is mirrored to `.claude/session-report.md`**, stamped
-   with the session id, before the session ends:
-
-       SESSION: <session id>
-       RELEASE: <release URL | none — why no release>
-       - [x] <task text as in session-tasks.md> — DONE — <evidence>
-       - [ ] <task text> — BLOCKED — <why + what would unblock>
-
-   One line per task, the task text copied verbatim so the guard can match
-   it; the evidence tail is NOT optional — FIXED = VERIFIED applies to a
-   report line as to any claim of finished work. A fresh session writes a
-   fresh report; an earlier session's file never carries over. — **GATE**,
-   machine-enforced by `rules/hooks/report_guard.py` (Stop hook, wired
-   machine-wide in `~/.claude/settings.json`): when every task is checked and
-   the turn is not `WAITING_ON_OWNER: yes`, ending without a session-stamped
-   report that covers every task with status + evidence + a RELEASE line is
-   blocked, with what is missing fed back. While tasks are still open, the
-   session-tasks guard is the wall — this gate takes over at the finish line.
-3. **Tasks the owner adds mid-session join the list the moment they are
-   given** — appended to `.claude/session-tasks.md` as `- [ ]` in the same
-   turn, so the report at the end covers them exactly like the opening tasks.
-   The session tracks the LIST; the owner's scratch files (`UV/`) are his own
-   and are never the report's source of truth. Since 2026-08-08 this has
-   teeth: the session-tasks guard blocks a turn whose list is older than the
-   owner's last message.
-4. **The owner may demand the report AT ANY MOMENT mid-session (owner decree
-   2026-08-08)** — "gde smo?", "šta je urađeno?" — and the answer is the
-   SAME per-task shape (status + evidence per task, NOT DONE first),
-   rendered in chat, without ending the session. A hook cannot recognize
-   the demand in his words, so this half stays a LAW of conduct; the
-   end-of-session half is machine-enforced above.
-
----
-
-<a id="present"></a>
-
-## Present Before Building (owner decree 2026-08-01)
-
-Before implementing, the agent shows how it UNDERSTOOD the task. The obligation
-scales with the triage class AUTOMATICALLY — the agent never asks whether a
-sketch is wanted; the class decides:
-
-| Task class | Before implementation |
-|------------|----------------------|
-| **Trivial** (small fix, mechanical change) | Nothing — one sentence of intent in the response |
-| **Standard — new functionality / algorithm** | **Algorithm sketch**: VISUAL (box-drawing sketch in chat; rendered Artifact/HTML page when complex — see [Communication](#communication)) + detailed prose walkthrough + why this approach + how the instructions were understood + what is unclear → wait for the owner's yes |
-| **Standard — new or changed GUI element** | **Layout sketch**: VISUAL wireframe (box-drawing in chat; rendered Artifact/HTML when complex) + prose explanation → wait. Mermaid source belongs only in `__flow/` doc files ([Docs Rules](DOCS.md)), never in chat |
-| **Wide** (big task, many instructions) | **Echo-brief**: ALL instructions regrouped into cohesive wholes + "this is how I understood everything" + open questions → work starts only after confirmation |
-
-- **The approved sketch is not throwaway work:** after implementation it seeds
-  the file's `__flow/` doc — written once, used twice.
-- This pairs with Owner Guardrail #5 (vocabulary mix-ups): the sketch is the
-  mechanism that catches a misunderstanding at the cost of one message instead
-  of one implementation.
-- **Pre-authorized autonomous runs** cannot wait for a yes: the sketch /
-  echo-brief goes into the final report instead (same precedent as the
-  MIGRATE-DOCS target map).
-- Class: **GATE** — a Definition-of-Done item in every task brief.
-
-<a id="delegation"></a>
-
-## Delegation Is Not a Question (owner decree 2026-08-06)
-
-**Once a round's verdicts are settled, starting the approved work is the
-agent's job, not the owner's.** A big task is EXECUTED BY AGENTS — each job
-its own agent session, the weakest capable tier — while the session only
-coordinates and reports. The coordinator designs the roster (job, tier,
-exact files, structured deliverable), presents it, and LAUNCHES the first
-wave in the same message. Ending a turn by asking the owner "do I start
-now, or in a fresh session?" is the exact drift this rule exists to stop —
-it happened the very day the verdicts of a Wide round were fully settled,
-and a memory note recording the same lesson had already failed to hold.
-
-- A genuine CONTENT question (a verdict the owner truly owns) still ends a
-  turn lawfully with `WAITING_ON_OWNER: yes`. A SCHEDULING question never
-  does — that flag is for decisions only the owner can make, and the
-  calendar is not one of them.
-- Class: **GATE** — machine-enforced by `rules/hooks/delegation_guard.py`
-  (Stop hook, wired machine-wide in `~/.claude/settings.json`): ending a
-  turn whose chat text asks whether/when to start while open tasks remain
-  in `.claude/session-tasks.md` is blocked, in either language.
-
-<a id="agents-not-daemons"></a>
-
-## Agents Are Not Daemons (owner decree 2026-08-06)
-
-**The session that launches agents OWNS them** — months of established
-practice, broken the very evening the delegation rule landed: a coordinator
-fired background agents per project and moved on; nobody could say which
-agents ran, what they were doing or when they finished, and the owner
-learned of them from windows flashing over his work and from phone
-notifications he could not attribute.
-
-1. **A visible roster before launch** — who (tier), what job, which files —
-   per [Delegation Is Not a Question](#delegation); launching is the
-   coordinator's job, but launching UNTRACKED is abandonment, not delegation.
-2. **A ledger while they run** — `.claude/agents-ledger.md`, one line per
-   agent: `- [ ] <tier> - <job> - RUNNING - started <when>`, flipped to
-   `DONE - <evidence>` when its result is COLLECTED and verified, or to
-   `HANDED OVER - <exact state + where + how the owner checks>` when the
-   owner explicitly takes it.
-3. **No ending with a running agent.** Wait and collect, or hand over
-   loudly. Every agent inherits [Silent Audits](GUI.md#silent-audits) — an
-   agent that flashes windows over the owner's desk is a defect of its
-   COORDINATOR.
-- Class: **GATE** — machine-enforced by `rules/hooks/agents_guard.py`
-  (Stop hook, machine-wide): a session whose transcript launched subagents
-  cannot end unless the ledger names the session, accounts for every
-  launched agent, and holds no RUNNING line.
-
----
-
-<a id="communication"></a>
-
-## Communication with the Owner (owner decree 2026-08-02)
-
-Born from a real breakdown: an agent pasted raw Mermaid into chat (the owner's
-interface shows diagram source as unrendered garbage) and asked three one-line
-questions with zero explanation — total mutual incomprehension, a session spent
-on apologies instead of progress. Both patterns are now banned and enforced.
-
-1. **A visual is OBLIGATORY, and it must render in the owner's eyes — LAW.**
-   Presenting an algorithm, a GUI element, or a config-file structure ALWAYS
-   carries a visual representation next to the detailed prose walkthrough
-   (numbered steps, full sentences, in Serbian) — visuals are the default,
-   never a rarity to be avoided. The MEDIUM scales with complexity:
-   - **Simple** → a Unicode box-drawing / ASCII sketch directly in the chat
-     message (plain text renders as-is in every interface — this is what
-     "rendered normally" for the owner before).
-   - **Complex** → a RENDERED page the owner opens: an Artifact or an HTML
-     file — real diagram, not source.
-   - **A rendered page commits to ONE explicit color scheme — LAW (owner
-     2026-08-03).** Born from a real breakdown: a proposal page styled with
-     adaptive light/dark theme tokens (`prefers-color-scheme` media queries /
-     host theme stamping) rendered as white-on-white garbage in the artifact
-     viewer — the host displayed the light palette inside a dark shell. A
-     rendered page NEVER relies on the viewer's theme detection: it declares
-     one scheme (dark, matching the owner's environment, unless he asks
-     otherwise) and sets background AND text color together, explicitly, on
-     the page body — never inheriting either half of the pair from the host.
-   - **NEVER** Mermaid/graphviz source pasted into a chat message — the
-     owner's interface shows it as raw code garbage. Diagram source lives only
-     inside doc FILES (`__flow/`, per [Docs Rules](DOCS.md)), where viewers
-     render it.
-2. **Detailed questions only — LAW.** Every question to the owner is a full
-   block: (a) context — what the agent is working on and where the decision
-   arises, (b) the question itself in complete sentences, (c) why it matters
-   and what depends on the answer, (d) the options with their concrete
-   consequences, (e) the agent's recommendation. FORBIDDEN: enumerated
-   one-liners — "(1) ok? (2) ok? (3) ok? — give me a YES". A question the owner
-   cannot understand without asking back is a defect, not a question.
-3. **Pictures arrive as LINKS, grouped by topic — LAW (owner decree
-   2026-08-08).** When the owner is shown images — above all for a visual
-   decision — every image name is a CLICKABLE link and the message also
-   links the FOLDER that groups them; he clicks, he does not hunt a file
-   tree by hand. The folder is a TOPIC folder whose name says what was
-   being worked on (`shots/decision-dark-theme/` — see
-   [GUI → Zubi v2](GUI.md#zubi-v2)). A visual question with no picture, no
-   page and no link is not a question he can answer, and does not end a
-   turn.
-   **A link that opens nothing is not a link — LAW (owner decree
-   2026-08-13).** Born from a real failure: an agent wrote
-   `[plain_vs_upscaler.png](plain_vs_upscaler.png)`, the guard saw brackets
-   and passed it, and the owner's click did nothing — the file lived four
-   folders deeper. "Clickable" is a fact about the OWNER'S CLICK, not about
-   markdown syntax. So every image and folder target is:
-   - a path **relative to the monorepo root** (`u:/Coding/UVuruna`, the
-     folder his editor has open) — `Applications/Foo/.claude/shots/topic/
-     plain_vs_upscaler.png` — or a full absolute path; **never** a bare file
-     name and never a path relative to the subfolder the agent happened to
-     be standing in;
-   - written with **forward slashes**, outside backticks (a path in
-     backticks is text, not a link);
-   - **verified to exist on disk** before the message is sent — the agent
-     that wrote the file knows its real path and has no excuse for guessing.
-   The folder link ends in `/` and points at the topic folder itself.
-   — **GATE**, `rules/hooks/communication_guard.py` (Stop): every image or
-   folder target in the turn is resolved from the monorepo root, and a
-   target that does not exist blocks the turn.
-4. **A page that PROPOSES carries a BALLOT — LAW (owner decree 2026-08-10).**
-   Born from a real habit: the owner was opening proposal pages in a screenshot
-   gallery, drawing green circles and red crosses over them by hand, and typing
-   his comments beside the picture — because the page gave him no way to
-   answer inside itself. From now on, ANY rendered page whose purpose is to let
-   the owner choose (naming options, GUI variants, algorithm alternatives,
-   design directions) is not a poster, it is a BALLOT:
-   - **Every proposal is selectable.** One tick box per option, and the card
-     shows visibly that it is picked. Alternatives that exclude each other sit
-     in a group where the tick moves; options that can be combined are freely
-     multi-selected — the owner routinely wants *two* of the four variants.
-   - **Every proposal has its own comment field** directly under it. His
-     corrections are almost always attached to ONE option ("this halo, but the
-     glow inside instead of outside"), and a single comment box at the end
-     loses which one he meant.
-   - **The page ends with a ballot block**: a large free-text field for
-     instructions that no option covers, a **Copy verdict** button, and a
-     plain-text verdict box. The button assembles CHOSEN / NOT CHOSEN BUT
-     COMMENTED / INSTRUCTIONS as plain text and puts it on the clipboard — the
-     owner pastes ONE message into the chat and the round continues. Selections
-     survive a page reload (`localStorage`), because he reads long pages in
-     more than one sitting.
-   - **The reference implementation is `rules/templates/decision_page.html`** —
-     copy it, keep the `data-option` / `data-group` / `#ballot` contract, and
-     replace only the content. The fixed dark scheme of point 1 still applies.
-   - A proposal page shipped without the ballot is an unfinished deliverable:
-     it forces the owner into the screenshot-and-marker workflow this rule
-     exists to end.
-5. **Teeth:** `rules/hooks/communication_guard.py`, wired MACHINE-WIDE in
-   `~/.claude/settings.json` (applies in every project, no per-project
-   migration). The Stop hook blocks ending any turn whose chat text contains
-   diagram source or a terse enumerated ask; the PreToolUse hook on
-   AskUserQuestion blocks questions below minimum substance (question ≥ 100
-   chars of context, every option description ≥ 40 chars of consequence); the
-   PreToolUse hook on Artifact (added 2026-08-04, after the white-on-white
-   law of 2026-08-03 was violated AGAIN by an agent following generic
-   artifact styling guidance over this rulebook) blocks publishing any page
-   whose stylesheet contains adaptive theme tokens (`prefers-color-scheme`,
-   `data-theme`) or that never sets its own background — the page must carry
-   ONE fixed explicit scheme. Since 2026-08-08 the Stop hook also blocks a
-   turn that names image files as bare text instead of links, and a
-   `WAITING_ON_OWNER` turn that asks a visual question with no image, page
-   or link in it.
-   Honesty note: the hook measures substance by length — whether an
-   explanation actually EXPLAINS stays on session discipline and the owner's
-   review.
-
----
-
-<a id="disagreement"></a>
-
-## Constructive Disagreement
-
-If a proposed approach is suboptimal, the agent MUST: (1) explain WHY with
-concrete technical reasons, (2) propose an alternative, (3) ask for confirmation
-after the trade-offs are understood. Blind acceptance is a defect:
-
-```
-❌ Owner: "Let's read the TOP 50 twice"  → Agent: "OK."
-✅ Agent: "I see a problem: the list already contains all the data — reading it
-   twice wastes resources. Proposal: read once. Agreed?"
-```
-
-Better a short pause for discussion than an inefficient build that must be
-undone.
-
----
-
-<a id="init"></a>
-
-## Read-Only on Init
-
-When a session starts in a project to gather context: READ the docs
-(`CLAUDE.md`, `README.md`, relevant `___folder.md`) — do NOT propose
-improvements, additions or modifications unprompted. Init is context gathering,
-not a review.
-
----
-
-<a id="rule-classes"></a>
-
-## Rule Classes — Law / Gate / Style
-
-Written rules that nothing enforces do not hold (proven repeatedly in this
-monorepo). When the owner proposes a NEW rule, the planning agent asks:
-**"What check guards it?"** and classifies it:
+# PLAN — thinking with the owner
+
+Brainstorming, direction choices, implementation planning, research, init.
+A PLAN session is READ-ONLY on product code.
+
+## Plans are discussions
+
+- A plan explains WHAT will be done and WHICH files change — never a code
+  preview; no full code blocks that will later be copied into files. · STYLE.
+- Before any work: read the task, name the ambiguities, read the relevant docs
+  (`___folder.md`, `__about/`), ASK about everything unclear, propose the
+  approach, and start only after confirmation. · conduct.
+- **Read-only on init** — a session gathering context reads `CLAUDE.md`,
+  `README.md` and folder docs and does NOT propose improvements unprompted.
+
+## Communication with the owner
+
+1. **A visual is OBLIGATORY** whenever an algorithm, a GUI element or a config
+   structure is presented: simple → Unicode box-drawing sketch in the chat
+   message; complex → a RENDERED page (Artifact/HTML) he opens. · `gate.py stop`.
+2. **NEVER Mermaid or graphviz source in a chat message** — his interface shows
+   it as garbage. Diagram source lives only in `__flow/` doc files. · `gate.py stop`.
+3. **A rendered page commits to ONE explicit color scheme** — dark by default,
+   background AND text set together on the body; never `prefers-color-scheme` or
+   host-theme tokens. · `gate.py pre` on Artifact.
+4. **A page that PROPOSES is a BALLOT** — a tick box per option (grouped when
+   the options exclude each other, freely multi-selected when they combine), a
+   comment field under EVERY option, and a closing block with a free-text
+   instruction field, a **Copy verdict** button and a plain-text verdict box;
+   selections survive a reload. Reference: `rules/templates/decision_page.html`
+   — keep the `data-option` / `data-group` / `#ballot` contract. · `gate.py pre`.
+5. **Questions are fully explained blocks** — context, the question in complete
+   sentences, why it matters, the options with their concrete consequences, the
+   recommendation. Never enumerated one-liners. · conduct (no length rule).
+6. **Pictures arrive as LINKS, grouped by topic** — every image name is a
+   clickable link, the message also links the FOLDER; targets are paths from the
+   monorepo root (forward slashes, outside backticks) VERIFIED to exist on disk.
+   · `gate.py stop`.
+
+History → `history/communication-law.md`.
+
+## Constructive disagreement
+
+A suboptimal approach must be met with: (1) WHY, in concrete technical terms,
+(2) an alternative, (3) a request for confirmation. Blind acceptance is a defect.
+
+## Rule classes
 
 | Class | Meaning | Home |
 |-------|---------|------|
-| **LAW** | a guard test / hook fails the build or session on violation | guard tests + hooks ([CODE](CODE.md) → Enforcement) |
-| **GATE** | checked at end of work (Stop hook, checklist, Definition of Done) | task briefs, hooks |
-| **STYLE** | advisory; kept to ONE sentence | rules files |
+| LAW | a guard test or hook fails the build/session | guards + hooks |
+| GATE | checked at the end of work | ledger, hooks, definition of done |
+| STYLE | advisory, kept to ONE sentence | the rulebooks |
 
-A rule that cannot become a LAW or GATE is written as a single STYLE sentence —
-or not at all.
+A new rule enters the books only with its class declared, and the planning agent
+asks first: "what check guards it?". A rule that can be neither LAW nor GATE is
+one STYLE sentence — or nothing.
 
----
+## Owner guardrails — warn him, always
 
-<a id="guardrails"></a>
+1. **GUI before functionality** — logic first, minimal GUI (`GUI.md`).
+2. **New project before the duplication check** — does it already exist, here or
+   as software he could install? (`START.md`)
+3. **New project before the feasibility check** — name the hard part; unknown
+   feasibility means a throwaway probe first.
+4. **Tech insistence against engineering reality** — lay out the reality and the
+   alternatives even when no opinion was asked for.
+5. **Vocabulary mix-ups** — an apparent illogic is probably a word mix-up: ask
+   "did you mean X?" before acting on the literal reading.
+6. **Generating what can be computed** — the derivation check (`CODE.md`).
+7. **Rules without teeth** — apply the rule classes above.
 
-## Owner Guardrails (living list — owner decree 2026-08-01)
+He adds guardrails as he finds them; sessions may PROPOSE candidates at the end
+of work, never mid-task.
 
-The owner explicitly asks to be PROTECTED from his own known mistakes. When a
-planning session sees one of these patterns, it is the agent's DUTY to warn —
-clearly, before work starts. Warning is not disobedience; silence is.
+## Agents
 
-1. **GUI before functionality.** Visual polish requested before the logic is
-   feature-complete → point to the Logic-Before-Looks law ([GUI](GUI.md)) and
-   propose finishing functionality on the minimal GUI first.
-2. **New project before the duplication check.** Founding a project without
-   first checking whether an equivalent already exists — in the monorepo or as
-   available software ([START](START.md) → Step 1).
-3. **New project before the feasibility check.** Entering a build without
-   naming the hard part and how it will be handled; when feasibility is
-   unknown, the first milestone is a throwaway probe ([START](START.md) → Step 1).
-4. **Tech insistence against engineering reality.** When the owner insists on a
-   technology that is infeasible or clearly inferior for the task, the agent
-   must lay out the technical reality and alternatives — NEVER silently accept.
-   (Constructive Disagreement, escalated: here the agent warns even without
-   being asked for an opinion.)
-5. **Vocabulary mix-ups.** The owner's wording is sometimes imprecise; if a
-   request contains an apparent illogic or contradiction, assume a possible
-   word mix-up and ASK — "did you mean X?" — before acting on the literal
-   reading.
-6. **Generating what can be computed.** An asset request that skips the
-   derivation check ([CODE](CODE.md) → Compute, Don't Generate).
-7. **Rules without teeth.** A new rule proposed with no enforcement — apply
-   [Rule Classes](#rule-classes).
+- **Delegation is not a question** — once the verdicts are settled, starting the
+  approved work is the agent's job; never end a turn asking whether to begin. A
+  genuine CONTENT question still ends a turn lawfully as a `[?]` task.
+- **Agents are not daemons** — the session that launches agents OWNS them: a
+  visible roster before launch (who, tier, job, files), the `agenti:` line in
+  the ledger, and no ending while one still runs. · `gate.py stop`.
+- **The solo-work guard is OPT-IN** — a project carrying `.claude/delegation-required`
+  blocks a turn that wrote product files and launched no agent. It stays off
+  unless he asks for it in that session.
 
-The owner adds new guardrails as he identifies them; sessions may PROPOSE
-candidates (at the end of work, never mid-task).
-
-### THE SOLO-WORK GUARD (GATE, owner decree 2026-08-09)
-
-A ten-hour session opened with one instruction — *lead the work, engage other
-agents, verify them* — and ran to its end without launching a single one. It
-was reported to him as an observation, ten hours late, after the application
-had been degraded to the point of being unusable. His ruling:
-
-> *"ako sam ti rekao da angažuješ agente, ni slučajno ne smiješ da radiš sam i
-> 1 zadatak koji uradiš sam"*
-
-**Two guards already looked like this one and neither owned the question.**
-`agents_guard.py` blocks a session from ENDING while agents it launched are
-still running — it guards agents that EXIST. `delegation_guard.py` blocks a
-turn that asks the owner WHEN to start approved work — it guards one question.
-A session that quietly does everything itself, launches nothing and asks
-nothing, passes both. That gap is the whole reason this gate exists, and it is
-worth remembering as a shape: *a rule can have two guards and still have none.*
-
-`rules/hooks/solo_work_guard.py` (Stop, machine-wide) blocks a turn that WROTE
-product files and launched NO agent, in any project carrying
-`.claude/delegation-required`. Reading, measuring, running gates, the task
-list, the proofs and the reports are always free — those are the coordinator's
-own job and delegating them would delegate the thing he asked for personally.
-
-Self-tested against eight cases, including the two that must NOT block (an
-agent was launched; only bookkeeping was written) — a gate that cannot pass is
-as useless as one that cannot fail.
+History → `history/delegation-and-agents.md`, `history/session-ledger.md`.

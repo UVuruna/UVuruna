@@ -1,6 +1,6 @@
 # Refactor God-Files — Task Brief
 
-This is a **copy-paste task brief**. The owner hands it to any project session whose codebase contains god-files (see root `CLAUDE.md`, Rule #20). It is generic — it names no project; the session discovers its own targets in Phase 0.
+This is a **copy-paste task brief**. The owner hands it to any project session whose codebase contains god-files (see `rules/CODE.md` → THE STRUCTURE LAW). It is generic — it names no project; the session discovers its own targets in Phase 0.
 
 ## Table of Contents
 
@@ -20,7 +20,7 @@ This is a **copy-paste task brief**. The owner hands it to any project session w
 
 ## What You Are Being Asked to Do
 
-This project violates **Rule #20 — Cohesive Modules, No God-Files**: one or more source files have grown far past ~1,000 lines and accumulated multiple unrelated responsibilities (window + widgets + dialogs + theming + helpers in one file is the canonical example).
+This project violates **THE STRUCTURE LAW** (`rules/CODE.md`): one or more source files have grown far past ~1,000 lines and accumulated multiple unrelated responsibilities (window + widgets + dialogs + theming + helpers in one file is the canonical example).
 
 Your task: **split every god-file into cohesive modules — one responsibility per file — with ZERO behavior change.**
 
@@ -57,7 +57,7 @@ Get-ChildItem -Recurse -Include *.py,*.js,*.ts |
   Sort-Object Lines -Descending
 ```
 
-Classify per Rule #20: **> ~1,000 lines = violation** (split target), **~500–1,000 = smell** (list it, ask whether it holds more than one responsibility), **≤ ~500 = leave alone**.
+Classify per THE STRUCTURE LAW (`rules/CODE.md`): **> ~1,000 lines = violation** (split target), **~500–1,000 = smell** (list it, ask whether it holds more than one responsibility), **≤ ~500 = leave alone**.
 
 <a id="phase-1"></a>
 

@@ -1,339 +1,95 @@
 # DOCS — MD-First 2.0
 
-**Who reads this:** every session that writes or migrates documentation — and
-every coding session at the "update docs" step. Migration of an existing project
-follows [MIGRATE-DOCS.md](../MIGRATE-DOCS.md).
+Documentation-Driven Development is how this organization programs: an agent
+that starts in a project sees structure, responsibilities and connections
+without reading code first. Read this for a DOCS session and at the "update
+docs" step of every code session.
 
-Documentation-Driven Development is not a rule among rules — it is HOW this
-organization programs. The goal: an agent that starts in a project gets oriented
-fast and sees structure, responsibilities and connections without reading the
-code first.
+## Living docs (LAW)
 
-## Table of Contents
+For EVERY file you changed, in the SAME session:
 
-- [The Living Docs Rule](#living-docs)
-- [Structure — Folder Docs & the Two Subfolders](#structure)
-- [Tiers — Which File Gets Which Docs](#tiers)
-- [Content Templates](#templates)
-- [Navigation Chain & Link Formatting](#navigation)
-- [Markdown Conventions](#markdown)
-- [Enforcement](#enforcement)
-
----
-
-<a id="living-docs"></a>
-
-## The Living Docs Rule (owner decree 2026-08-01)
-
-**Files are living bodies — their documentation lives and dies with them.**
-The historical failure: docs are written once at file creation and never touched
-again, so they slowly become lies — and a doc that lies is worse than no doc,
-because agents trust it.
-
-Therefore, in EVERY session, for EVERY file you change:
-
-1. Open its `__about/` doc (and `__flow/` if it has one) and ask: *does my
-   change alter what this says?* If yes — update it NOW, in the same session.
+1. Open its `__about/` doc (and `__flow/` if it has one) and ask whether your
+   change alters what it says — if yes, update it now.
 2. Walk the chain UPWARD: the folder's `___folder.md`, its parent's, up to
-   `README.md` — update every level your change touched (new file listed,
-   moved responsibility, changed connection).
-3. A change without its doc update is UNFINISHED WORK — the Stop-hook guard
-   (docs coverage + links) catches the structural part; the content part is
-   the session's duty.
+   `README.md`; update every level your change touched.
+3. A change without its doc update is UNFINISHED work. · `run_guards`
+   (`test_docs_coverage.py`, `test_doc_links.py`) catch the structural half; the
+   content half is the session's duty.
 
----
-
-<a id="structure"></a>
-
-## Structure — Folder Docs & the Two Subfolders
-
-Docs no longer sit beside scripts (that drowned folders — real case: one `gui/`
-folder held 28 scripts + 28 docs = 56 entries). Every code folder now has:
+## Structure
 
 ```
 📁 gui/
-  📝 ___gui.md              ← entry point: folder purpose, file list, links
-  📁 __about/               ← WHAT: per-file description & connections
-    📝 main_window.md
-    📝 canvas_widget.md
-  📁 __flow/                ← HOW: per-file visual algorithm / sketch / schema
-    📝 main_window.md
-    📝 canvas_widget.md
+  📝 ___gui.md      ← purpose, file table, connections, design decisions
+  📁 __about/       ← WHAT: per file — purpose, Uses / Used by, classes
+  📁 __flow/        ← HOW: per file — Mermaid diagram + neutral pseudocode
   🐍 main_window.py
-  🐍 canvas_widget.py
 ```
 
-- **`___folder.md`** (triple underscore — sorts first): unchanged role — folder
-  purpose, list of its files (one line each), connections, design decisions,
-  links into `__about/` and `__flow/`.
-- **`__about/{name}.md`** — what the file does, its connections (Uses /
-  Used by), classes/functions. Basename IDENTICAL to the script it describes.
-- **`__flow/{name}.md`** — the file's logic shown VISUALLY:
-  - algorithm file → Mermaid flowchart + language-neutral pseudocode
-  - GUI file → layout sketch (zones, widgets) — Mermaid block diagram or a
-    nested emoji list; always text, never images
-  - config file → visual tree of its sections and keys
-- Double underscore sorts the two doc folders directly under `___folder.md` and
-  above the code — the folder shows its structure at a glance.
-- **Flat, root-level-only projects** (files directly in the project root, no
-  packages): `__about/` and `__flow/` sit directly under the project root; the
-  project `README.md` plays the `___folder.md` role — no separate root folder
-  doc. This provision applies PER LOOSE FILE, not per project: a project with
-  packages AND loose root scripts documents the loose scripts in root-level
-  `__about/`/`__flow/` while its packages follow the normal folder layout.
+- `___folder.md` (triple underscore, sorts first) lists every file in one line
+  each and links into `__about/` and `__flow/`.
+- `__about/{name}.md` and `__flow/{name}.md` carry the IDENTICAL basename as the
+  script they describe.
+- Flat, root-level projects put `__about/`/`__flow/` in the project root and let
+  `README.md` play the folder-doc role — per LOOSE FILE, not per project.
 
----
-
-<a id="tiers"></a>
-
-## Tiers — Which File Gets Which Docs
-
-Docs are written where they carry information — never for ritual (the
-compute-don't-generate principle applied to documentation; real case: a project
-accumulated 441 doc files against 298 code files).
+## Tiers — who gets which docs
 
 | Tier | Definition | Obligation |
 |------|-----------|------------|
-| **Trivial** | glue, `__init__`, re-exports, < ~60 lines of plain wiring | one line in `___folder.md` only — NO own docs |
-| **Standard** | ordinary module | `__about/{name}.md` |
-| **Algorithmic** | a file whose logic a DIAGRAM genuinely tells better than the code itself | `__about/{name}.md` **+** `__flow/{name}.md` |
-| tests/ | test modules | `___tests.md` folder doc only |
+| Trivial | glue, `__init__`, re-exports, < ~60 lines of wiring | one line in `___folder.md` |
+| Standard | ordinary module | `__about/{name}.md` |
+| Algorithmic | a file a DIAGRAM tells better than the code | `__about/` + `__flow/` |
+| tests/ | test modules | `___tests.md` only |
 
-**The flow doc must EARN its place (owner decision 2026-08-01).** Being a
-widget, a config table or a protocol does NOT automatically make a file
-Algorithmic — the first pilot migrations proved that reading turns ~80% of
-files "Algorithmic" and doubles the doc count. The test: *would the diagram
-just restate the code?* Then the file is Standard. Reserve `__flow/` for
-real multi-step algorithms, nontrivial GUI layouts and configs whose
-structure needs a picture. Concrete signals that a file EARNS its flow:
-a background-thread or process handoff, cascading multi-level state, a real
-state machine, nontrivial geometry/math, a protocol with ordered steps. (Projects migrated before this narrowing carry
-wider flow lists — they get trimmed in a dedicated revision pass, recorded
-as a debt.)
+**A flow doc must EARN its place** — the test is "would the diagram just restate
+the code?". Signals that it earns one: a thread or process handoff, cascading
+state, a real state machine, nontrivial geometry, an ordered protocol. **Nature
+beats the line band in both directions**, and the tier list inside
+`test_docs_coverage.py` records every override — changing a tier means editing
+that test in the same commit.
 
-The project's `test_docs_coverage.py` encodes the tier assignment (trivial
-list / flow-required list) — changing a file's tier means updating that test in
-the same commit.
+## Templates
 
-Tier judgment rules (lessons from the 2026-08-01 pilot):
+`___folder.md`: title, purpose, `## Files` table (file · tier · one line ·
+`[about](__about/x.md) · [flow](__flow/x.md)`), `## Connections` (Uses / Used
+by, each with a why), `## Design Decisions`.
+`__about/{name}.md`: script link (+ flow link if Algorithmic), `## Purpose`,
+`## Connections` (Uses / Used by), `## Classes` — role, key attributes and
+methods one line each.
+`__flow/{name}.md`: about-link, `## Algorithm` — Mermaid flowchart plus
+language-neutral pseudocode; GUI files sketch zones, config files draw their
+section/key tree.
 
-- **Nature beats the line band — in BOTH directions.** The ~60-line bound is a
-  heuristic; a 300-line `__init__.py` of pure mechanical re-exports is still
-  Trivial, and an 86-line Qt widget is still Algorithmic. When nature and line
-  count disagree, nature decides — and the coverage test's tier list records
-  the override.
-- An `__init__.py` at Standard tier or above documents as
-  `__about/__init__.md` — the identical-basename rule applies unchanged.
-- `.md` files that are DATA, not documentation (e.g. `tests/fixtures/*.md`
-  sample sheets), are exempt from the navigation chain via an explicit EXEMPT
-  list inside `test_doc_links.py`.
+## Navigation chain
 
----
+From `README.md` every project `.md` must be reachable, with no broken relative
+link. · `test_doc_links.py`. Encoded exceptions: `.claude/`, `UV/`, caches and
+vendored dirs are not walked; links into `UV/` are not asserted; data `.md`
+files sit in the test's EXEMPT list; **monorepo-root docs are cited as plain
+backticked text, never as markdown links**.
 
-<a id="templates"></a>
+Link rules: links point at `.md` files (scripts only via an explicit
+"(script)" link) · link text is human-readable, never a raw path · one `../`
+per level including the doc subfolder · link a `___folder.md` when the target's
+`__about/` doc does not exist yet or the file is Trivial · `Used by: none
+(entry point)` is written out, never left off.
 
-## Content Templates
+## README
 
-### `___folder.md`
+- The opening 1–3 sentence paragraph (≤ ~350 chars) IS the GitHub About; when it
+  changes and a repo exists: `gh repo edit <owner>/<repo> --description "…"`.
+- **The name story** (owner decree 2026-08-10, GATE) — directly under it, one or
+  two sentences on why the project carries its name, sold as the user's
+  experience, never the implementation. A rename rewrites it in the same commit.
 
-```markdown
-# folder_name/
+## Markdown conventions
 
-Purpose of the folder and its role in the system.
+Folder trees use emoji + 2-space indent (never ASCII box-drawing): 📁 📂 📄 🐍
+🔧 ⚙️ 📝 🖼️ 🗄️ · diagrams are Mermaid, never ASCII art, and every diagram with
+subgraphs opens with the `subGraphTitleMargin` init line · headers referenced
+from a TOC carry an explicit `<a id="…"></a>`.
 
-## Files
-
-| File | Tier | One line |
-|------|------|----------|
-| `main_window.py` | Algorithmic | window shell, layout, wiring — [about](__about/main_window.md) · [flow](__flow/main_window.md) |
-| `helpers.py` | Trivial | small shared formatters |
-
-## Connections
-
-### Uses
-- [Other Component (folder)](../other/___other.md) — why
-
-### Used by
-- [Parent Component (folder)](../parent/___parent.md) — why
-
-## Design Decisions
-Why things are this way (not just what).
-```
-
-### `__about/{name}.md`
-
-```markdown
-# Component Name
-
-**Script:** [Component Name (script)](../component_name.py) ·
-**Flow:** [diagram](../__flow/component_name.md)   ← only if Algorithmic tier
-
-## Purpose
-What it does, why it exists.
-
-## Connections
-### Uses
-- [Other Component](other_component.md) — why
-### Used by
-- [Parent Component](../../parent/__about/parent.md) — why
-
-## Classes
-### ClassName
-Role. Key attributes and methods, one line each.
-```
-
-### `__flow/{name}.md`
-
-```markdown
-# Component Name — Flow
-
-**About:** [description](../__about/component_name.md)
-
-## Algorithm
-```mermaid
-flowchart TB
-    A[event arrives] --> B{age > timeout?}
-    B -- yes --> C[discard + log warning]
-    B -- no --> D[append to batch]
-    D --> E{batch full OR 2s?}
-    E -- yes --> F[(write batch to DB)]
-```
-
-Pseudocode (language-neutral — the owner must be able to follow it in any stack):
-
-    FOR EACH event IN queue:
-        IF event age > timeout → discard, log warning
-        ELSE → append to batch
-    WHEN batch full OR 2s passed → write batch to DB
-```
-
-GUI files sketch their zones; config files draw their section/key tree — same
-Mermaid-or-nested-list approach, always text. A config module with REAL logic
-(cached loaders, derivation) adds pseudocode under the tree — the tree shows
-the data, the pseudocode the behavior.
-
----
-
-<a id="navigation"></a>
-
-## Navigation Chain & Link Formatting
-
-**From the project `README.md` you must be able to reach EVERY `.md` file** by
-following links: `README.md → ___module.md → __about/*, __flow/*`. This is
-enforced by `test_doc_links.py` — unreachable or broken = failed build.
-
-Stated exceptions (the test encodes them explicitly, never silently):
-
-- **Excluded directories:** `.claude/`, `UV/`, caches, vendored/build dirs —
-  their `.md` files are neither walked nor required
-- **Links INTO `UV/`** (the owner's gitignored inbox) are not asserted — the
-  target set is volatile by design
-- **Data `.md` files** (fixtures, sample sheets) sit in the test's EXEMPT list
-- **Monorepo-root docs are referenced as plain text, never markdown links** —
-  a project-level link guard cannot assert targets outside the project, so
-  `[x](../../rules/CODE.md)`-style links falsely pass or fail; write
-  `rules/CODE.md` in backticks instead (project `CLAUDE.md` files with the
-  Router table are the one place such links live, and they are guard-exempt)
-
-Link rules (unchanged from MD-First 1.0):
-
-- Links point to `.md` files (scripts only via the explicit "(script)" link)
-- Link text is human-readable — NEVER a raw path
-- **Exception:** inside a `___folder.md` FILE TABLE, the compact
-  `[about](__about/x.md) · [flow](__flow/x.md)` form is allowed — everywhere
-  else the human-readable rule holds
-- **Target not migrated yet?** When the target's `__about/` doc is not
-  guaranteed to exist (mid-migration, other folder's turn), link its
-  `___folder.md` instead — never a path you hope will exist
-- **Mind the depth:** from `app/__about/x.md`, the folder doc of `core/` is
-  `../../core/___core.md`; from `core/browser/__about/x.md` it is
-  `../../../core/___core.md` — one `../` per level including the doc subfolder
-- **Linking to a Trivial-tier file** (which has no `__about/` doc): link its
-  folder's `___folder.md` — the file's one-line entry lives there
-- **No callers?** Write `Used by: none (entry point / not yet wired)` explicitly
-  — never leave the section off. A FALSE connection claim inherited from a
-  legacy doc is dropped, with a Design Decisions note when the correction is
-  load-bearing
-
-| Target | Link text | Example |
-|--------|-----------|---------|
-| `___folder.md` (top-level) | `Name (folder)` | `[App (folder)](app/___app.md)` |
-| `___folder.md` (subfolder) | `Name (subfolder)` | `[GUI (subfolder)](app/gui/___gui.md)` |
-| `__about/` doc | `Component Name` | `[App Controller](__about/app_controller.md)` |
-| `__flow/` doc | `Component Name (flow)` | `[App Controller (flow)](__flow/app_controller.md)` |
-| Script itself | `Name (script)` | `[App Controller (script)](app_controller.py)` |
-| Files in structure trees | plain text, NO links | `🐍 app_controller.py` |
-
-<a id="github-about"></a>
-
-### README Opening = GitHub About
-
-Every project README opens with a 1–3 sentence plain paragraph (what it does,
-for whom, on what platform — ≤ ~350 chars). That paragraph IS the GitHub About;
-whenever a session changes it and a repo exists:
-`gh repo edit <owner>/<repo> --description "<paragraph>"`. Longer intro → first
-sentence is the About.
-
-<a id="name-story"></a>
-
-### The Name Story (owner decree 2026-08-10, class GATE)
-
-Directly under that opening paragraph, every README explains **why the project
-carries its name** — one or two sentences, as a `## Why "<Name>"` section or a
-single italic line under the title. The story sells what the name promises in
-terms of the user's experience, never the implementation:
-
-> **Why "Vibe Coder"** — because it turns your phone into the machine: you
-> write code from the beach, from the bath, thumbing a controller like you are
-> playing a game, and what comes out the other end is a running program.
-
-A rename rewrites this section in the same commit as the rename. Naming rules
-themselves: [START](START.md#name) → Step 2.
-
----
-
-<a id="markdown"></a>
-
-## Markdown Conventions
-
-### Folder trees — emoji, never ASCII box-drawing
-
-`├── └── │` break on narrow screens. Use emoji + 2-space indent:
-📁 folder (📂 open) · 📄 file · 🐍 Python · 🔧 script (.ps1/.bat/.sh) ·
-⚙️ config · 📝 markdown/text · 🖼️ image · 🗄️ database
-
-### Diagrams — Mermaid, never ASCII art
-
-Directions `LR`/`TB`; shapes `[box]` `(rounded)` `[(db)]` `{decision}`
-`((circle))`; arrows `-->` `---` `-.-` `==>` `-- label -->`.
-Every diagram WITH subgraphs starts with:
-
-```
-%%{init: {'flowchart': {'subGraphTitleMargin': {'top': 0, 'bottom': 35}}}}%%
-```
-
-### Anchors & TOC
-
-Headers referenced from a TOC get an explicit `<a id="anchor-name"></a>` line
-above them (GitHub/VSCode/GitLab generate anchors differently). Lowercase,
-dashes, no emoji in the id. TOC sits immediately after the document title and
-lists all `##` sections.
-
----
-
-<a id="enforcement"></a>
-
-## Enforcement
-
-Two of the four project guard tests belong to this file
-(spec: [CODE](CODE.md) → Enforcement):
-
-- **`tests/test_docs_coverage.py`** — every source file has the docs its tier
-  requires; tier lists live in the test and shrink/grow only with an
-  accompanying doc change.
-- **`tests/test_doc_links.py`** — the full navigation chain from `README.md`:
-  every project `.md` reachable, zero broken relative links.
-
-Both run in the Stop hook — a session cannot end with missing or orphaned docs.
-Content truth (docs that structurally exist but lie) cannot be machine-checked:
-that is what the Living Docs Rule and owner review are for.
+History and pilot lessons → `history/docs-md-first.md`; the completed migration
+brief → `history/MIGRATE-DOCS.md`.
