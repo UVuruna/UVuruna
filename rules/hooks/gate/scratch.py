@@ -14,13 +14,13 @@ from pathlib import Path
 SHELL_WRITE_RE = re.compile(
     r"(?:(?<![A-Za-z_\-])>{1,2}|\btee\b|\bcp\b[^|;&\n]*|\bmv\b[^|;&\n]*|--output[= ]|-o )"
     r"\s*[\"']?"
-    r"((?<![\w.])/(?![a-zA-Z]/|dev/|proc/|tmp/|c/|mnt/)[\w.\-]+"       # /tmp_x -> drive root
+    r"((?<![\w.:])/(?![a-zA-Z]/|dev/|proc/|tmp/|c/|mnt/)[\w.\-]+"       # /tmp_x -> drive root
     r"|(?:\.\./){3,}[\w.\-]+"                                  # ../../../x
     r"|[a-zA-Z]:[\\/][\w.\-]+\.(?:txt|png|py|md|json|log)\b)"  # X:\file at a drive root
 )
 PY_WRITE_RE = re.compile(
     r"(?:open|Path|write_text|save|imwrite)\(\s*[\"']"
-    r"((?<![\w.])/(?![a-zA-Z]/|dev/|proc/|tmp/|c/|mnt/)[\w.\-]+"
+    r"((?<![\w.:])/(?![a-zA-Z]/|dev/|proc/|tmp/|c/|mnt/)[\w.\-]+"
     r"|(?:\.\./){3,}[\w.\-]+"
     r"|[a-zA-Z]:[\\/][\w.\-]+\.(?:txt|png|py|md|json|log))"
 )
