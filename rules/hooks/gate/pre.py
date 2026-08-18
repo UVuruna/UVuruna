@@ -7,7 +7,7 @@ from pathlib import Path
 
 import changed_files
 
-from . import (ballot, build_guard, gui_api, language,
+from . import (ballot, build_guard, gui_api, language, scratch,
                ledger as ledger_mod, paths, transcript)
 
 
@@ -16,8 +16,11 @@ def _written(tool_input: dict) -> str:
 
 
 def _edit(tool_input: dict, root: Path, session_id: str,
-          model_of) -> list[str] | None:
+          model_of, cwd: Path) -> list[str] | None:
     path = tool_input.get("file_path") or tool_input.get("notebook_path") or ""
+    problem = scratch.check_edit_path(path, root, cwd)
+    if problem:
+        return problem
     if paths.is_evidence_path(path):
         return [
             "evidence.jsonl is written by the machine, never by an agent.",
@@ -65,6 +68,9 @@ def _edit(tool_input: dict, root: Path, session_id: str,
 
 def _bash(tool_input: dict, model_of) -> list[str] | None:
     command = str(tool_input.get("command") or "")
+    problem = scratch.check_command(command)
+    if problem:
+        return problem
     if not build_guard.is_build_command(command):
         return None
     model = model_of()
@@ -89,7 +95,7 @@ def run(payload: dict) -> list[str] | None:
         return cache["model"]
 
     if tool in paths.EDIT_TOOLS:
-        return _edit(tool_input, root, session_id, model_of)
+        return _edit(tool_input, root, session_id, model_of, cwd)
     if tool in ("Bash", "PowerShell"):
         return _bash(tool_input, model_of)
     if tool == "Artifact":

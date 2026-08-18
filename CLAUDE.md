@@ -1,8 +1,7 @@
 # CLAUDE.md — UVuruna Constitution
 
 Universal law for **ALL projects**; one rulebook per CATEGORY in `rules/`
-([Router](#router)), plus `history/`, `howto/` and `briefs/`. Project
-`CLAUDE.md` files may only ADD or TIGHTEN it.
+([Router](#router)). Project `CLAUDE.md` files may only ADD or TIGHTEN it.
 
 ## Organization
 
@@ -20,11 +19,9 @@ every project has its own git repo, and the root repo tracks only root docs,
 **Hidden projects must never appear in any tracked file** — no name, no path,
 no logo; `PRIVATE.md` stays untracked.
 
-**Main projects (owner decree 2026-08-17):** the projects under ACTIVE,
-INTENSIVE development — the current focus — carry a ⭐ beside their name in
-`README.md` / `PROJECTS.md` (a hidden main project is starred only in
-`PRIVATE.md`). When the owner says "glavni projekti" he means exactly the
-starred set; it changes only by his word.
+**Main projects (owner decree 2026-08-17):** the ACTIVE, INTENSIVE ones carry
+a ⭐ in `README.md` / `PROJECTS.md` (a hidden one only in `PRIVATE.md`);
+"glavni projekti" = exactly the starred set; it changes only by his word.
 
 ## Priorities (higher wins)
 
@@ -93,12 +90,12 @@ tooth; several may combine, each bringing its own.
 - **Sub-agents carry their own tooth** — one that edited product files runs
   something after its last edit and reports `! ` evidence lines.
 - **Session start:** read the project's `UV/` inbox (never edit or delete his
-  files) and the relevant `___folder.md`. **Ask before assuming** — better 100
-  questions than 1 bug; disagreeing constructively is a duty (`PLAN.md`).
+  files) and the relevant `___folder.md`. **Ask before assuming**;
+  disagreeing constructively is a duty (`PLAN.md`).
 - **Token economy:** triage in one line — **Trivial** (inline, no agents) /
-  **Standard** (+ a few agents for parallel pieces) / **Wide** (agents, sized to
-  the ask); weakest capable tier per delegated task; a multi-agent workflow only
-  on his explicit request; reuse research, never rerun it.
+  **Standard** (+ a few agents) / **Wide** (agents, sized to the ask); weakest
+  capable tier per task; a workflow only on his explicit request; reuse
+  research, never rerun it.
 - **Honesty:** no capacity lies, no error masking, evidence for every claim of
   finished work. **Scope:** only what was asked; propose the rest at the end.
 - **We build for OTHERS, never for his machine** (owner decree 2026-08-16): a
@@ -106,11 +103,13 @@ tooth; several may combine, each bringing its own.
   `.claude/`, paths or habits — it ships what it needs, proven on the profiles
   in `rules/devices.json`.
 - **Files:** no `_v2`/`_new`/`_backup` — git is the history; ask before
-  deleting. **After the work:** update the docs you touched, and commit.
+  deleting. **Scratch stays in the scratchpad** (`gate.py pre`): never write
+  outside the project — in Git Bash `/x` is the DRIVE ROOT — and delete your
+  temp files. **After the work:** update the docs you touched, and commit.
 
 ## Version & Commits
 
 **`0.0.000 description`** — patch zero-padded to 3, short English phrase, em
-dash `—` for detail. Related work in one session: +1 (`1.0.500 → 1.0.501`);
-unrelated: next round (`1.0.508 → 1.0.510`). Bump from `git log --oneline -5`,
-group by topic, stage the exact files (**never** `git add .`).
+dash `—` for detail. Related work: +1 (`1.0.500 → 1.0.501`); unrelated: next
+round (`→ 1.0.510`). Bump from `git log`, group by topic, stage exact files
+(**never** `git add .`).

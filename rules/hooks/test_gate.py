@@ -456,3 +456,36 @@ def test_gate_survives_missing_transcript(tmp_path, event):
     done = run_gate(event, root, tmp_path / "nope.jsonl", tool_name="Read",
                     tool_input={"file_path": str(root / "src" / "a.py")})
     assert done.returncode in (0, 2)
+
+
+# ═══════════════════════════ scratch ═══════════════════════════
+
+def test_pre_blocks_shell_write_to_drive_root(tmp_path):
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: GUI · klasa: Trivial\n")
+    transcript = write_transcript(tmp_path, [user("crop the shot", 0)])
+    cmd = "cd proj && cat > " + "/tmp" + "_crop.py << 'PY'\nprint(1)\nPY"
+    done = run_gate("pre", root, transcript, tool_name="Bash",
+                    tool_input={"command": cmd})
+    assert done.returncode == 2, done.stderr
+    assert "leaves the project" in done.stderr
+
+
+def test_pre_allows_shell_write_inside_project(tmp_path):
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: GUI · klasa: Trivial\n")
+    transcript = write_transcript(tmp_path, [user("crop the shot", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Bash",
+                    tool_input={"command": "python x.py > .claude/tmp/out.txt 2>&1"})
+    assert done.returncode == 0, done.stderr
+
+
+def test_pre_blocks_write_tool_outside_project(tmp_path):
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: GUI · klasa: Trivial\n")
+    transcript = write_transcript(tmp_path, [user("note", 0)])
+    outside = Path(root.anchor) / "tmp_notes.txt"   # the drive root, never written
+    done = run_gate("pre", root, transcript, tool_name="Write",
+                    tool_input={"file_path": str(outside), "content": "x"})
+    assert done.returncode == 2, done.stderr
+    assert "outside the project" in done.stderr
