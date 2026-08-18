@@ -17,7 +17,7 @@ Project root = nearest ancestor of the cwd with `.claude/` or `.git`
 
 | Command | Does | Row |
 |---------|------|-----|
-| `uv test <pytest args…> [--label X]` | pytest with `--junitxml` into the evidence dir | `kind:test` + `passed/failed/skipped/total` |
+| `uv test [--label X] <pytest args…>` (`--label` BEFORE the paths — after them it goes to pytest) | pytest with `--junitxml` into the evidence dir; names test files pytest collected NOTHING from | `kind:test` + `passed/failed/skipped/total` |
 | `uv run "<cmd>" --profile <p> [--timeout S] [--smoke-seconds N]` | runs it under the profile's affinity, priority and env; log captured | `kind:run` + `start_ms` |
 | `uv shot [--window N] [--profile P …] [--all]` | builds a registered window offscreen at the profile screen AND at its minimum, PNG + ALG checks | `kind:shot` + `checks` |
 | `uv device <profile> <url\|apk\|package> [--flow f.py]` | Chromium emulation (viewport, DPR, CPU throttle, network) or `adb` on a phone | `kind:device` + `checks` |
