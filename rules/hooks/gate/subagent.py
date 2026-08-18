@@ -10,7 +10,8 @@ from . import paths, transcript as transcript_mod
 
 RUN_RE = re.compile(r"uv\.py|\buv\s+(test|shot|run|device)\b|pytest"
                     r"|run_guards|python\s+-m\b", re.I)
-BANG_RE = re.compile(r"^\s*!\s+\S", re.M)
+#: `! ev-…` at line start, also behind a list marker, backticks or bold
+BANG_RE = re.compile(r"^\s*(?:[-*>]\s*)?[`*_]*!\s*[`*_]*\S", re.M)
 
 
 def run(payload: dict) -> list[str] | None:
@@ -37,9 +38,9 @@ def run(payload: dict) -> list[str] | None:
     if not BANG_RE.search(model.final_text()):
         return [
             "This sub-agent's report carries no `! ` evidence line.",
-            "FIX: end the report with one `! ` line per thing you ran — "
-            "`! ev-NNNN test tests/test_x.py 6/6` — so the coordinator can "
-            "reference it.",
+            "FIX: add plain lines starting with `! ` (e.g. "
+            "`! ev-0004 test tests/test_x.py 6/6`) at the end of your final "
+            "message; keep the rest of the report as it is.",
             "where: final report",
         ]
     return None
