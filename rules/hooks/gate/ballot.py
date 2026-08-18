@@ -42,6 +42,16 @@ def check(file_path: str, page: str, roots: list[Path]) -> list[str] | None:
             "text colour on the body, no media queries, no data-theme.",
             f"where: {file_path}",
         ]
+    for block in re.findall(r"<style[^>]*>(.*?)</style>", page, re.I | re.S):
+        if re.search(r"<style", block, re.I) or "</style" in block.lower():
+            return [
+                "A <style> tag sits INSIDE a <style> block — the browser "
+                "drops the first CSS rule (colours, background) and the page "
+                "renders unreadable (2026-08-18 ballot).",
+                "FIX: keep exactly one <style>…</style> per block; check the "
+                "file you concatenated CSS from does not already carry the tag.",
+                f"where: {file_path}",
+            ]
     if "<style" in page.lower() and not BACKGROUND_RE.search(page):
         return [
             "This page never sets its own background colour, so it inherits "
