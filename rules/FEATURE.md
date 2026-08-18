@@ -35,6 +35,9 @@ second-largest input, both orientations for a phone target.
   product edit: `uv test <pytest args>` · `uv run "<cmd>" --profile <p>` ·
   `uv device <profile> <url|apk>`. A row's `evidence` column names its `ev-`
   id (runner usage: `howto/runner.md`). · `gate.py stop`.
+- **Virtual devices are HEADLESS and SILENT** — an emulator or browser the
+  runner boots never opens a window or plays sound on the owner's desk (owner
+  decree 2026-08-18); the agent looks at `adb screencap` PNGs. · runner.
 - **A row that cannot be proven is honest, not hidden** — the runner writes a
   `kind: unavailable` row (missing emulator, no hardware), the task stays `[~]`
   and the final message says which scenario is unproven and why. Never `[x]`.

@@ -12,7 +12,7 @@ from pathlib import Path
 #: shell write targets that leave the project: `> /tmp_x`, `cat > /x`,
 #: `tee /x`, `> ../../../x`, `open("/x", "w")`, `.write_text` on `../../..`
 SHELL_WRITE_RE = re.compile(
-    r"(?:>{1,2}|\btee\b|\bcp\b[^|;&\n]*|\bmv\b[^|;&\n]*|--output[= ]|-o )"
+    r"(?:(?<![A-Za-z_\-])>{1,2}|\btee\b|\bcp\b[^|;&\n]*|\bmv\b[^|;&\n]*|--output[= ]|-o )"
     r"\s*[\"']?"
     r"((?<![\w.])/(?![a-zA-Z]/|dev/|proc/|tmp/|c/|mnt/)[\w.\-]+"       # /tmp_x -> drive root
     r"|(?:\.\./){3,}[\w.\-]+"                                  # ../../../x

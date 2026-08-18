@@ -7,7 +7,7 @@ from pathlib import Path
 
 import changed_files
 
-from . import (ballot, build_guard, gui_api, language, scratch,
+from . import (agents, ballot, build_guard, gui_api, language, scratch,
                ledger as ledger_mod, paths, transcript)
 
 
@@ -76,7 +76,11 @@ def _bash(tool_input: dict, model_of) -> list[str] | None:
     model = model_of()
     last = model.last_owner_message()
     words = transcript.owner_text(last.text) if last else ""
-    return build_guard.check(command, model.is_subagent, words)
+    # The harness may hand a sub-agent's PreToolUse the PARENT transcript, so
+    # "a sub-agent is running" counts as "this may be a sub-agent": while any
+    # agent runs, nobody builds — the main session builds at the end, alone.
+    subagent = model.is_subagent or bool(agents.still_running(model))
+    return build_guard.check(command, subagent, words)
 
 
 def run(payload: dict) -> list[str] | None:

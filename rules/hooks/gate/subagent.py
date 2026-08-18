@@ -14,10 +14,37 @@ RUN_RE = re.compile(r"uv\.py|\buv\s+(test|shot|run|device)\b|pytest"
 BANG_RE = re.compile(r"^\s*(?:[-*>]\s*)?[`*_]*!\s*[`*_]*\S", re.M)
 
 
+def _agent_transcript(payload: dict) -> str:
+    """The SUB-AGENT's own transcript. The harness hands SubagentStop the
+    PARENT session's path, so resolve the agent file: an explicit
+    `agent_transcript_path`/`agent_id` when present, else the most recently
+    modified `agent-*.jsonl` under the parent's `subagents/` folder."""
+    given = str(payload.get("agent_transcript_path") or "")
+    if given and os.path.isfile(given):
+        return given
+    parent = str(payload.get("transcript_path") or "")
+    if transcript_mod.is_subagent_transcript(parent):
+        return parent
+    if not parent:
+        return ""
+    sub = Path(parent).with_suffix("") / "subagents"
+    agent_id = str(payload.get("agent_id") or "")
+    if agent_id:
+        candidate = sub / f"agent-{agent_id}.jsonl"
+        if candidate.is_file():
+            return str(candidate)
+    try:
+        files = sorted(sub.glob("agent-*.jsonl"),
+                       key=lambda f: f.stat().st_mtime, reverse=True)
+    except OSError:
+        files = []
+    return str(files[0]) if files else parent
+
+
 def run(payload: dict) -> list[str] | None:
     cwd = Path(payload.get("cwd") or os.getcwd())
     root = paths.project_root(cwd)
-    model = transcript_mod.load(payload.get("transcript_path") or "")
+    model = transcript_mod.load(_agent_transcript(payload))
 
     product_edits = model.product_edits(root)
     if not product_edits:

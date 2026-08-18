@@ -193,8 +193,14 @@ def _device_android(args, ctx: Context, profile: dict,
 
         emulator = which("emulator") or str(Path(
             "C:/Users/vurun/AppData/Local/Android/Sdk/emulator/emulator.exe"))
-        warn(f"booting AVD {avds[0]} - this takes a minute")
-        subprocess.Popen([emulator, "-avd", avds[0], "-no-snapshot-save"])
+        warn(f"booting AVD {avds[0]} headless and silent - this takes a minute")
+        # HEADLESS AND SILENT, always: a virtual device is the agent's eye,
+        # never a window or a sound on the owner's desk (owner decree
+        # 2026-08-18). Screenshots come from `adb exec-out screencap`.
+        subprocess.Popen([emulator, "-avd", avds[0], "-no-snapshot-save",
+                          "-no-window", "-no-audio", "-no-boot-anim",
+                          "-gpu", "swiftshader_indirect"],
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         subprocess.run([adb, "wait-for-device"], timeout=args.timeout * 4)
         serials = _adb_devices(adb)
         if not serials:

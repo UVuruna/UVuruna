@@ -80,3 +80,7 @@ Nothing is silent: a missing prerequisite is a loud stderr line AND a row that
 cannot be mistaken for proof.
 
 Self-test: `pytest rules/tools/test_uv.py`
+
+Emulators and browsers the runner boots are always headless and silent
+(`-no-window -no-audio -no-boot-anim`; Playwright headless) — nothing appears
+on the owner's screen and nothing plays; look at the PNGs.
