@@ -7,7 +7,7 @@ from pathlib import Path
 
 import changed_files
 
-from . import (agents, ballot, build_guard, gui_api, language, scratch,
+from . import (agents, ballot, build_guard, gui_api, language, scratch, structure,
                ledger as ledger_mod, paths, transcript)
 
 
@@ -51,6 +51,18 @@ def _edit(tool_input: dict, root: Path, session_id: str,
             "BUILD · klasa: … · agenti: …` at the top of the ledger.",
             f"where: {paths.ledger_path(root, session_id)}",
         ]
+
+    if (not led.trivial and any(led.has(c) for c in structure.CODE_CATEGORIES)
+            and not structure.has_block(led.text)):
+        model = model_of()
+        if not model.product_edits(root):
+            return [
+                "STRUCTURE first: no `struktura:` block — decide WHERE the code "
+                "goes before writing it.",
+                "FIX: add `struktura:` lines to the ledger: `<module> ← <unit>: "
+                "why it belongs there` or `NEW <module>: responsibility`.",
+                f"where: {led.path}",
+            ]
 
     if led.has("FEATURE") and not led.trivial and not led.has_matrix:
         model = model_of()

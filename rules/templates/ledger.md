@@ -1,6 +1,9 @@
 # <session title — what the owner asked for>
 kategorija: TODO · klasa: TODO · agenti: TODO
 
+struktura:
+  <module path> ← <unit>: <why it belongs there>   (or: NEW <module>: <responsibility>)
+
 - [ ] T1 <first deliverable>
 
 <!-- kategorija: one or more of GUI FEATURE BUGFIX REFACTOR DOCS PLAN BUILD
@@ -17,7 +20,9 @@ kategorija: TODO · klasa: TODO · agenti: TODO
 - [?] T3 BUILD & RELEASE — waits for the owner's word
     ? build v0.0.288 with T1+T2? command: python setup/build.py
 
-FEATURE writes this BEFORE its first product edit; BUGFIX writes `uzrok: <root
+Code categories (Standard/Wide) fill `struktura:` BEFORE the first product
+edit — every new def/class must be placed there; a reviewer sub-agent then
+writes `pregled N` (≥ 8) for FEATURE/REFACTOR. FEATURE writes this BEFORE its first product edit; BUGFIX writes `uzrok: <root
 cause>`, a repeat also `proces-uzrok: <why the previous claim was false>`:
 matrica:
 | # | scenario | input/state | device | evidence |

@@ -162,7 +162,7 @@ def test_pre_blocks_forbidden_gui_api(tmp_path):
 
 def test_pre_blocks_feature_without_matrix(tmp_path):
     root = project(tmp_path)
-    ledger(root, "# w\nkategorija: FEATURE · klasa: Standard\n\n- [ ] T1\n")
+    ledger(root, "# w\nkategorija: FEATURE · klasa: Standard\nstruktura:\n  src/a.py ← the change: the module already owns it\n\n- [ ] T1\n")
     transcript = write_transcript(tmp_path, [user("dodaj feature", 0)])
     done = run_gate("pre", root, transcript, tool_name="Write",
                     tool_input={"file_path": str(root / "src" / "a.py"),
@@ -301,7 +301,7 @@ def test_stop_gui_blocks_stale_shot(tmp_path):
 
 def test_stop_feature_blocks_matrix_row_without_evidence(tmp_path):
     root = project(tmp_path)
-    ledger(root, "# w\nkategorija: FEATURE · klasa: Standard\n\n"
+    ledger(root, "# w\nkategorija: FEATURE · klasa: Standard\nstruktura:\n  src/a.py ← the change: the module already owns it\n\n"
                  "- [x] T1 new card\n    ! ev-0001 test 12/12\n\n"
                  "matrica:\n"
                  "| # | scenario | input | device | evidence |\n"
@@ -320,7 +320,7 @@ def test_stop_feature_blocks_matrix_row_without_evidence(tmp_path):
 
 def test_stop_bugfix_passes_red_before_green_after(tmp_path):
     root = project(tmp_path)
-    ledger(root, "# w\nkategorija: BUGFIX · klasa: Standard\n"
+    ledger(root, "# w\nkategorija: BUGFIX · klasa: Standard\nstruktura:\n  src/a.py ← the change: the module already owns it\n\n"
                  "uzrok: the path was resolved against cwd, not the root\n\n"
                  "- [x] T1 fix\n    ! ev-0002 test 12/12\n")
     evidence(root, [ev_test_row("ev-0001", 0, rc=1),
@@ -336,7 +336,7 @@ def test_stop_bugfix_passes_red_before_green_after(tmp_path):
 
 def test_stop_bugfix_blocks_repeat_without_process_cause(tmp_path):
     root = project(tmp_path)
-    ledger(root, "# w\nkategorija: BUGFIX · klasa: Standard\n"
+    ledger(root, "# w\nkategorija: BUGFIX · klasa: Standard\nstruktura:\n  src/a.py ← the change: the module already owns it\n\n"
                  "uzrok: the path was wrong\n\n"
                  "- [x] T1 fix\n    ! ev-0002 test 12/12\n")
     evidence(root, [ev_test_row("ev-0001", 0, rc=1), ev_test_row("ev-0002", 9)])
@@ -512,6 +512,8 @@ def test_artifact_blocks_page_nobody_rendered(tmp_path):
     root = project(tmp_path)
     page = root / "page.html"
     page.write_text(BALLOT_HTML, encoding="utf-8")
+    import os
+    os.utime(page, (T0.timestamp(), T0.timestamp()))
     transcript = write_transcript(tmp_path, [user("napravi listić", 0)])
     done = run_gate("pre", root, transcript, tool_name="Artifact",
                     tool_input={"file_path": str(page), "favicon": "x"})
@@ -523,6 +525,8 @@ def test_artifact_blocks_render_nobody_looked_at(tmp_path):
     root = project(tmp_path)
     page = root / "page.html"
     page.write_text(BALLOT_HTML, encoding="utf-8")
+    import os
+    os.utime(page, (T0.timestamp(), T0.timestamp()))
     evidence(root, [_device_row("ev-0001", 600, f"uv device web-desktop file:///{page.as_posix()}",
                                 "device-0001-web-desktop.png")])
     transcript = write_transcript(tmp_path, [user("napravi listić", 0)])
@@ -536,6 +540,8 @@ def test_artifact_passes_rendered_and_seen(tmp_path):
     root = project(tmp_path)
     page = root / "page.html"
     page.write_text(BALLOT_HTML, encoding="utf-8")
+    import os
+    os.utime(page, (T0.timestamp(), T0.timestamp()))
     evidence(root, [_device_row("ev-0001", 600, f"uv device web-desktop file:///{page.as_posix()}",
                                 "device-0001-web-desktop.png")])
     transcript = write_transcript(tmp_path, [
@@ -546,4 +552,61 @@ def test_artifact_passes_rendered_and_seen(tmp_path):
     ])
     done = run_gate("pre", root, transcript, tool_name="Artifact",
                     tool_input={"file_path": str(page), "favicon": "x"})
+    assert done.returncode == 0, done.stderr
+
+
+# ═══════════════════════════ structure tooth ═══════════════════════════
+
+def test_pre_blocks_code_edit_without_struktura_block(tmp_path):
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUGFIX · klasa: Standard\n\n- [ ] T1\n")
+    transcript = write_transcript(tmp_path, [user("sredi", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Write",
+                    tool_input={"file_path": str(root / "src" / "a.py"),
+                                "content": "x = 1\n"})
+    assert done.returncode == 2, done.stderr
+    assert "struktura" in done.stderr.lower()
+
+
+def test_stop_blocks_unit_the_block_never_placed(tmp_path):
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUGFIX · klasa: Standard\n"
+                 "struktura:\n  src/a.py ← fix_path: the resolver already lives here\n\n"
+                 "uzrok: the path was wrong\n\n- [x] T1 fix\n    ! ev-0002 test 12/12\n")
+    evidence(root, [ev_test_row("ev-0001", 0, rc=1), ev_test_row("ev-0002", 9)])
+    transcript = write_transcript(tmp_path, [
+        user("puca", 0),
+        tool_use("Edit", {"file_path": str(root / "src" / "b.py"), "old_string": "x = 1",
+                          "new_string": "x = 1\n\nclass Orphan:\n    pass\n"}, 5, "t1"),
+        assistant(GOOD_FINAL, 10)])
+    done = run_gate("stop", root, transcript)
+    assert done.returncode == 2, done.stderr
+    assert "Orphan" in done.stderr
+
+
+def test_stop_feature_needs_reviewer_and_grade(tmp_path):
+    root = project(tmp_path)
+    body = ("# w\nkategorija: FEATURE · klasa: Standard\n"
+            "struktura:\n  src/a.py ← Card: the widgets module owns cards\n\n"
+            "matrica:\n| # | scenario | input | device | evidence |\n"
+            "| 1 | average device: main flow | fresh | laptop-avg | ev-0001 |\n"
+            "| 2 | fresh install, no owner paths | - | pc-low | ev-0001 |\n\n"
+            "- [x] T1 card\n    ! ev-0001 test 12/12\n")
+    ledger(root, body)
+    evidence(root, [ev_test_row("ev-0001", 9)])
+    edit = tool_use("Write", {"file_path": str(root / "src" / "a.py"),
+                              "content": "class Card:\n    pass\n"}, 1, "t1")
+    transcript = write_transcript(tmp_path, [user("dodaj karticu", 0), edit,
+                                             assistant(GOOD_FINAL, 10)])
+    done = run_gate("stop", root, transcript)
+    assert done.returncode == 2 and "reviewer" in done.stderr, done.stderr
+    # reviewer launched after the edit + grade written -> passes
+    ledger(root, body + "pregled 9 (reviewer: no repeated kind without a class)\n")
+    transcript = write_transcript(tmp_path, [
+        user("dodaj karticu", 0), edit,
+        tool_use("Agent", {"prompt": "You are the structure reviewer …",
+                           "description": "reviewer"}, 8, "a1"),
+        tool_result("a1", "pregled 9", 9),
+        assistant(GOOD_FINAL, 10)])
+    done = run_gate("stop", root, transcript)
     assert done.returncode == 0, done.stderr

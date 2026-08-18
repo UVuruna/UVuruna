@@ -14,7 +14,7 @@ from pathlib import Path
 import changed_files
 
 from . import (agents, build_guard, evidence as evidence_mod, ledger as
-               ledger_mod, paths, teeth)
+               ledger_mod, paths, teeth, structure)
 
 MERMAID_RE = re.compile(r"```\s*(mermaid|graphviz|dot|plantuml)\b", re.I)
 MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^()\s]+)\)")
@@ -103,6 +103,9 @@ def _ledger_checks(led, model) -> list[str] | None:
 
 
 def _teeth(led, evid, model, root: Path, product_edits) -> list[str] | None:
+    problem = structure.check_stop(led, model, product_edits)
+    if problem:
+        return problem
     if led.has("GUI"):
         gui_edits = [t for t in product_edits
                      if changed_files.is_gui_path(t.file_path)]
@@ -121,7 +124,7 @@ def _teeth(led, evid, model, root: Path, product_edits) -> list[str] | None:
         problem = teeth.refactor(led, evid, product_edits, root)
         if problem:
             return problem
-    return None
+    return structure.check_review(led, model, product_edits)
 
 
 def _evidence_integrity(model, root: Path) -> list[str] | None:
