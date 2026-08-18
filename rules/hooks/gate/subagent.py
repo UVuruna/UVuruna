@@ -35,7 +35,14 @@ def run(payload: dict) -> list[str] | None:
             "run_guards) and report the result.",
             f"where: {product_edits[-1].file_path}",
         ]
-    if not BANG_RE.search(model.final_text()):
+    # The sub-agent's report may not be flushed to its transcript when the
+    # SubagentStop hook fires, and every block is appended as a user record;
+    # so look at the LAST assistant texts overall, never only "after the last
+    # user message" — otherwise a blocked agent can never unblock itself.
+    texts = [m.text for m in model.messages
+             if m.role == "assistant" and m.text.strip()]
+    recent = "\n".join(texts[-3:])
+    if not BANG_RE.search(recent):
         return [
             "This sub-agent's report carries no `! ` evidence line.",
             "FIX: add plain lines starting with `! ` (e.g. "
