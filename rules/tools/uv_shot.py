@@ -227,18 +227,7 @@ def _shot_tk(registry, window_name: str, profile: dict, out: Path) -> dict:
         faults += [f"[{label}] {f}"
                    for f in checks_module.run_zubi(window, window_name)]
 
-    window.deiconify()
-    window.lift()
-    window.update()
-    try:
-        from PIL import ImageGrab
-    except ImportError as error:
-        raise RuntimeError("Tk screenshots need Pillow (pip install pillow)"
-                           ) from error
-    box = (window.winfo_rootx(), window.winfo_rooty(),
-           window.winfo_rootx() + window.winfo_width(),
-           window.winfo_rooty() + window.winfo_height())
-    ImageGrab.grab(bbox=box).save(out, "PNG")
+    _grab_tk_window(window, out)
     starved = [f for f in faults if "EMPTY BAND" in f]
     return {
         "ok": True,
@@ -250,6 +239,79 @@ def _shot_tk(registry, window_name: str, profile: dict, out: Path) -> dict:
                    "starved": len(starved), "min_fits": bool(min_fits)},
         "faults": faults,
     }
+
+
+def _grab_tk_window(window, out: Path) -> None:
+    """Capture a Tk toplevel WITHOUT it ever reaching the owner's screen:
+    the window is placed far off-screen and, on Windows, rendered through
+    `PrintWindow` into a bitmap (works off-screen); elsewhere it falls back
+    to a screen grab of the off-screen rectangle and says so loudly.
+    Silent audits law: no audit window on his desk, no focus stolen."""
+    import sys
+    try:
+        from PIL import Image
+    except ImportError as error:
+        raise RuntimeError("Tk screenshots need Pillow (pip install pillow)"
+                           ) from error
+    window.geometry(f"+{-32000}+{-32000}")
+    window.deiconify()
+    window.update_idletasks()
+    window.update()
+    width, height = max(window.winfo_width(), 1), max(window.winfo_height(), 1)
+    if sys.platform == "win32":
+        import ctypes
+        from ctypes import wintypes
+        user32, gdi32 = ctypes.windll.user32, ctypes.windll.gdi32
+        hwnd = wintypes.HWND(int(window.winfo_id()))
+        # the toplevel's own HWND (winfo_id is the client frame; go up)
+        parent = user32.GetParent(hwnd)
+        while parent:
+            hwnd, parent = parent, user32.GetParent(parent)
+        rect = wintypes.RECT()
+        user32.GetWindowRect(hwnd, ctypes.byref(rect))
+        width = max(rect.right - rect.left, width)
+        height = max(rect.bottom - rect.top, height)
+        hdc = user32.GetWindowDC(hwnd)
+        mem = gdi32.CreateCompatibleDC(hdc)
+        bmp = gdi32.CreateCompatibleBitmap(hdc, width, height)
+        gdi32.SelectObject(mem, bmp)
+        PW_RENDERFULLCONTENT = 0x00000002
+        ok = user32.PrintWindow(hwnd, mem, PW_RENDERFULLCONTENT)
+        if not ok:
+            ok = user32.PrintWindow(hwnd, mem, 0)
+
+        class BITMAPINFOHEADER(ctypes.Structure):
+            _fields_ = [("biSize", wintypes.DWORD), ("biWidth", wintypes.LONG),
+                        ("biHeight", wintypes.LONG), ("biPlanes", wintypes.WORD),
+                        ("biBitCount", wintypes.WORD),
+                        ("biCompression", wintypes.DWORD),
+                        ("biSizeImage", wintypes.DWORD),
+                        ("biXPelsPerMeter", wintypes.LONG),
+                        ("biYPelsPerMeter", wintypes.LONG),
+                        ("biClrUsed", wintypes.DWORD),
+                        ("biClrImportant", wintypes.DWORD)]
+        info = BITMAPINFOHEADER()
+        info.biSize = ctypes.sizeof(BITMAPINFOHEADER)
+        info.biWidth, info.biHeight = width, -height
+        info.biPlanes, info.biBitCount, info.biCompression = 1, 32, 0
+        buffer = ctypes.create_string_buffer(width * height * 4)
+        gdi32.GetDIBits(mem, bmp, 0, height, buffer, ctypes.byref(info), 0)
+        gdi32.DeleteObject(bmp)
+        gdi32.DeleteDC(mem)
+        user32.ReleaseDC(hwnd, hdc)
+        image = Image.frombuffer("RGBA", (width, height), buffer.raw,
+                                 "raw", "BGRA", 0, 1).convert("RGB")
+        if not ok:
+            warn("PrintWindow failed - the PNG may be blank; open it")
+        image.save(out, "PNG")
+    else:
+        from PIL import ImageGrab
+        warn("no PrintWindow on this OS - grabbing the off-screen rectangle; "
+             "the PNG may be blank, open it")
+        box = (window.winfo_rootx(), window.winfo_rooty(),
+               window.winfo_rootx() + width, window.winfo_rooty() + height)
+        ImageGrab.grab(bbox=box).save(out, "PNG")
+    window.withdraw()
 
 
 def cmd_shot_one(args, ctx: Context) -> int:
