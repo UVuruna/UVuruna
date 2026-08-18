@@ -489,3 +489,61 @@ def test_pre_blocks_write_tool_outside_project(tmp_path):
                     tool_input={"file_path": str(outside), "content": "x"})
     assert done.returncode == 2, done.stderr
     assert "outside the project" in done.stderr
+
+
+# ═══════════════════════════ artifact: seen before publish ═══════════════════════════
+
+BALLOT_HTML = (
+    "<title>t</title><style>body{background:#000;color:#fff}</style>"
+    "<div class='option' data-option='a'><input type='checkbox' id='a'>"
+    "<label for='a'>A</label><textarea></textarea></div>"
+    "<div id='ballot'><textarea id='ballot-note'></textarea>"
+    "<button id='ballot-copy'></button><textarea id='verdict'></textarea></div>"
+)
+
+
+def _device_row(ident, minutes, cmd, artifact):
+    return {"id": ident, "ts": at(minutes), "kind": "device", "cmd": cmd,
+            "rc": 0, "profile": "web-desktop", "artifact": artifact,
+            "sha256": "x", "summary": "ok"}
+
+
+def test_artifact_blocks_page_nobody_rendered(tmp_path):
+    root = project(tmp_path)
+    page = root / "page.html"
+    page.write_text(BALLOT_HTML, encoding="utf-8")
+    transcript = write_transcript(tmp_path, [user("napravi listić", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Artifact",
+                    tool_input={"file_path": str(page), "favicon": "x"})
+    assert done.returncode == 2, done.stderr
+    assert "rendered" in done.stderr
+
+
+def test_artifact_blocks_render_nobody_looked_at(tmp_path):
+    root = project(tmp_path)
+    page = root / "page.html"
+    page.write_text(BALLOT_HTML, encoding="utf-8")
+    evidence(root, [_device_row("ev-0001", 600, f"uv device web-desktop file:///{page.as_posix()}",
+                                "device-0001-web-desktop.png")])
+    transcript = write_transcript(tmp_path, [user("napravi listić", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Artifact",
+                    tool_input={"file_path": str(page), "favicon": "x"})
+    assert done.returncode == 2, done.stderr
+    assert "LOOKED" in done.stderr
+
+
+def test_artifact_passes_rendered_and_seen(tmp_path):
+    root = project(tmp_path)
+    page = root / "page.html"
+    page.write_text(BALLOT_HTML, encoding="utf-8")
+    evidence(root, [_device_row("ev-0001", 600, f"uv device web-desktop file:///{page.as_posix()}",
+                                "device-0001-web-desktop.png")])
+    transcript = write_transcript(tmp_path, [
+        user("napravi listić", 0),
+        tool_use("Read", {"file_path": str(root / ".claude" / "evidence" / "s1" /
+                                           "device-0001-web-desktop.png")}, 601, "r1"),
+        tool_result("r1", "image", 601),
+    ])
+    done = run_gate("pre", root, transcript, tool_name="Artifact",
+                    tool_input={"file_path": str(page), "favicon": "x"})
+    assert done.returncode == 0, done.stderr

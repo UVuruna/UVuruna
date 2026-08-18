@@ -29,6 +29,8 @@ A PLAN session is READ-ONLY on product code.
    instruction field, a **Copy verdict** button and a plain-text verdict box;
    selections survive a reload. Reference: `rules/templates/decision_page.html`
    — keep the `data-option` / `data-group` / `#ballot` contract. · `gate.py pre`.
+   **No page goes to him unseen**: `uv device web-desktop file:///<page>` after
+   the last edit, open the PNG with Read, only then publish. · `gate.py pre`.
 5. **Questions are fully explained blocks** — context, the question in complete
    sentences, why it matters, the options with their concrete consequences, the
    recommendation. Never enumerated one-liners. · conduct (no length rule).

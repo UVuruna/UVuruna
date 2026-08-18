@@ -113,6 +113,39 @@ def run(payload: dict) -> list[str] | None:
                                              errors="replace")
         except OSError:
             return None
-        return ballot.check(page_path, page,
-                            [Path(page_path).parent, cwd, root])
+        problem = ballot.check(page_path, page,
+                               [Path(page_path).parent, cwd, root])
+        if problem:
+            return problem
+        return _seen_before_publish(page_path, root, session_id, model_of)
+    return None
+
+
+def _seen_before_publish(page_path: str, root: Path, session_id: str,
+                         model_of) -> list[str] | None:
+    """A page goes out only after the runner rendered it AND the agent opened
+    the render (2026-08-18: an unreadable ballot reached the owner)."""
+    from datetime import datetime, timezone
+    from . import evidence as evidence_mod
+    page = Path(page_path)
+    try:
+        edited = datetime.fromtimestamp(page.stat().st_mtime, tz=timezone.utc)
+    except OSError:
+        return None
+    name = page.name.lower()
+    rows = [r for r in evidence_mod.load(
+                paths.evidence_file(root, session_id)).of_kind("device")
+            if r.kind != "unavailable" and r.newer_than(edited)
+            and name in str(r.data.get("cmd") or "").lower()]
+    fix = (f"FIX: python rules/tools/uv.py device web-desktop "
+           f"file:///{page.as_posix()} → open the PNG with Read → publish.")
+    if not rows:
+        return ["Publishing a page nobody rendered after its last edit.",
+                fix, f"where: {page_path}"]
+    latest = max((r.ts for r in rows if r.ts), default=None)
+    seen = any(ts is not None and latest is not None and ts >= latest
+               for _, ts in model_of().image_reads())
+    if not seen:
+        return ["The page was rendered but no one LOOKED at the render.",
+                fix, f"where: {page_path}"]
     return None
