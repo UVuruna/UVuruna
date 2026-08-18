@@ -56,4 +56,43 @@ def run(payload: dict) -> list[str] | None:
         print("\n".join(line.format(path=ledger) for line in REMINDER))
     else:
         print(f"ledger: {ledger}")
+    debt = _debt_line(root)
+    if debt:
+        print(debt)
     return None
+
+
+def _debt_line(root: Path) -> str:
+    """One line of what this project still OWES — ratcheted files and open
+    refactors — printed every prompt so 'planned, written, never done'
+    (owner 2026-08-18) has nowhere to hide."""
+    import json
+    parts = []
+    ratchets = list(root.glob("tests/structure_ratchet.json")) + \
+        list(root.glob("*/tests/structure_ratchet.json"))
+    for ratchet in ratchets:
+        try:
+            data = json.loads(ratchet.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            continue
+        if isinstance(data, dict) and data:
+            worst = sorted(data.items(),
+                           key=lambda kv: -int((kv[1] or {}).get("lines") or 0))
+            names = ", ".join(f"{Path(k).name} {(v or {}).get('lines')}"
+                              for k, v in worst[:3])
+            parts.append(f"{len(data)} ratcheted file(s): {names}")
+    open_items = 0
+    for audit in root.glob("docs/AUDIT-*.md"):
+        try:
+            text = audit.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for line in text.splitlines():
+            if line.startswith("| R") and "DONE" not in line.upper():
+                open_items += 1
+    if open_items:
+        parts.append(f"{open_items} open refactor(s) in docs/AUDIT-*.md")
+    if not parts:
+        return ""
+    return ("DEBT: " + " · ".join(parts)
+            + " — planned is not done; a task closes only [x] with evidence.")
