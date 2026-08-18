@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 import re
 from pathlib import Path
@@ -41,9 +42,24 @@ def _agent_transcript(payload: dict) -> str:
     return str(files[0]) if files else parent
 
 
+def _log_payload(payload: dict, root: Path) -> None:
+    """Record which keys the harness sends (agent_id? agent transcript?) so
+    the transcript resolution above can stop guessing once they are known."""
+    try:
+        target = root / ".claude" / "evidence" / "gate-subagent-payloads.log"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        keys = {k: (v if k != "transcript_path" else str(v)[-60:])
+                for k, v in payload.items() if k not in ("tool_input",)}
+        with open(target, "a", encoding="utf-8") as handle:
+            handle.write(json.dumps(keys, default=str) + "\n")
+    except OSError:
+        pass
+
+
 def run(payload: dict) -> list[str] | None:
     cwd = Path(payload.get("cwd") or os.getcwd())
     root = paths.project_root(cwd)
+    _log_payload(payload, root)
     model = transcript_mod.load(_agent_transcript(payload))
 
     product_edits = model.product_edits(root)
