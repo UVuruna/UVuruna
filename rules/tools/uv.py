@@ -89,11 +89,50 @@ def cmd_test(args, ctx: Context) -> int:
         summary += f" - {counts['failed']} failed"
     if counts["skipped"]:
         summary += f", {counts['skipped']} skipped"
+    # A test file pytest COLLECTS NOTHING from is invisible to every count
+    # (VibeCoder 2026-08-19: 30 script-style gates, 3 broken by a refactor,
+    # every "N/N green" row silently excluded them). Name them in the row.
+    invisible = _uncollected_test_files(ctx.root, args.pytest_args, junit)
+    if invisible:
+        counts["uncollected"] = len(invisible)
+        summary += (f" | {len(invisible)} test file(s) pytest collected NOTHING "
+                    f"from: {', '.join(invisible[:4])}"
+                    + (" …" if len(invisible) > 4 else ""))
+        warn(f"{len(invisible)} test file(s) yield no pytest tests - run them "
+             "directly or wrap their main() in a test_* function")
     if args.label:
         summary = f"{args.label}: {summary}"
     ctx.ev.append(ident, "test", cmd, proc.returncode, summary, junit,
                   label=args.label, **counts)
     return proc.returncode
+
+
+def _uncollected_test_files(root: Path, pytest_args: list[str],
+                            junit: Path) -> list[str]:
+    """`test_*.py` files under the pytest target paths that appear in NO
+    junit testcase classname — pytest ran and found no test in them."""
+    import xml.etree.ElementTree as ET
+    targets = [root / a for a in pytest_args
+               if not a.startswith("-") and (root / a).exists()]
+    if not targets:
+        return []
+    files: set[Path] = set()
+    for target in targets:
+        if target.is_dir():
+            files.update(target.rglob("test_*.py"))
+        elif target.suffix == ".py":
+            files.add(target)
+    seen: set[str] = set()
+    try:
+        for case in ET.parse(junit).getroot().iter("testcase"):
+            classname = case.get("classname") or ""
+            seen.add(classname.split(".")[-1] if "." in classname else classname)
+            for part in classname.split("."):
+                seen.add(part)
+    except ET.ParseError:
+        return []
+    return sorted(f.relative_to(root).as_posix() for f in files
+                  if f.stem not in seen)
 
 
 # --------------------------------------------------------------------------

@@ -122,6 +122,19 @@ def test_test_subcommand_records_a_failing_suite(project: Path):
     assert "1 failed" in row["summary"]
 
 
+def test_test_subcommand_names_files_pytest_collects_nothing_from(project: Path):
+    tests_dir = project / "tests"
+    tests_dir.mkdir()
+    _write_suite(project, "tests/test_real.py", "def test_one():\n    assert 1\n")
+    _write_suite(project, "tests/test_gate.py",
+                 "def main():\n    assert 1\n\nif __name__ == '__main__':\n    main()\n")
+    assert run_uv(project, "test", "tests") == 0
+    row = rows_of(project)[-1]
+    assert row["total"] == 1
+    assert row.get("uncollected") == 1
+    assert "test_gate.py" in row["summary"] and "collected NOTHING" in row["summary"]
+
+
 # --- uv run -----------------------------------------------------------------
 
 
