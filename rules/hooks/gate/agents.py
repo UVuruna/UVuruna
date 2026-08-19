@@ -75,9 +75,15 @@ def still_running(model) -> list[tuple[str, str]]:
     return open_agents
 
 
-def check(model) -> list[str] | None:
+def check(model, led=None) -> list[str] | None:
     open_agents = still_running(model)
     if not open_agents:
+        return None
+    # Owner 2026-08-19 ("ti si taj koji koordinira, a ne onaj koji sve
+    # rešava"): a coordinator that has honestly marked the delegated work
+    # `[>]` in the ledger may end the turn and stay reachable — the agents'
+    # completion notification re-invokes it. Unmarked running agents still block.
+    if led is not None and any(t.state == ">" for t in led.tasks):
         return None
     names = "; ".join(f"{label} ({why})" for label, why in open_agents[:2])
     return [

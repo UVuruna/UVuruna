@@ -86,8 +86,10 @@ def _bash(tool_input: dict, model_of) -> list[str] | None:
     if not build_guard.is_build_command(command):
         return None
     model = model_of()
-    last = model.last_owner_message()
-    words = transcript.owner_text(last.text) if last else ""
+    # Law 4 says "never without his word IN THAT SESSION" — so every owner
+    # message of the session counts, not only the last one (owner 2026-08-19:
+    # "nemoj da ti ponavljam u ovoj sesiji svaki put, radi build kad treba").
+    words = " ".join(transcript.owner_text(m.text) for m in model.owner_messages)
     # The harness may hand a sub-agent's PreToolUse the PARENT transcript, so
     # "a sub-agent is running" counts as "this may be a sub-agent": while any
     # agent runs, nobody builds — the main session builds at the end, alone.

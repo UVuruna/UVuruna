@@ -57,7 +57,7 @@ def _mtime(path: Path) -> datetime | None:
 
 # ═══════════════════════════ checks ═══════════════════════════
 
-def _ledger_checks(led, model) -> list[str] | None:
+def _ledger_checks(led, model, agents_running: bool = False) -> list[str] | None:
     if not led.exists or not led.categories:
         return [
             "No session ledger (or no `kategorija:` line) — work happened with "
@@ -92,6 +92,10 @@ def _ledger_checks(led, model) -> list[str] | None:
                 f"where: {led.path}:{task.line}",
             ]
     open_tasks = led.open_tasks()
+    if agents_running:
+        # delegated work in flight is honest as `[>]`; only untouched `[ ]`
+        # tasks need a `[?]` beside them
+        open_tasks = [t for t in open_tasks if t.state != ">"]
     if open_tasks and not led.waiting_tasks():
         return [
             f"{len(open_tasks)} task(s) are still open and nothing waits on "
@@ -269,26 +273,32 @@ def run(payload: dict) -> list[str] | None:
     session_id = str(payload.get("session_id") or "").strip() or "unknown"
     model = transcript_mod.load(payload.get("transcript_path") or "")
 
-    problem = agents.check(model)
+    led = ledger_mod.load(paths.ledger_path(root, session_id))
+    problem = agents.check(model, led)
     if problem:
         return problem
+    agents_running = bool(agents.still_running(model))
 
-    led = ledger_mod.load(paths.ledger_path(root, session_id))
     evid = evidence_mod.load(paths.evidence_file(root, session_id))
     product_edits = model.product_edits(root)
 
+    # Every group reports its first problem, and ALL groups report in ONE
+    # message — one fix round instead of one round per tooth (owner
+    # 2026-08-19: agents "3 puta šalju oproštajnu poruku").
+    problems: list[str] = []
     if product_edits or led.open_tasks():
         for step in (
-            lambda: _ledger_checks(led, model),
+            lambda: _ledger_checks(led, model, agents_running),
             lambda: _teeth(led, evid, model, root, product_edits),
             lambda: _evidence_integrity(model, root),
             lambda: _rules_size(model, root),
         ):
             problem = step()
             if problem:
-                return problem
-
-    problem = _communication(model, root, cwd)
-    if problem:
-        return problem
-    return _installable(led, model, root, product_edits)
+                problems += (["—"] if problems else []) + problem
+    for step in (lambda: _communication(model, root, cwd),
+                 lambda: _installable(led, model, root, product_edits)):
+        problem = step()
+        if problem:
+            problems += (["—"] if problems else []) + problem
+    return problems or None

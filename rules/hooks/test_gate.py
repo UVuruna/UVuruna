@@ -619,3 +619,42 @@ def test_stop_feature_needs_reviewer_and_grade(tmp_path):
         assistant(GOOD_FINAL, 10)])
     done = run_gate("stop", root, transcript)
     assert done.returncode == 0, done.stderr
+
+
+def test_pre_allows_build_on_bill_word(tmp_path):
+    # Voice typing renders the owner's "build" as "bill" (2026-08-19).
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n")
+    transcript = write_transcript(
+        tmp_path, [user("Radi sada a potom preko interneta bill", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Bash",
+                    tool_input={"command": "python setup/build.py"})
+    assert done.returncode == 0, done.stderr
+
+def test_pre_allows_build_on_owner_word_earlier_in_session(tmp_path):
+    """Law 4: his word IN THAT SESSION - not only in his last message."""
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n")
+    transcript = write_transcript(tmp_path, [
+        user("radi build kad treba, nemoj da me pitas svaki put", 0),
+        assistant("ok", 1),
+        user("sredi jos i ovaj bag", 2)])
+    done = run_gate("pre", root, transcript, tool_name="Bash",
+                    tool_input={"command": "python setup/build.py"})
+    assert done.returncode == 0, done.stderr
+
+
+def test_stop_allows_end_while_agents_run_if_ledger_marks_them_in_progress(tmp_path):
+    """A coordinator with `[>]` delegated work may end the turn and stay
+    reachable; the agents completion re-invokes it (owner 2026-08-19)."""
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: DOCS · klasa: Standard\n\n- [x] T1 done\n"
+                 "    ! wrote the docs\n- [>] T2 docs sweep @sonnet (background agent)\n")
+    records = [user("kreni", 0),
+               tool_use("Agent", {"description": "docs sweep"}, 1, "t1"),
+               tool_result("t1", "Async agent launched\nagentId: aaa111", 2)]
+    records += [assistant("still working", 3 + i) for i in range(4)]
+    records += [assistant(GOOD_FINAL, 8)]
+    transcript = write_transcript(tmp_path, records)
+    done = run_gate("stop", root, transcript)
+    assert done.returncode == 0, done.stderr

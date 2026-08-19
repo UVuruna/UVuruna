@@ -6,11 +6,13 @@ pipeline. Full procedure: `howto/ship.md`.
 ## The Release Law — REVERSED (owner verdict 2026-08-18)
 
 1. **No build and no release starts without his explicit word in that session.**
-   Never automatic, never "standing authorization". · `gate.py pre` blocks
-   `build.py`, `pyinstaller`, `makensis`, `gradlew assemble|bundle`,
-   `dotnet publish`, `msbuild /t:Publish`, `gh release`, `git tag v` unless the
-   owner's LAST message asked for it (`build · release · bild · bilduj · rilis ·
-   objavi`).
+   Never automatic, never a standing authorization ACROSS sessions — his word
+   once in a session covers that session's builds (owner 2026-08-19: "radi
+   build kad treba, nemoj da ti ponavljam"). · `gate.py pre` blocks `build.py`,
+   `pyinstaller`, `makensis`, `gradlew assemble|bundle`, `dotnet publish`,
+   `msbuild /t:Publish`, `gh release`, `git tag v` unless ANY owner message of
+   this session asked for it (`build · release · bild · bilduj · bill · rilis ·
+   objavi · apk`).
 2. **A session that changed an installable app's code ends with the heading
    `## BUILD & RELEASE?`** — the list of changes, the version it would carry and
    the EXACT command — and stops. The ledger holds a `[?] BUILD` task with the
