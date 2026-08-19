@@ -402,7 +402,38 @@ def test_stop_blocks_agent_written_evidence(tmp_path):
     assert "evidence" in done.stderr.lower()
 
 
-def test_stop_installable_project_must_ask_for_build(tmp_path):
+def test_stop_blocks_build_without_release(tmp_path):
+    # "Build" means the installer on GitHub Releases, never a file in dist/
+    # (owner 2026-08-19: three build.py runs, no release, an hour of rage).
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n\n"
+                 "- [x] T1 built\n    ! dist/App_Setup.exe\n")
+    transcript = write_transcript(tmp_path, [
+        user("uradi build", 0),
+        tool_use("Bash", {"command": "python setup/build.py"}, 1, "t1"),
+        assistant(GOOD_FINAL, 2)])
+    done = run_gate("stop", root, transcript)
+    assert done.returncode == 2, done.stderr
+    assert "released" in done.stderr.lower()
+
+
+def test_stop_passes_when_the_release_went_out(tmp_path):
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n\n"
+                 "- [x] T1 released\n    ! gh release create v0.0.353\n")
+    transcript = write_transcript(tmp_path, [
+        user("uradi build", 0),
+        tool_use("Bash", {"command": "python setup/build.py"}, 1, "t1"),
+        tool_use("Bash", {"command": 'gh release create v0.0.353 '
+                                     '"dist/App_Setup.exe"'}, 2, "t2"),
+        assistant(GOOD_FINAL, 3)])
+    done = run_gate("stop", root, transcript)
+    assert done.returncode == 0, done.stderr
+
+
+def test_stop_never_asks_for_a_build_he_did_not_order(tmp_path):
+    # The old law made EVERY turn on an installable project end with
+    # "## BUILD & RELEASE?" — he says the word when he wants it (2026-08-19).
     root = project(tmp_path)
     (root / "CLAUDE.md").write_text("# proj\ninstallable: yes\n",
                                     encoding="utf-8")
@@ -414,8 +445,28 @@ def test_stop_installable_project_must_ask_for_build(tmp_path):
                            "content": "x = 1\n"}, 1, "t1"),
         assistant(GOOD_FINAL, 2)])
     done = run_gate("stop", root, transcript)
+    assert done.returncode == 0, done.stderr
+
+
+def test_pre_allows_reading_about_the_build(tmp_path):
+    # `grep -n build.py` is not a build. Blocking it taught agents to avoid
+    # the whole subject (owner 2026-08-19: four blocks on one sed && grep).
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: DOCS · klasa: Standard\n")
+    transcript = write_transcript(tmp_path, [user("procitaj kako radi", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Bash", tool_input={
+        "command": "sed -n '1,40p' tests/t.py && grep -n 'build.py' tests/t.py"})
+    assert done.returncode == 0, done.stderr
+
+
+def test_pre_blocks_release_without_owner_word(tmp_path):
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n")
+    transcript = write_transcript(tmp_path, [user("sredi ovaj bag", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Bash", tool_input={
+        "command": "gh release create v1 dist/a.exe"})
     assert done.returncode == 2, done.stderr
-    assert "build" in done.stderr.lower()
+    assert "owner" in done.stderr.lower()
 
 
 # ═══════════════════════════ subagent ═══════════════════════════

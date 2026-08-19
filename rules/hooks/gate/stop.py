@@ -19,8 +19,7 @@ MERMAID_RE = re.compile(r"```\s*(mermaid|graphviz|dot|plantuml)\b", re.I)
 MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^()\s]+)\)")
 IMAGE_SUFFIX_RE = re.compile(r"\.(?:png|jpe?g|svg|gif|bmp)$", re.I)
 FENCE_RE = re.compile(r"^\s*```")
-BUILD_HEADING_RE = re.compile(r"##\s*BUILD\s*&\s*RELEASE\s*\?", re.I)
-INSTALLABLE_RE = re.compile(r"^\s*installable\s*:\s*yes\b", re.I | re.M)
+RELEASE_WORD_RE = re.compile(r"(release|rilis|objav\w*)", re.I)
 
 SHORT_FINAL = 120
 LONG_EARLIER = 600
@@ -230,33 +229,33 @@ def _communication(model, root: Path, cwd: Path) -> list[str] | None:
     return None
 
 
-def _installable(led, model, root: Path, product_edits) -> list[str] | None:
-    if not product_edits:
-        return None
-    claude = root / "CLAUDE.md"
-    declared = False
-    try:
-        declared = bool(INSTALLABLE_RE.search(
-            claude.read_text(encoding="utf-8", errors="replace")))
-    except OSError:
-        pass
-    has_builder = (root / "setup" / "build.py").is_file() or \
-        (root / "build.py").is_file()
-    if not (declared or has_builder):
-        return None
+def _release(led, model) -> list[str] | None:
+    """`build.py` alone is HALF the job.
+
+    "Build" means the installer a user can download from GitHub Releases
+    (owner decree 2026-08-19). Once a build ran on his word, the turn does not
+    end until the release is out — or until a task says, in his language, why
+    it cannot be (hidden project, no repo, a failed step).
+    """
+    built = False
     for tool in model.runs():
-        if build_guard.is_build_command(str(tool.input.get("command") or "")):
-            return None  # a build already ran on his word
-    final = model.final_text()
-    waiting_build = any("build" in task.text.lower()
-                        for task in led.waiting_tasks())
-    if BUILD_HEADING_RE.search(final) and waiting_build:
+        command = str(tool.input.get("command") or "")
+        if build_guard.is_release_command(command):
+            return None
+        if build_guard.is_build_command(command):
+            built = True
+    if not built:
         return None
+    excused = [t for t in led.tasks if t.state in ('?', '~')]
+    for task in excused:
+        if RELEASE_WORD_RE.search(task.text):
+            return None
     return [
-        "This project is installable and product files changed, but the owner "
-        "is never asked to build.",
-        "FIX: end with a `## BUILD & RELEASE?` heading naming the version and "
-        "the command, and add a `[?]` BUILD task with its `?` line.",
+        "A build ran but nothing was released — the installer sits in dist/ "
+        "where no user can reach it, and his app still sees the old version.",
+        "FIX: finish it: `git push origin HEAD` → `gh release create "
+        "v{version} \"dist/{Project}_Setup.exe\"`. If it truly cannot ship, "
+        "say why in a [?] or [~] task naming the release.",
         f"where: {led.path}",
     ]
 
@@ -297,7 +296,7 @@ def run(payload: dict) -> list[str] | None:
             if problem:
                 problems += (["—"] if problems else []) + problem
     for step in (lambda: _communication(model, root, cwd),
-                 lambda: _installable(led, model, root, product_edits)):
+                 lambda: _release(led, model)):
         problem = step()
         if problem:
             problems += (["—"] if problems else []) + problem

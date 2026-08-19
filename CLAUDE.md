@@ -35,10 +35,10 @@ duplication** · **D. Logging**, scaled.
 2. **CONFIG SECTION** (`CODE.md`) — defined once, whole, in its banner section,
    never patched after the fact.
 3. **DOCS** (`DOCS.md`) — MD-First 2.0 coverage + nav chain from README.
-4. **BUILD & RELEASE — NEVER AUTOMATIC** (`BUILD.md`, owner verdict
-   2026-08-18) — never without his word in that session; a session that changed
-   an installable app ends with `## BUILD & RELEASE?` and the exact command;
-   sub-agents never build.
+4. **BUILD = RELEASE, ON HIS WORD** (`BUILD.md`, owner verdict 2026-08-19) —
+   his word once in a session opens it; then it runs to the END: `build.py` +
+   push + `gh release create`, one go, no asking. Nobody raises the subject
+   before he does; sub-agents never build.
 5. **FIXED = VERIFIED** (`BUGFIX.md`) — a session ends FIXED (root cause + fix +
    evidence), CANNOT FIX HERE (why + what unblocks) or IMPOSSIBLE — never
    "solved" for a symptom patch.
@@ -76,7 +76,7 @@ combine, each bringing its own.
 4. **ZUB** — `uv shot/test/run/device`; evidence NEWER than the last product
    edit, and the agent opens the images it claims.
 5. **LEDGER** — tasks `[ ] [>] [?] [~] [x]`, an `!` evidence line each.
-6. **KRAJ** — open items FIRST, then `## BUILD & RELEASE?`.
+6. **KRAJ** — open items FIRST; the build only if he asked for it.
 
 ## Universal Conduct
 

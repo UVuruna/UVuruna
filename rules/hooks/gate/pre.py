@@ -83,7 +83,7 @@ def _bash(tool_input: dict, model_of) -> list[str] | None:
     problem = scratch.check_command(command)
     if problem:
         return problem
-    if not build_guard.is_build_command(command):
+    if not build_guard.needs_owner_word(command):
         return None
     model = model_of()
     # Law 4 says "never without his word IN THAT SESSION" — so every owner

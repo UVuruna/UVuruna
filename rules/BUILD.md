@@ -3,28 +3,31 @@
 For installable desktop/mobile apps. Websites and pure libraries do not use this
 pipeline. Full procedure: `howto/ship.md`.
 
-## The Release Law — REVERSED (owner verdict 2026-08-18)
+## The Release Law (owner verdict 2026-08-19)
 
-1. **No build and no release starts without his explicit word in that session.**
-   Never automatic, never a standing authorization ACROSS sessions — his word
-   once in a session covers that session's builds (owner 2026-08-19: "radi
-   build kad treba, nemoj da ti ponavljam"). · `gate.py pre` blocks `build.py`,
-   `pyinstaller`, `makensis`, `gradlew assemble|bundle`, `dotnet publish`,
-   `msbuild /t:Publish`, `gh release`, `git tag v` unless ANY owner message of
-   this session asked for it (`build · release · bild · bilduj · bill · rilis ·
-   objavi · apk`).
-2. **A session that changed an installable app's code ends with the heading
-   `## BUILD & RELEASE?`** — the list of changes, the version it would carry and
-   the EXACT command — and stops. The ledger holds a `[?] BUILD` task with the
-   `?` question so the ask is not lost. · `gate.py stop`.
-3. **Sub-agents and parallel agents never build.** Build is the main session's
+1. **"Build" means the installer on GitHub Releases** — the thing any user can
+   download. A file in `dist/` is HALF a job; a turn that stops there has not
+   done what he asked. · `gate.py stop` blocks a turn where a build ran and no
+   release went out.
+2. **No build starts without his word.** His word once in a session covers that
+   session, including a conditional one ("kad završiš sve, uradi build"). ·
+   `gate.py pre` blocks `build.py`, `pyinstaller`, `makensis`,
+   `gradlew assemble|bundle`, `dotnet publish`, `msbuild /t:Publish`,
+   `gh release create|upload` until any owner message of the session says
+   `build · release · bild · bilduj · bill · rilis · objavi · apk`. Reading
+   about the build (`grep`, `sed`, `cat`) is never a build.
+3. **Then it runs to the end, in one go, without asking.** Build → verify →
+   push → tag → `gh release create`. No confirmation between the steps, no
+   second question, no report that stops at "BUILD COMPLETE".
+4. **Nobody raises the subject before he does.** No `## BUILD & RELEASE?`
+   heading, no standing question at the end of a turn, no reminder. He says
+   when he wants it. A change that is worth shipping waits in the repo.
+5. **Sub-agents and parallel agents never build.** Build is the main session's
    job, at the end, once. · `gate.py pre` (a sub-agent transcript never gets
    permission).
 
-Consequence he accepted: a session he does not answer leaves no installer — the
-change lives in the repo until he says the word. Self-update inside applications
-is unchanged; only WHO decides to publish changed.
-History → `history/release-law.md`.
+Self-update inside applications is unchanged; only WHO decides to publish
+changed. History → `history/release-law.md`.
 
 ## When he says build
 

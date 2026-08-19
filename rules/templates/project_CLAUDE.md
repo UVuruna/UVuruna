@@ -11,8 +11,8 @@ installable: yes
 
 <!-- profiles: the device profiles from rules/devices.json that this project's
      GUI/FEATURE teeth must satisfy; at least one is never pc-owner.
-     installable: yes when the project ships an installer (then BUILD.md and the
-     `## BUILD & RELEASE?` ending apply), no otherwise. -->
+     installable: yes when the project ships an installer (then BUILD.md
+     applies on his word), no otherwise. -->
 
 ## Stack
 

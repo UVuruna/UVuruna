@@ -54,5 +54,5 @@ second-largest input, both orientations for a phone target.
 
 Matrix complete with fresh evidence, guards green (`run_guards` FULL), docs
 updated, ledger tasks `[x]` with `!` lines (or honest `[~]`), open items named
-FIRST in the final message, then `## BUILD & RELEASE?` when the project is
-installable (`BUILD.md`).
+FIRST in the final message. The build is not mentioned unless he asked for it
+(`BUILD.md`).

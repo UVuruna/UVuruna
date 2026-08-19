@@ -36,8 +36,8 @@ kategorija: GUI + FEATURE · klasa: Standard · agenti: 1 sonnet grader
   blocks the turn.
 - **Open `[ ]`/`[>]` tasks block the end of a session** unless a `[?]` exists.
 - The final message opens with the open items (`[ ]`, `[~]`, `[?]`), then the
-  finished ones with their evidence, then `## BUILD & RELEASE?` when the project
-  is installable.
+  finished ones with their evidence. The build is named only when he asked for
+  one — then it is DONE and released, not offered.
 
 ## Evidence lines
 
