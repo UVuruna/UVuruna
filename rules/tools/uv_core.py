@@ -56,13 +56,13 @@ def sha256_of(path: Path) -> str:
 
 
 def find_project_root(start: Path | None = None) -> Path:
-    """Nearest ancestor of `start` (cwd by default) holding `.claude/` or
-    `.git` - the same rule gate.py uses."""
-    here = Path(start or Path.cwd()).resolve()
-    for candidate in (here, *here.parents):
-        if (candidate / ".claude").is_dir() or (candidate / ".git").exists():
-            return candidate
-    return here
+    """Nearest ancestor holding `.claude/` or `.git` — ONE implementation,
+    shared with the gate (rules/hooks/gate/paths.py)."""
+    hooks_dir = str(Path(__file__).resolve().parents[1] / "hooks")
+    if hooks_dir not in sys.path:
+        sys.path.insert(0, hooks_dir)
+    from gate import paths as gate_paths
+    return gate_paths.project_root(Path(start or Path.cwd()).resolve())
 
 
 def load_devices() -> dict:

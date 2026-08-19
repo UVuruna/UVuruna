@@ -141,12 +141,30 @@ def _run_flow(path: Path, page) -> None:
     module.flow(page)
 
 
-def _adb() -> str | None:
+def _sdk_tool(name: str, *rel: str) -> str | None:
+    """`adb`/`emulator` from PATH, else from the Android SDK the OS knows —
+    `ANDROID_HOME` / `ANDROID_SDK_ROOT`, then the SDK's default install
+    folder under the CURRENT user's profile. Never the owner's path."""
+    import os
     from shutil import which
+    found = which(name)
+    if found:
+        return found
+    roots = [os.environ.get("ANDROID_HOME"), os.environ.get("ANDROID_SDK_ROOT"),
+             os.path.join(os.environ.get("LOCALAPPDATA", ""), "Android", "Sdk"),
+             os.path.expanduser("~/Android/Sdk"),
+             os.path.expanduser("~/Library/Android/sdk")]
+    for root in roots:
+        if not root:
+            continue
+        candidate = Path(root).joinpath(*rel)
+        if candidate.is_file():
+            return str(candidate)
+    return None
 
-    candidate = Path("C:/Users/vurun/AppData/Local/Android/Sdk/"
-                     "platform-tools/adb.exe")
-    return which("adb") or (str(candidate) if candidate.is_file() else None)
+
+def _adb() -> str | None:
+    return _sdk_tool("adb", "platform-tools", "adb.exe")
 
 
 def _adb_devices(adb: str) -> list[str]:
@@ -156,11 +174,8 @@ def _adb_devices(adb: str) -> list[str]:
 
 
 def _list_avds() -> list[str]:
-    from shutil import which
-
-    emulator = which("emulator") or str(
-        Path("C:/Users/vurun/AppData/Local/Android/Sdk/emulator/emulator.exe"))
-    if not Path(emulator).is_file():
+    emulator = _sdk_tool("emulator", "emulator", "emulator.exe")
+    if not emulator:
         return []
     out = subprocess.run([emulator, "-list-avds"],
                          capture_output=True, text=True).stdout
@@ -189,10 +204,7 @@ def _device_android(args, ctx: Context, profile: dict,
                                "--start-emulator to boot one",
                                profile=args.profile)
             return 3
-        from shutil import which
-
-        emulator = which("emulator") or str(Path(
-            "C:/Users/vurun/AppData/Local/Android/Sdk/emulator/emulator.exe"))
+        emulator = _sdk_tool("emulator", "emulator", "emulator.exe")
         warn(f"booting AVD {avds[0]} headless and silent - this takes a minute")
         # HEADLESS AND SILENT, always: a virtual device is the agent's eye,
         # never a window or a sound on the owner's desk (owner decree

@@ -6,7 +6,6 @@ from __future__ import annotations
 
 import os
 import re
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -26,9 +25,11 @@ INSTALLABLE_RE = re.compile(r"^\s*installable\s*:\s*yes\b", re.I | re.M)
 SHORT_FINAL = 120
 LONG_EARLIER = 600
 
-SIZE_LIMITS = (
-    (re.compile(r"(^|/)CLAUDE\.md$", re.I), 6 * 1024),
-    (re.compile(r"(^|/)rules/[A-Z0-9_-]+\.md$"), 5 * 1024),
+#: which edits make the size guard run — the LIMITS live only in
+#: rules/tools/rules_size_guard.py
+SIZE_PATTERNS = (
+    re.compile(r"(^|/)CLAUDE\.md$", re.I),
+    re.compile(r"(^|/)rules/[A-Z0-9_-]+\.md$"),
 )
 SIZE_EXEMPT = re.compile(r"(^|/)rules/(START\.md|history/|howto/|briefs/)",
                          re.I)
@@ -141,46 +142,37 @@ def _evidence_integrity(model, root: Path) -> list[str] | None:
 
 
 def _rules_size(model, root: Path) -> list[str] | None:
-    edited = []
+    """When a rulebook or a project CLAUDE.md was edited, ask THE size guard
+    (rules/tools/rules_size_guard.py) — the one place the limits live."""
+    touched = False
     for tool in model.edits():
         path = tool.file_path.replace("\\", "/")
         if SIZE_EXEMPT.search(path):
             continue
-        for pattern, limit in SIZE_LIMITS:
-            if pattern.search(path):
-                edited.append((Path(path), limit))
-                break
-    if not edited:
+        if any(pattern.search(path) for pattern in SIZE_PATTERNS):
+            touched = True
+            break
+    if not touched:
         return None
-    script = root / "rules" / "tools" / "rules_size_guard.py"
-    if script.is_file():
-        try:
-            done = subprocess.run([sys.executable, str(script)], cwd=str(root),
-                                  capture_output=True, text=True, timeout=120)
-        except (OSError, subprocess.SubprocessError):
-            return None
-        if done.returncode != 0:
-            tail = (done.stdout or done.stderr or "").strip().splitlines()
-            return [
-                "Rules-size guard fails — a rulebook grew past its limit.",
-                "FIX: move the story to rules/history/ and keep the checklist.",
-                f"where: {tail[-1][:100] if tail else script}",
-            ]
+    tools_dir = str(Path(__file__).resolve().parents[2] / "tools")
+    if tools_dir not in sys.path:
+        sys.path.insert(0, tools_dir)
+    try:
+        import rules_size_guard
+    except ImportError:
         return None
-    for path, limit in edited:
-        try:
-            size = path.stat().st_size
-        except OSError:
-            continue
-        if size > limit:
-            return [
-                f"{path.name} is {size // 1024} KB, over its {limit // 1024} "
-                "KB limit.",
-                "FIX: rules are checklists — move the story to "
-                "rules/history/ and keep WHAT · WHO CHECKS · EVIDENCE.",
-                f"where: {path}",
-            ]
-    return None
+    repo_root = Path(__file__).resolve().parents[3]
+    project = None if Path(root).resolve() == repo_root else root
+    over = [row for row in rules_size_guard.check(project) if not row[3]]
+    if not over:
+        return None
+    path, size, limit = over[0][0], over[0][1], over[0][2]
+    return [
+        f"{Path(str(path)).name} is {size} B, over its {limit} B limit.",
+        "FIX: rules are checklists — move the story to rules/history/ and "
+        "keep WHAT · WHO CHECKS · EVIDENCE.",
+        f"where: {path}",
+    ]
 
 
 def _communication(model, root: Path, cwd: Path) -> list[str] | None:
