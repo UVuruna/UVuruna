@@ -17,6 +17,10 @@ pipeline. Full procedure: `howto/ship.md`.
    `build · release · bild · bilduj · bill · rilis · objavi · apk`. Reading
    about the build (`grep`, `sed`, `cat`) is never a build.
 3. **Then it runs to the end, in one go, without asking.** Build → verify →
+   **emulator smoke (Android, owner decree 2026-08-20: headless AVD, install
+   Success + process alive after launch + 0 FATAL in logcat + a screenshot the
+   agent OPENED; the one thing it cannot prove is a Play Protect verdict —
+   Google cloud heuristics — so say that instead of claiming it)** →
    push → tag → `gh release create`. No confirmation between the steps, no
    second question, no report that stops at "BUILD COMPLETE".
 4. **Nobody raises the subject before he does.** No `## BUILD & RELEASE?`
