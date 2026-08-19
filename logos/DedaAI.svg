@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <linearGradient id="dd-gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F6D387"/>
+      <stop offset="1" stop-color="#C9862B"/>
+    </linearGradient>
+  </defs>
+  <!-- card -->
+  <rect x="8" y="8" width="240" height="240" rx="40" fill="#141A24"/>
+  <rect x="8.75" y="8.75" width="238.5" height="238.5" rx="39.25" fill="none" stroke="#F6D387" stroke-opacity="0.28" stroke-width="1.5"/>
+  <!-- sound waves: Deda hears and speaks -->
+  <path d="M 170,96 A 24 24 0 0 1 218,96" fill="none" stroke="url(#dd-gold)" stroke-width="8" stroke-linecap="round"/>
+  <path d="M 156,106 A 38 38 0 0 1 232,106" fill="none" stroke="url(#dd-gold)" stroke-width="8" stroke-linecap="round" opacity="0.55"/>
+  <!-- glasses: two lenses + bridge, front view -->
+  <rect x="42" y="102" width="78" height="62" rx="22" fill="#26344D" stroke="url(#dd-gold)" stroke-width="9"/>
+  <rect x="136" y="102" width="78" height="62" rx="22" fill="#26344D" stroke="url(#dd-gold)" stroke-width="9"/>
+  <rect x="118" y="125" width="20" height="16" rx="7" fill="url(#dd-gold)"/>
+</svg>

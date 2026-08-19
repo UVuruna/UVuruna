@@ -284,6 +284,26 @@ Travel); build/release pipeline remaining before v1 ships
 
 ---
 
+<a id="dedaai"></a>
+
+### <img src="logos/DedaAI.svg" width="22" height="22"> DedaAI ⭐
+
+**Local path:** `Applications/DedaAI/`
+**GitHub:** [UVuruna/DedaAI](https://github.com/UVuruna/DedaAI)
+**Type:** Mobile Application (Android) — Ray-Ban Meta smart-glasses companion
+**Status:** 🟡 In Development — MVP works end to end (wake word, one-photo
+vision, multi-turn Gemini Live conversation, tap/notification standby);
+trained wake-word models not wired in yet, guided hardware test pending
+**Visibility:** Public
+
+**Description:** Voice assistant ("Deda") for Ray-Ban Meta smart glasses. Look at something, say "Hej Deda", ask a question, get a spoken answer back through the glasses' speakers — one high-resolution photo per question, never a live video stream, so the camera and the glasses' microphone are never open at the same time. Every user creates and pastes in their own free Gemini API key; there is no server of any kind. Serbian, Slovenian and English, switchable in-app.
+
+**Tech Stack:** Kotlin, native Android, Meta Wearables Device Access Toolkit (DAT SDK), Gemini Live (WebSocket), openWakeWord (TFLite/ONNX — training complete, integration pending)
+
+**Docs:** [README](Applications/DedaAI/README.md)
+
+---
+
 <a id="web"></a>
 
 ## 🌐 Web Projects
