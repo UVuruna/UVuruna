@@ -101,8 +101,8 @@ def run(payload: dict) -> list[str] | None:
     tool = str(payload.get("tool_name") or "")
     tool_input = payload.get("tool_input") or {}
     cwd = Path(payload.get("cwd") or os.getcwd())
-    root = paths.project_root(cwd)
     session_id = str(payload.get("session_id") or "").strip() or "unknown"
+    root = paths.session_root(cwd, session_id)
 
     cache: dict = {}
 

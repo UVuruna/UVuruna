@@ -31,6 +31,32 @@ def ledger_path(root: Path, session_id: str) -> Path:
     return sessions_dir(root) / f"{session_id}.md"
 
 
+def session_root(cwd: Path, session_id: str) -> Path:
+    """The project root whose `.claude/sessions/` holds THIS session's ledger.
+
+    `project_root` alone breaks the moment a Bash `cd` parks the session's
+    working directory inside a NESTED project with its own `.git`: the nearest
+    root wins, the session's ledger is not there, and every ledger-based check
+    runs against an empty ledger (2026-08-19: the stop gate blocked a
+    coordinator whose ledger full of `[>]` lived one root higher). When the
+    nearest root has no ledger for this session, climb to the next enclosing
+    root; the nearest root stays the answer when nobody has one (a fresh
+    session that has not written its ledger yet).
+    """
+    nearest = project_root(cwd)
+    if not session_id or session_id == "unknown":
+        return nearest
+    # One walk up, nearest first — every ancestor that is itself a root
+    # (`.claude`/`.git`) is a candidate; re-deriving project_root per step
+    # would re-scan the same ancestors quadratically on this hot path
+    # (pregled 2026-08-19, finding 3).
+    for directory in (nearest, *nearest.parents):
+        is_root = (directory / ".claude").is_dir() or (directory / ".git").exists()
+        if is_root and ledger_path(directory, session_id).is_file():
+            return directory
+    return nearest
+
+
 def evidence_dir(root: Path, session_id: str) -> Path:
     return Path(root) / ".claude" / "evidence" / session_id
 

@@ -86,12 +86,21 @@ def check(model, led=None) -> list[str] | None:
     if led is not None and any(t.state == ">" for t in led.tasks):
         return None
     names = "; ".join(f"{label} ({why})" for label, why in open_agents[:2])
+    # Name the ledger this verdict was based on: a wrong root (nested project,
+    # drifted cwd) reads as an EMPTY ledger, and without this the failure is
+    # indistinguishable from genuinely unmarked agents. Folded into the
+    # `where:` line because gate.py emits AT MOST three lines — a fourth
+    # would be silently cut (pregled 2026-08-19, finding 1).
+    marks = (f"ledger: {led.path} — {len(led.tasks)} tasks, "
+             f"{sum(1 for t in led.tasks if t.state == '>')} marked [>]"
+             if led is not None else "ledger: none loaded")
     return [
         f"{len(open_agents)} sub-agent(s) have no completion record — they are "
         "still running.",
         "FIX: wait for the completion notification, verify each result, report "
-        "it — nothing you write can unlock this.",
-        f"where: {names}",
+        "it — nothing you write can unlock this (a coordinator may end the "
+        "turn only with the delegated work marked [>] in the ledger).",
+        f"where: {names} — {marks}",
     ]
 
 

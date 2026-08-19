@@ -658,3 +658,44 @@ def test_stop_allows_end_while_agents_run_if_ledger_marks_them_in_progress(tmp_p
     transcript = write_transcript(tmp_path, records)
     done = run_gate("stop", root, transcript)
     assert done.returncode == 0, done.stderr
+
+
+def test_stop_finds_the_session_ledger_above_a_nested_project(tmp_path):
+    """A Bash `cd` into a nested project (its own .git) must not orphan the
+    session ledger one root higher: with the payload cwd inside the nested
+    repo, the gate must still read the outer ledger and honour its `[>]`
+    marks (2026-08-19: the stop gate blocked exactly this coordinator)."""
+    root = project(tmp_path)
+    (root / ".git").mkdir()
+    nested = root / "Applications" / "Inner"
+    (nested / ".git").mkdir(parents=True)
+    (nested / "android").mkdir()
+    ledger(root, "# w\nkategorija: DOCS · klasa: Standard\n\n- [x] T1 done\n"
+                 "    ! wrote the docs\n- [>] T2 docs sweep @sonnet (background agent)\n")
+    records = [user("kreni", 0),
+               tool_use("Agent", {"description": "docs sweep"}, 1, "t1"),
+               tool_result("t1", "Async agent launched\nagentId: aaa111", 2),
+               assistant(GOOD_FINAL, 3)]
+    transcript = write_transcript(tmp_path, records)
+    done = run_gate("stop", nested / "android", transcript)
+    assert done.returncode == 0, done.stderr
+
+    # Control: without the outer ledger the same payload must still block —
+    # the climb stops at roots that genuinely have no ledger for the session.
+    (root / ".claude" / "sessions" / "s1.md").unlink()
+    done = run_gate("stop", nested / "android", transcript)
+    assert done.returncode == 2
+    assert "still running" in done.stderr
+
+    # Nearest wins: when BOTH roots hold a ledger for the session, the nested
+    # one is the session's truth — here it carries no [>] marks, so the gate
+    # must block on the running agent even though the outer ledger says [>].
+    ledger(root, "# w\nkategorija: DOCS · klasa: Standard\n\n"
+                 "- [>] T2 docs sweep @sonnet (background agent)\n")
+    (nested / ".claude" / "sessions").mkdir(parents=True)
+    (nested / ".claude" / "sessions" / "s1.md").write_text(
+        "# n\nkategorija: DOCS · klasa: Standard\n\n- [ ] T1 idle\n",
+        encoding="utf-8")
+    done = run_gate("stop", nested / "android", transcript)
+    assert done.returncode == 2
+    assert "still running" in done.stderr

@@ -27,8 +27,8 @@ REMINDER = (
 
 def run(payload: dict) -> list[str] | None:
     cwd = Path(payload.get("cwd") or os.getcwd())
-    root = paths.project_root(cwd)
     session_id = str(payload.get("session_id") or "").strip() or "unknown"
+    root = paths.session_root(cwd, session_id)
 
     ledger = paths.ledger_path(root, session_id)
     try:

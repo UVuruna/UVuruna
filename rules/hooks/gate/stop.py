@@ -269,8 +269,8 @@ def run(payload: dict) -> list[str] | None:
     if payload.get("stop_hook_active"):
         return None
     cwd = Path(payload.get("cwd") or os.getcwd())
-    root = paths.project_root(cwd)
     session_id = str(payload.get("session_id") or "").strip() or "unknown"
+    root = paths.session_root(cwd, session_id)
     model = transcript_mod.load(payload.get("transcript_path") or "")
 
     led = ledger_mod.load(paths.ledger_path(root, session_id))

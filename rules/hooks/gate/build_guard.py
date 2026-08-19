@@ -16,9 +16,11 @@ BUILD_PATTERNS = (
 )
 
 #: the owner's word — Serbian and English, any inflection. "apk" counts: the
-#: owner orders Android builds with "pravi apk" (2026-08-19).
+#: owner orders Android builds with "pravi apk" (2026-08-19). "bill" counts:
+#: voice typing renders his "build" as "bill" ("preko interneta bill",
+#: 2026-08-19 evening).
 OWNER_WORD_RE = re.compile(
-    r"\b(build|release|bild|bildu?j|rilis|objavi|izbilduj|apk)\w*", re.I)
+    r"\b(build|release|bild|bildu?j|bill|rilis|objavi|izbilduj|apk)\w*", re.I)
 
 
 def is_build_command(command: str) -> bool:

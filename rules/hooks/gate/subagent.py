@@ -58,7 +58,12 @@ def _log_payload(payload: dict, root: Path) -> None:
 
 def run(payload: dict) -> list[str] | None:
     cwd = Path(payload.get("cwd") or os.getcwd())
-    root = paths.project_root(cwd)
+    session_id = str(payload.get("session_id") or "").strip() or "unknown"
+    # session_root, not bare project_root: a sub-agent whose payload cwd sits
+    # inside a nested project must still be judged against the SESSION's tree,
+    # or edits outside the nested subtree silently escape the "ran nothing
+    # after editing" check (pregled 2026-08-19, finding 2).
+    root = paths.session_root(cwd, session_id)
     _log_payload(payload, root)
     model = transcript_mod.load(_agent_transcript(payload))
 
