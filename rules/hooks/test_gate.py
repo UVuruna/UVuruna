@@ -190,6 +190,15 @@ def test_pre_allows_build_on_owner_word(tmp_path):
     assert done.returncode == 0, done.stderr
 
 
+def test_pre_allows_build_on_apk_word(tmp_path):
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n")
+    transcript = write_transcript(tmp_path, [user("pravi apk", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Bash",
+                    tool_input={"command": "python setup/build.py"})
+    assert done.returncode == 0, done.stderr
+
+
 def test_pre_blocks_build_in_subagent(tmp_path):
     root = project(tmp_path)
     ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n")

@@ -15,9 +15,10 @@ BUILD_PATTERNS = (
     re.compile(r"\bdotnet\s+publish\b", re.I),
 )
 
-#: the owner's word — Serbian and English, any inflection
+#: the owner's word — Serbian and English, any inflection. "apk" counts: the
+#: owner orders Android builds with "pravi apk" (2026-08-19).
 OWNER_WORD_RE = re.compile(
-    r"\b(build|release|bild|bildu?j|rilis|objavi|izbilduj)\w*", re.I)
+    r"\b(build|release|bild|bildu?j|rilis|objavi|izbilduj|apk)\w*", re.I)
 
 
 def is_build_command(command: str) -> bool:
