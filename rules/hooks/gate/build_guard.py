@@ -77,11 +77,15 @@ def needs_owner_word(command: str) -> bool:
 #: the owner's word — Serbian and English, any inflection. "apk" counts: the
 #: owner orders Android builds with "pravi apk" (2026-08-19). "bill" counts:
 #: voice typing renders his "build" as "bill" ("preko interneta bill",
-#: 2026-08-19 evening). ANY message of the session carries it, including a
-#: conditional one ("kad završiš sve, uradi build") — he does not repeat
-#: himself and nobody asks him again (owner 2026-08-19 night).
+#: 2026-08-19 evening). "isporuci" counts: the 2026-08-21 MVP order said
+#: "sto ces mi vec sada isporuciti danas" — delivery of the installable IS
+#: the release in his vocabulary (third learning; it arrived in the UV
+#: inbox, see pre._inbox_words). ANY message of the session carries it,
+#: including a conditional one ("kad završiš sve, uradi build") — he does
+#: not repeat himself and nobody asks him again (owner 2026-08-19 night).
 OWNER_WORD_RE = re.compile(
-    r"\b(build|release|bild|bildu?j|bill|rilis|objavi|izbilduj|apk)\w*", re.I)
+    r"\b(build|release|bild|bildu?j|bill|rilis|objavi|izbilduj|apk"
+    r"|isporu[cč])\w*", re.I)
 
 
 def check(command: str, is_subagent: bool, owner_last_message: str

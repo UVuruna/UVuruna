@@ -181,6 +181,40 @@ def test_pre_blocks_build_without_owner_word(tmp_path):
     assert "owner" in done.stderr.lower()
 
 
+def test_pre_allows_build_word_in_fresh_inbox(tmp_path):
+    # 2026-08-21: the owner's order arrived as UV/prompt.txt ("...sto ces mi
+    # vec sada isporuciti danas...") with the chat message only pointing at
+    # the file — a freshly written inbox file carries his word.
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n")
+    (root / "UV").mkdir()
+    (root / "UV" / "prompt.txt").write_text(
+        "ovo ces mi vec sada isporuciti danas — prva verzija sa gita",
+        encoding="utf-8")
+    transcript = write_transcript(tmp_path, [user("instrukcije u prompt.txt", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Bash",
+                    tool_input={"command": "python setup/build.py"})
+    assert done.returncode == 0, done.stderr
+
+
+def test_pre_blocks_build_word_only_in_stale_inbox(tmp_path):
+    # The same word in an inbox file from some EARLIER session must not
+    # green-light a build — Law 4 is per-session.
+    import os as _os
+    root = project(tmp_path)
+    ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n")
+    (root / "UV").mkdir()
+    stale = root / "UV" / "prompt.txt"
+    stale.write_text("isporuci mi novu verziju", encoding="utf-8")
+    old = (T0 - timedelta(days=2)).timestamp()
+    _os.utime(stale, (old, old))
+    transcript = write_transcript(tmp_path, [user("sredi ovaj bag", 0)])
+    done = run_gate("pre", root, transcript, tool_name="Bash",
+                    tool_input={"command": "python setup/build.py"})
+    assert done.returncode == 2, done.stderr
+    assert "owner" in done.stderr.lower()
+
+
 def test_pre_allows_build_on_owner_word(tmp_path):
     root = project(tmp_path)
     ledger(root, "# w\nkategorija: BUILD · klasa: Standard\n")

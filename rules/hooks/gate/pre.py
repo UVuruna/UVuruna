@@ -78,7 +78,34 @@ def _edit(tool_input: dict, root: Path, session_id: str,
     return None
 
 
-def _bash(tool_input: dict, model_of) -> list[str] | None:
+def _inbox_words(cwd: Path, model) -> str:
+    """The owner's UV/ inbox is his voice too — but Law 4 is per-SESSION, so
+    only files written FOR this session count (mtime no older than an hour
+    before his first message). Learned 2026-08-21: the MVP-release order
+    arrived as UV/prompt.txt ("sto ces mi vec sada isporuciti danas"), the
+    chat message only pointing at the file — a stale inbox from an old
+    session must never green-light a build months later."""
+    first = model.first_owner_message()
+    if first is None or first.ts is None:
+        return ""
+    cutoff = first.ts.timestamp() - 3600
+    texts = []
+    inbox = cwd / "UV"
+    if inbox.is_dir():
+        for path in sorted(inbox.iterdir()):
+            if path.suffix.lower() not in (".txt", ".md"):
+                continue
+            try:
+                if path.stat().st_mtime < cutoff:
+                    continue
+                texts.append(
+                    path.read_text(encoding="utf-8", errors="replace")[:50_000])
+            except OSError:
+                continue
+    return " ".join(texts)
+
+
+def _bash(tool_input: dict, model_of, cwd: Path) -> list[str] | None:
     command = str(tool_input.get("command") or "")
     problem = scratch.check_command(command)
     if problem:
@@ -88,8 +115,10 @@ def _bash(tool_input: dict, model_of) -> list[str] | None:
     model = model_of()
     # Law 4 says "never without his word IN THAT SESSION" — so every owner
     # message of the session counts, not only the last one (owner 2026-08-19:
-    # "nemoj da ti ponavljam u ovoj sesiji svaki put, radi build kad treba").
+    # "nemoj da ti ponavljam u ovoj sesiji svaki put, radi build kad treba"),
+    # and so does an inbox file he wrote for this session (2026-08-21).
     words = " ".join(transcript.owner_text(m.text) for m in model.owner_messages)
+    words += " " + _inbox_words(cwd, model)
     # The harness may hand a sub-agent's PreToolUse the PARENT transcript, so
     # "a sub-agent is running" counts as "this may be a sub-agent": while any
     # agent runs, nobody builds — the main session builds at the end, alone.
@@ -115,7 +144,7 @@ def run(payload: dict) -> list[str] | None:
     if tool in paths.EDIT_TOOLS:
         return _edit(tool_input, root, session_id, model_of, cwd)
     if tool in ("Bash", "PowerShell"):
-        return _bash(tool_input, model_of)
+        return _bash(tool_input, model_of, cwd)
     if tool == "Artifact":
         if tool_input.get("action") in ("list", "comments", "reply", "resolve"):
             return None
