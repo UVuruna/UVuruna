@@ -84,6 +84,15 @@ per level including the doc subfolder · link a `___folder.md` when the target's
   two sentences on why the project carries its name, sold as the user's
   experience, never the implementation. A rename rewrites it in the same commit.
 
+## FEATURES.md (owner decree 2026-08-21)
+
+Every project keeps `docs/FEATURES.md`, README-level: the product's MAIN
+functionalities, briefly described, **grouped by kinship**, written for the
+future USER — never the implementation. Feature headings end with a slug
+(`` ### <Name> · `slug` ``); ledger tasks tag their feature with `#slug`, so
+work history and catalogue link both ways. Linked from README. First
+instance: `Applications/VibeCoder/docs/FEATURES.md`.
+
 ## Markdown conventions
 
 Folder trees use emoji + 2-space indent (never ASCII box-drawing): 📁 📂 📄 🐍
